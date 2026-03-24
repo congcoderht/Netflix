@@ -1,0 +1,35 @@
+{
+  "name": "netflix-server",
+  "version": "1.0.0",
+  "description": "Netflix backend API",
+  "main": "dist/index.js",
+  "scripts": {
+    "swagger": "ts-node src/swagger.ts",
+    "dev": "npm run swagger && ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "npm run swagger && tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint src/",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.10",
+    "@types/swagger-ui-express": "^4.1.8",
+    "prisma": "^6.5.0",
+    "swagger-autogen": "^2.23.7",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}
