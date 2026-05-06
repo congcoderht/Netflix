@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "Netflix",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "search": "Search",
+    "noResults": "No results found"
+  },
+  "auth": {
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "register": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full Name",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot password?",
+    "loginWithGoogle": "Sign in with Google",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginSuccess": "Signed in successfully",
+    "registerSuccess": "Account created successfully",
+    "logoutSuccess": "Signed out successfully"
+  },
+  "nav": {
+    "home": "Home",
+    "movies": "Movies",
+    "series": "TV Shows",
+    "myList": "My List",
+    "profile": "Profile",
+    "admin": "Admin"
+  },
+  "home": {
+    "hero": {
+      "watchNow": "Watch Now",
+      "addToList": "Add to List"
+    },
+    "sections": {
+      "trending": "Trending Now",
+      "newRelease": "New Releases",
+      "continueWatching": "Continue Watching"
+    }
+  },
+  "movie": {
+    "watchNow": "Watch Now",
+    "trailer": "Watch Trailer",
+    "addToList": "Add to My List",
+    "removeFromList": "Remove from List",
+    "season": "Season",
+    "episode": "Episode",
+    "genre": "Genre",
+    "duration": "Duration",
+    "releaseYear": "Release Year",
+    "description": "Description"
+  },
+  "subscription": {
+    "title": "Choose your plan",
+    "basic": "Basic",
+    "standard": "Standard",
+    "premium": "Premium",
+    "perMonth": "/month",
+    "subscribe": "Subscribe",
+    "currentPlan": "Current Plan",
+    "expiresAt": "Expires",
+    "renew": "Renew",
+    "paymentHistory": "Payment History"
+  },
+  "profile": {
+    "title": "Your Profile",
+    "changePassword": "Change Password",
+    "oldPassword": "Current Password",
+    "newPassword": "New Password",
+    "updateProfile": "Update Profile",
+    "watchHistory": "Watch History",
+    "myList": "My List"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "movies": "Movies",
+    "genres": "Genres",
+    "subscriptions": "Plans",
+    "statistics": "Statistics",
+    "totalUsers": "Total Users",
+    "revenue": "Revenue",
+    "topMovies": "Top Movies"
+  },
+  "error": {
+    "notFound": "Page not found",
+    "unauthorized": "You are not authorized",
+    "serverError": "Server error",
+    "goHome": "Go Home"
+  }
+}

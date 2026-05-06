@@ -6,7 +6,7 @@ COPY prisma ./prisma/
 RUN npm ci
 RUN npx prisma generate
 COPY . .
-RUN npm run build
+RUN npm run build && cp src/swagger_output.json dist/
 
 # Production stage
 FROM node:20-alpine AS production

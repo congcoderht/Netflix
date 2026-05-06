@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "Netflix",
+    "loading": "Đang tải...",
+    "error": "Có lỗi xảy ra",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "back": "Quay lại",
+    "search": "Tìm kiếm",
+    "noResults": "Không có kết quả"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "register": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "name": "Họ tên",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "loginWithGoogle": "Đăng nhập với Google",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "loginSuccess": "Đăng nhập thành công",
+    "registerSuccess": "Đăng ký thành công",
+    "logoutSuccess": "Đăng xuất thành công"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "movies": "Phim",
+    "series": "Phim bộ",
+    "myList": "Danh sách của tôi",
+    "profile": "Hồ sơ",
+    "admin": "Quản trị"
+  },
+  "home": {
+    "hero": {
+      "watchNow": "Xem ngay",
+      "addToList": "Thêm vào danh sách"
+    },
+    "sections": {
+      "trending": "Đang thịnh hành",
+      "newRelease": "Mới phát hành",
+      "continueWatching": "Tiếp tục xem"
+    }
+  },
+  "movie": {
+    "watchNow": "Xem ngay",
+    "trailer": "Xem trailer",
+    "addToList": "Thêm vào danh sách",
+    "removeFromList": "Xóa khỏi danh sách",
+    "season": "Mùa",
+    "episode": "Tập",
+    "genre": "Thể loại",
+    "duration": "Thời lượng",
+    "releaseYear": "Năm phát hành",
+    "description": "Mô tả"
+  },
+  "subscription": {
+    "title": "Chọn gói của bạn",
+    "basic": "Cơ bản",
+    "standard": "Tiêu chuẩn",
+    "premium": "Cao cấp",
+    "perMonth": "/tháng",
+    "subscribe": "Đăng ký gói",
+    "currentPlan": "Gói hiện tại",
+    "expiresAt": "Hết hạn",
+    "renew": "Gia hạn",
+    "paymentHistory": "Lịch sử thanh toán"
+  },
+  "profile": {
+    "title": "Hồ sơ cá nhân",
+    "changePassword": "Đổi mật khẩu",
+    "oldPassword": "Mật khẩu cũ",
+    "newPassword": "Mật khẩu mới",
+    "updateProfile": "Cập nhật hồ sơ",
+    "watchHistory": "Lịch sử xem",
+    "myList": "Danh sách của tôi"
+  },
+  "admin": {
+    "dashboard": "Bảng điều khiển",
+    "users": "Người dùng",
+    "movies": "Phim",
+    "genres": "Thể loại",
+    "subscriptions": "Gói cước",
+    "statistics": "Thống kê",
+    "totalUsers": "Tổng người dùng",
+    "revenue": "Doanh thu",
+    "topMovies": "Phim phổ biến"
+  },
+  "error": {
+    "notFound": "Không tìm thấy trang",
+    "unauthorized": "Bạn không có quyền truy cập",
+    "serverError": "Lỗi máy chủ",
+    "goHome": "Về trang chủ"
+  }
+}
