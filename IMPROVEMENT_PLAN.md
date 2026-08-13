@@ -100,13 +100,14 @@
 - [x] Bổ sung ESLint cho backend và bảo đảm script `npm run lint` chạy được.
 - [ ] Thêm formatter thống nhất cho client và server.
 - [ ] Thêm unit test cho auth, JWT, OTP và các service quan trọng.
+  - Đã có test hồi quy bước đầu cho refresh token và quyền truy cập movie.
 - [ ] Thêm integration test cho API với database test.
 - [ ] Các case tối thiểu:
   - Đăng ký và xác minh OTP.
   - Login đúng/sai và tài khoản bị khóa.
-  - Refresh rotation và reuse token cũ.
+  - [x] Refresh rotation và reuse token cũ.
   - Phân quyền admin.
-  - User không xem được phim chưa publish.
+  - [x] User không xem được phim chưa publish; admin vẫn xem được.
   - CRUD movie/genre/season/episode.
 - [ ] Thêm test frontend cho auth store, interceptor và protected routes.
 - [ ] Thêm smoke E2E cho login → duyệt phim → xem chi tiết.
@@ -254,6 +255,7 @@ Kết quả sau đợt ổn định P0 ngày 2026-07-27:
 - Server TypeScript build và Swagger generation: pass.
 - Prisma schema validation: pass.
 - Prisma Client generation: pass.
+- Backend regression tests: 6 test pass bằng Node.js test runner, không phụ thuộc dịch vụ ngoài.
 - Cảnh báo còn lại:
   - Frontend bundle chính khoảng 915 kB trước gzip; cần code splitting ở giai đoạn tối ưu.
   - Prisma cảnh báo cấu hình `package.json#prisma` sẽ bị loại bỏ ở Prisma 7.
