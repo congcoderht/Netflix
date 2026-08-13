@@ -2,17 +2,22 @@ import { Router } from 'express'
 import passport from '../config/passport'
 import * as authController from '../controllers/auth.controller'
 import { authenticate } from '../middlewares/auth.middleware'
+import {
+  loginRateLimit,
+  otpRateLimit,
+  refreshRateLimit,
+} from '../middlewares/rate-limit.middleware'
 
 export const authRouter = Router()
 
 // OTP
-authRouter.post('/send-otp', authController.sendOtp)
-authRouter.post('/verify-otp', authController.verifyOtp)
+authRouter.post('/send-otp', otpRateLimit, authController.sendOtp)
+authRouter.post('/verify-otp', otpRateLimit, authController.verifyOtp)
 
-// Email / password
-authRouter.post('/register', authController.register)
-authRouter.post('/login', authController.login)
-authRouter.post('/refresh', authController.refreshToken)
+// Email / password. Account creation is completed only through verify-otp;
+// exposing a direct register endpoint would bypass email verification.
+authRouter.post('/login', loginRateLimit, authController.login)
+authRouter.post('/refresh', refreshRateLimit, authController.refreshToken)
 authRouter.post('/logout', authController.logout)
 
 // User info (protected)

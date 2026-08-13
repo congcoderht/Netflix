@@ -39,12 +39,14 @@
   "home": {
     "hero": {
       "watchNow": "Xem ngay",
-      "addToList": "Thêm vào danh sách"
+      "addToList": "Thêm vào danh sách",
+      "moreInfo": "Thông tin thêm"
     },
     "sections": {
       "trending": "Đang thịnh hành",
       "newRelease": "Mới phát hành",
-      "continueWatching": "Tiếp tục xem"
+      "continueWatching": "Tiếp tục xem",
+      "featuredSeries": "Phim bộ nổi bật"
     }
   },
   "movie": {

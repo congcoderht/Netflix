@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/lib/axios'
+import { getApiErrorBody } from '@/lib/api-error'
 
 export default function Register() {
   const { t } = useTranslation()
@@ -30,11 +31,12 @@ export default function Register() {
       navigate('/verify-otp', {
         state: { email: form.email, name: form.name, password: form.password },
       })
-    } catch (err: any) {
-      if (err.response?.data?.code === 'OAUTH_ACCOUNT') {
+    } catch (err: unknown) {
+      const error = getApiErrorBody(err)
+      if (error.code === 'OAUTH_ACCOUNT') {
         setError('Email này đã đăng nhập bằng Google. Vui lòng đăng nhập bằng Google.')
       } else {
-        setError(err.response?.data?.message || t('common.error'))
+        setError(error.message || t('common.error'))
       }
     } finally {
       setLoading(false)

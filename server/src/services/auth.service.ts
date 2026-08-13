@@ -3,7 +3,6 @@ import crypto from 'crypto'
 import { prisma } from '../lib/prisma'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util'
 import { sendTempPasswordEmail } from '../lib/mailer'
-import { config } from '../config'
 
 const REFRESH_TOKEN_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -50,6 +49,10 @@ export const refreshTokens = async (token: string) => {
 
   const user = await prisma.user.findUnique({ where: { id: payload.userId } })
   if (!user) throw new Error('User not found')
+  if (user.isBlocked) {
+    await prisma.refreshToken.deleteMany({ where: { userId: user.id } })
+    throw new Error('Account is blocked')
+  }
 
   // Rotate: xóa token cũ, tạo token mới
   await prisma.refreshToken.delete({ where: { token } })
@@ -100,5 +103,8 @@ export const changePassword = async (userId: string, oldPassword: string, newPas
   if (!valid) throw new Error('Old password is incorrect')
 
   const hashed = await bcrypt.hash(newPassword, 10)
-  await prisma.user.update({ where: { id: userId }, data: { password: hashed } })
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: userId }, data: { password: hashed } }),
+    prisma.refreshToken.deleteMany({ where: { userId } }),
+  ])
 }

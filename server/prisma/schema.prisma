@@ -114,6 +114,17 @@ model Genre {
   @@map("genres")
 }
 
+model Actor {
+  id        String         @id @default(uuid())
+  name      String
+  avatar    String?
+  bio       String?
+  createdAt DateTime       @default(now()) @map("created_at")
+  movies    ActorOnMovie[]
+
+  @@map("actors")
+}
+
 model Movie {
   id          String      @id @default(uuid())
   title       String
@@ -131,6 +142,7 @@ model Movie {
   seasons     Season[]
 
   genres      GenreOnMovie[]
+  actors      ActorOnMovie[]
   watchHistories WatchHistory[]
   watchProgresses WatchProgress[]
   watchList   WatchList[]
@@ -152,6 +164,18 @@ model GenreOnMovie {
 
   @@id([movieId, genreId])
   @@map("genre_on_movies")
+}
+
+model ActorOnMovie {
+  movieId String @map("movie_id")
+  actorId String @map("actor_id")
+  role    String?
+
+  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  actor   Actor  @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, actorId])
+  @@map("actor_on_movies")
 }
 
 model Season {

@@ -8,10 +8,10 @@ export interface JwtPayload {
 }
 
 export const generateAccessToken = (payload: JwtPayload): string =>
-  jwt.sign(payload, config.jwt.accessSecret as string, { expiresIn: '15m' } as SignOptions)
+  jwt.sign(payload, config.jwt.accessSecret as string, { expiresIn: config.jwt.accessExpiresIn } as SignOptions)
 
 export const generateRefreshToken = (payload: JwtPayload): string =>
-  jwt.sign(payload, config.jwt.refreshSecret as string, { expiresIn: '7d' } as SignOptions)
+  jwt.sign(payload, config.jwt.refreshSecret as string, { expiresIn: config.jwt.refreshExpiresIn } as SignOptions)
 
 export const verifyAccessToken = (token: string) =>
   jwt.verify(token, config.jwt.accessSecret as string) as JwtPayload

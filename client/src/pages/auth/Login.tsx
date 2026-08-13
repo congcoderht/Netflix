@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/lib/axios'
 import { useAuthStore } from '@/store/auth.store'
+import { getApiErrorBody } from '@/lib/api-error'
 
 const NOTICES: Record<string, string> = {
   registered: 'Đăng ký thành công! Hãy đăng nhập để tiếp tục.',
@@ -35,11 +36,12 @@ export default function Login() {
       })
       setAuth(me.data, data.accessToken)
       navigate('/')
-    } catch (err: any) {
-      if (err.response?.data?.code === 'OAUTH_ACCOUNT') {
+    } catch (err: unknown) {
+      const error = getApiErrorBody(err)
+      if (error.code === 'OAUTH_ACCOUNT') {
         setError('Tài khoản này đăng nhập bằng Google. Vui lòng dùng nút "Đăng nhập với Google".')
       } else {
-        setError(err.response?.data?.message || t('common.error'))
+        setError(error.message || t('common.error'))
       }
     } finally {
       setLoading(false)

@@ -39,12 +39,14 @@
   "home": {
     "hero": {
       "watchNow": "Watch Now",
-      "addToList": "Add to List"
+      "addToList": "Add to List",
+      "moreInfo": "More Info"
     },
     "sections": {
       "trending": "Trending Now",
       "newRelease": "New Releases",
-      "continueWatching": "Continue Watching"
+      "continueWatching": "Continue Watching",
+      "featuredSeries": "Featured Series"
     }
   },
   "movie": {

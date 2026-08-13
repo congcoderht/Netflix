@@ -26,7 +26,10 @@ passport.use(
           include: { user: true },
         })
 
-        if (existingOAuth) return done(null, existingOAuth.user)
+        if (existingOAuth) {
+          if (existingOAuth.user.isBlocked) return done(null, false, { message: 'Account is blocked' })
+          return done(null, existingOAuth.user)
+        }
 
         // Tìm user theo email hoặc tạo mới
         let user = await prisma.user.findUnique({ where: { email } })
@@ -40,6 +43,8 @@ passport.use(
             },
           })
         }
+
+        if (user.isBlocked) return done(null, false, { message: 'Account is blocked' })
 
         // Tạo oauth account
         await prisma.oAuthAccount.create({

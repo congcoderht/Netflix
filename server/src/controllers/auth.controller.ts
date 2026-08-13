@@ -87,6 +87,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     setRefreshTokenCookie(res, tokens.refreshToken)
     res.json({ accessToken: tokens.accessToken })
   } catch {
+    res.clearCookie('refreshToken')
     res.status(401).json({ message: 'Invalid refresh token' })
   }
 }

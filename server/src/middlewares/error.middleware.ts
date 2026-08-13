@@ -6,6 +6,7 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
+  void _next
   console.error('❌ Error:', err.message);
 
   res.status(500).json({

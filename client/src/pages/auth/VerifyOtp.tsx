@@ -2,13 +2,20 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from '@/lib/axios'
 import { useAuthStore } from '@/store/auth.store'
+import { getApiErrorMessage } from '@/lib/api-error'
+
+type VerifyOtpLocationState = {
+  email?: string
+  name?: string
+  password?: string
+}
 
 export default function VerifyOtp() {
   const navigate = useNavigate()
   const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)
 
-  const { email, name, password } = (location.state as any) || {}
+  const { email, name, password } = (location.state as VerifyOtpLocationState | null) || {}
 
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState('')
@@ -19,7 +26,7 @@ export default function VerifyOtp() {
   useEffect(() => {
     if (!email) navigate('/register')
     inputs.current[0]?.focus()
-  }, [])
+  }, [email, navigate])
 
   useEffect(() => {
     if (resendCooldown <= 0) return
@@ -62,8 +69,8 @@ export default function VerifyOtp() {
       })
       setAuth(me.data, data.accessToken)
       navigate('/')
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Có lỗi xảy ra')
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, 'Có lỗi xảy ra'))
       setOtp(['', '', '', '', '', ''])
       inputs.current[0]?.focus()
     } finally {
@@ -77,8 +84,8 @@ export default function VerifyOtp() {
       await api.post('/auth/send-otp', { email, name, password })
       setResendCooldown(60)
       setError('')
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Có lỗi xảy ra')
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, 'Có lỗi xảy ra'))
     }
   }
 

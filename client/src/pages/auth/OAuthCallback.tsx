@@ -23,7 +23,7 @@ export default function OAuthCallback() {
         navigate('/')
       })
       .catch(() => navigate('/login'))
-  }, [])
+  }, [navigate, params, setAuth])
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">

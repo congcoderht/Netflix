@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import { z } from 'zod';
 const healthRouter = Router();
 
 healthRouter.get('/', (_req: Request, res: Response) => {

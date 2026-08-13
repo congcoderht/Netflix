@@ -12,8 +12,8 @@ export const config = {
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET || 'access-secret-change-in-prod',
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'refresh-secret-change-in-prod',
-    accessExpiresIn: '15m',
-    refreshExpiresIn: '7d',
+    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID || '',
@@ -22,6 +22,11 @@ export const config = {
   },
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+    apiKey: process.env.CLOUDINARY_API_KEY || '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET || '',
+  },
   smtp: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587', 10),
@@ -30,3 +35,20 @@ export const config = {
     from: process.env.SMTP_FROM || 'Netflix <no-reply@netflix.com>',
   },
 };
+
+export const validateConfig = () => {
+  if (!config.databaseUrl) {
+    throw new Error('DATABASE_URL is required')
+  }
+
+  if (config.nodeEnv === 'production') {
+    const insecureSecrets = [
+      config.jwt.accessSecret,
+      config.jwt.refreshSecret,
+    ].some((secret) => !secret || secret.includes('change-in-prod'))
+
+    if (insecureSecrets) {
+      throw new Error('Secure JWT_ACCESS_SECRET and JWT_REFRESH_SECRET are required in production')
+    }
+  }
+}

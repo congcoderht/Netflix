@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth',
-      partialState: (state: AuthState) => ({ user: state.user }),
-    } as any
+      partialize: (state: AuthState) => ({ user: state.user, accessToken: state.accessToken }),
+    }
   )
 )
