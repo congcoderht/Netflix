@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Layout from '@/components/layout/Layout'
@@ -26,25 +26,32 @@ export default function Movies() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [searchInput, setSearchInput] = useState(searchParam)
 
   const LIMIT = 15
 
-  const setParam = useCallback((key: string, value: string) => {
+  const setParam = (key: string, value: string) => {
+    const currentValue = searchParams.get(key) || ''
+    if (currentValue === value) return
+
     const next = new URLSearchParams(searchParams)
     if (value) next.set(key, value)
     else next.delete(key)
     next.delete('page')
     setLoading(true)
+    setError('')
     setPage(1)
     setSearchParams(next)
-  }, [searchParams, setSearchParams])
+  }
 
   useEffect(() => {
     getGenres().then(setGenres)
   }, [])
 
   useEffect(() => {
+    let active = true
+
     getMovies({
       type: typeParam || undefined,
       genreId: genreParam || undefined,
@@ -53,19 +60,43 @@ export default function Movies() {
       limit: LIMIT,
     })
       .then((res) => {
+        if (!active) return
         setMovies(res.items)
         setTotal(res.total)
         setTotalPages(res.totalPages)
-        console.log('movies response:', res.total, 'total,', res.totalPages, 'pages')
       })
-      .finally(() => setLoading(false))
+      .catch(() => {
+        if (!active) return
+        setError('Không thể tải danh sách phim. Vui lòng thử lại.')
+        setMovies([])
+        setTotal(0)
+        setTotalPages(1)
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => { active = false }
   }, [typeParam, genreParam, searchParam, page])
 
   // Debounce search
   useEffect(() => {
-    const t = setTimeout(() => setParam('search', searchInput), 400)
+    if (searchInput === searchParam) return
+
+    const t = setTimeout(() => {
+      setLoading(true)
+      setError('')
+      setPage(1)
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current)
+        if (searchInput) next.set('search', searchInput)
+        else next.delete('search')
+        next.delete('page')
+        return next
+      })
+    }, 400)
     return () => clearTimeout(t)
-  }, [searchInput, setParam])
+  }, [searchInput, searchParam, setSearchParams])
 
   const title = typeParam === 'MOVIE' ? t('nav.movies') : typeParam === 'SERIES' ? t('nav.series') : 'Tất cả phim'
 
@@ -136,6 +167,16 @@ export default function Movies() {
             <div className="flex justify-center py-20">
               <div className="w-10 h-10 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
             </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-400 text-lg mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="rounded bg-red-600 px-5 py-2 text-sm font-medium text-white hover:bg-red-700"
+              >
+                Thử lại
+              </button>
+            </div>
           ) : movies.length === 0 ? (
             <div className="text-center py-20">
               <svg className="w-16 h-16 text-gray-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,9 +193,9 @@ export default function Movies() {
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!loading && !error && totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-10">
-              <button onClick={() => { setLoading(true); setPage((p) => p - 1) }} disabled={page === 1}
+              <button onClick={() => { setLoading(true); setError(''); setPage((p) => p - 1) }} disabled={page === 1}
                 className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -170,13 +211,13 @@ export default function Movies() {
                 }, [])
                 .map((p, i) => p === '...'
                   ? <span key={`dot-${i}`} className="text-gray-600 px-1">...</span>
-                  : <button key={p} onClick={() => { setLoading(true); setPage(p as number) }}
+                  : <button key={p} onClick={() => { setLoading(true); setError(''); setPage(p as number) }}
                       className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${page === p ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
                       {p}
                     </button>
                 )}
 
-              <button onClick={() => { setLoading(true); setPage((p) => p + 1) }} disabled={page === totalPages}
+              <button onClick={() => { setLoading(true); setError(''); setPage((p) => p + 1) }} disabled={page === totalPages}
                 className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
