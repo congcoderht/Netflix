@@ -57,38 +57,42 @@
 - [x] Bổ sung rate limit phù hợp cho login, gửi OTP, xác minh OTP và refresh token.
 - [x] Không để ứng dụng production chạy với JWT secret mặc định.
   - Validate biến môi trường và dừng server sớm nếu thiếu secret bắt buộc.
-- [ ] Rà soát upload: MIME type, dung lượng, loại tài nguyên, quyền admin và cleanup file lỗi.
+- [x] Rà soát upload: MIME allowlist, magic bytes, dung lượng, loại tài nguyên và quyền admin.
+  - Upload dùng memory storage nên không để lại file tạm; lỗi Cloudinary được chuẩn hóa thành `UPLOAD_FAILED`.
 
 ### P1 — Độ ổn định của backend
 
-- [ ] Áp dụng Zod cho params, query và body của API.
-- [ ] Chuẩn hóa lỗi bằng lớp `AppError` và error middleware tập trung.
+- [x] Áp dụng Zod cho params, query và body của các JSON API hiện tại.
+  - Đã áp dụng cho Auth, Genre, Movie, Actor, Season và Episode API.
+- [x] Chuẩn hóa lỗi bằng lớp `AppError` và error middleware tập trung.
+  - Các lỗi nghiệp vụ Auth và Movie dùng mã lỗi ổn định; lỗi Prisma phổ biến được map tập trung.
 - [ ] Loại bỏ các khối `try/catch` lặp lại bằng async handler.
+  - Đã hoàn tất cho Auth, Genre, Movie và Season/Episode; callback OAuth giữ redirect riêng.
 - [ ] Validate `page`, `limit`, `duration`, số season/episode và enum `ContentType`.
-- [ ] Giới hạn `limit` tối đa để tránh truy vấn quá lớn.
-- [ ] Chuẩn hóa response pagination.
-- [ ] Xử lý đầy đủ lỗi Prisma như `P2002`, `P2003` và `P2025`.
-- [ ] Dùng transaction cho các thao tác thay thế quan hệ:
-  - Gán lại genres của phim.
-  - Gán lại actors của phim.
+- [x] Giới hạn `limit` tối đa 100 cho Movie API.
+- [x] Chuẩn hóa response pagination cho Movie API.
+- [x] Xử lý tập trung lỗi Prisma `P2002`, `P2003` và `P2025`.
+- [x] Dùng transaction cho các thao tác thay thế quan hệ:
+  - [x] Gán lại genres của phim.
+  - [x] Gán lại actors của phim.
   - Các thao tác nhiều bước liên quan season/episode.
-- [ ] Kiểm tra episode thực sự thuộc season và season thực sự thuộc movie trên nested route.
+- [x] Kiểm tra episode thực sự thuộc season và season thực sự thuộc movie trên nested route.
 - [ ] Thêm database index cho các trường thường tìm/lọc/sắp xếp.
-- [ ] Đồng bộ thời hạn refresh token trong JWT, cookie và database từ một cấu hình duy nhất.
+- [x] Đồng bộ thời hạn refresh token trong JWT, cookie và database từ một cấu hình duy nhất.
 - [ ] Bổ sung graceful shutdown cho HTTP server, Prisma và Redis.
 - [ ] Chuẩn hóa logging và không ghi secret/token vào log.
 
 ### P1 — Auth và frontend
 
-- [ ] Khởi tạo trạng thái đăng nhập an toàn khi tải lại trang.
+- [x] Khởi tạo trạng thái đăng nhập an toàn khi tải lại trang.
   - Xác minh phiên bằng `/auth/me` hoặc refresh thay vì chỉ tin dữ liệu persist.
-- [ ] Ngăn nhiều request `401` cùng lúc tạo nhiều lần refresh token.
+- [x] Ngăn nhiều request `401` cùng lúc tạo nhiều lần refresh token.
   - Dùng một refresh promise/queue chung trong Axios interceptor.
-- [ ] Redirect về `/login` rõ ràng khi refresh thất bại.
-- [ ] Rà soát việc persist access token trong localStorage.
+- [x] Redirect về `/login` rõ ràng khi refresh thất bại và lưu URL để quay lại sau đăng nhập.
+- [x] Không persist access token trong localStorage; token chỉ nằm trong memory và được khôi phục bằng refresh cookie.
   - Ngắn hạn: tăng cường phòng chống XSS.
   - Dài hạn: cân nhắc giữ access token trong memory và khôi phục bằng refresh cookie.
-- [ ] Không hiển thị form đổi mật khẩu cho tài khoản chỉ dùng OAuth, hoặc cung cấp luồng đặt mật khẩu.
+- [x] Không hiển thị form đổi mật khẩu cho tài khoản chỉ dùng OAuth và hiển thị trạng thái rõ ràng.
 - [ ] Chuẩn hóa loading, empty state và error state trên các trang.
 - [ ] Thêm error boundary và trang 404 thực sự.
 - [ ] Hoàn thiện accessibility cho form, modal, menu và video player.
@@ -152,24 +156,26 @@
 
 ### Giai đoạn 2 — Chuẩn hóa API
 
-- [ ] Tạo schema Zod theo từng resource.
-- [ ] Tạo validation middleware dùng chung.
-- [ ] Tạo `AppError`, async handler và error response thống nhất.
-- [ ] Chuẩn hóa pagination/filter.
-- [ ] Bổ sung transaction và ownership validation cho nested resources.
-- [ ] Cập nhật Swagger/API docs.
+- [x] Tạo schema Zod theo từng resource JSON hiện tại.
+- [x] Tạo validation middleware dùng chung.
+- [x] Tạo `AppError`, async handler và error response thống nhất.
+- [x] Chuẩn hóa pagination/filter cho Movie API.
+- [x] Bổ sung transaction và ownership validation cho nested resources.
+- [x] Cập nhật Swagger/API docs với tags, bearer security scheme và error/input definitions.
 
 **Điều kiện hoàn tất:** Controller gọn, input không hợp lệ trả lỗi `4xx` nhất quán và các API chính có integration test.
 
 ### Giai đoạn 3 — Củng cố auth frontend
 
-- [ ] Tạo bootstrap auth flow.
-- [ ] Chống refresh race condition.
-- [ ] Chuẩn hóa logout và redirect khi hết phiên.
-- [ ] Cải thiện OAuth/password UX.
+- [x] Tạo bootstrap auth flow.
+- [x] Chống refresh race condition.
+- [x] Chuẩn hóa logout và redirect khi hết phiên.
+- [x] Cải thiện OAuth/password UX; access token không còn xuất hiện trong callback URL.
 - [ ] Bổ sung test cho store, interceptor và protected routes.
 
 **Điều kiện hoàn tất:** Reload trang, token hết hạn và nhiều request đồng thời đều hoạt động ổn định.
+
+**Trạng thái:** Hoàn tất nền tảng auth frontend; test UI tự động sẽ được bổ sung trong quality phase.
 
 ### Giai đoạn 4 — Hoàn thiện trải nghiệm xem phim
 

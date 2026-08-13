@@ -89,18 +89,17 @@ export const create = async (data: MovieCreateInput) => {
 
 export const update = async (id: string, data: Partial<MovieCreateInput>) => {
   const { genreIds, ...rest } = data
-  return prisma.movie.update({
-    where: { id },
-    data: {
-      ...rest,
-      ...(genreIds !== undefined && {
-        genres: {
-          deleteMany: {},
-          create: genreIds.map((genreId) => ({ genre: { connect: { id: genreId } } })),
-        },
-      }),
-    },
-    select: MOVIE_SELECT,
+  return prisma.$transaction(async (tx) => {
+    if (genreIds !== undefined) {
+      await tx.genreOnMovie.deleteMany({ where: { movieId: id } })
+      if (genreIds.length) {
+        await tx.genreOnMovie.createMany({
+          data: genreIds.map((genreId) => ({ movieId: id, genreId })),
+        })
+      }
+    }
+
+    return tx.movie.update({ where: { id }, data: rest, select: MOVIE_SELECT })
   })
 }
 
@@ -121,10 +120,13 @@ export const upsertActor = (data: { name: string; avatar?: string; bio?: string 
   prisma.actor.create({ data })
 
 export const setMovieActors = async (movieId: string, actors: { actorId: string; role: string }[]) => {
-  await prisma.actorOnMovie.deleteMany({ where: { movieId } })
-  if (actors.length) {
-    await prisma.actorOnMovie.createMany({
-      data: actors.map((a) => ({ movieId, actorId: a.actorId, role: a.role })),
-    })
-  }
+  await prisma.$transaction(async (tx) => {
+    await tx.movie.findUniqueOrThrow({ where: { id: movieId }, select: { id: true } })
+    await tx.actorOnMovie.deleteMany({ where: { movieId } })
+    if (actors.length) {
+      await tx.actorOnMovie.createMany({
+        data: actors.map((a) => ({ movieId, actorId: a.actorId, role: a.role })),
+      })
+    }
+  })
 }

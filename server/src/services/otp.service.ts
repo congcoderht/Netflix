@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import { redis } from '../lib/redis'
 import { sendOtpEmail } from '../lib/mailer'
 import { prisma } from '../lib/prisma'
+import { AppError } from '../errors/app-error'
 
 const OTP_TTL = 10 * 60        // 10 phút (giây)
 const RATE_LIMIT_TTL = 60      // 1 phút
@@ -17,13 +18,13 @@ export const sendOtp = async (email: string, name?: string, password?: string) =
   if (attempts === 1) await redis.expire(rateLimitKeyStr, RATE_LIMIT_TTL)
   if (attempts > RATE_LIMIT_MAX) {
     const ttl = await redis.ttl(rateLimitKeyStr)
-    throw new Error(`Quá nhiều yêu cầu. Vui lòng thử lại sau ${ttl} giây.`)
+    throw new AppError(429, `Quá nhiều yêu cầu. Vui lòng thử lại sau ${ttl} giây.`, 'OTP_RATE_LIMITED')
   }
 
   // Kiểm tra email đã tồn tại chưa
   const existing = await prisma.user.findUnique({ where: { email } })
-  if (existing && existing.password) throw new Error('Email already exists')
-  if (existing && !existing.password) throw new Error('OAUTH_ACCOUNT')
+  if (existing && existing.password) throw new AppError(409, 'Email already exists', 'EMAIL_EXISTS')
+  if (existing && !existing.password) throw new AppError(409, 'Please sign in with Google', 'OAUTH_ACCOUNT')
 
   // Tạo OTP 6 số
   const otp = crypto.randomInt(100000, 999999).toString()
@@ -36,10 +37,10 @@ export const sendOtp = async (email: string, name?: string, password?: string) =
 
 export const verifyOtp = async (email: string, otp: string) => {
   const raw = await redis.get(otpKey(email))
-  if (!raw) throw new Error('Mã OTP không tồn tại hoặc đã hết hạn')
+  if (!raw) throw new AppError(400, 'Mã OTP không tồn tại hoặc đã hết hạn', 'OTP_EXPIRED')
 
   const { otp: storedOtp, name, password } = JSON.parse(raw)
-  if (otp !== storedOtp) throw new Error('Mã OTP không đúng')
+  if (otp !== storedOtp) throw new AppError(400, 'Mã OTP không đúng', 'INVALID_OTP')
 
   // Xóa OTP sau khi dùng
   await redis.del(otpKey(email))

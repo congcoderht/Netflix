@@ -9,11 +9,12 @@ import Profile from '@/pages/Profile'
 import MovieDetail from '@/pages/MovieDetail'
 import AdminMovies from '@/pages/admin/AdminMovies'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import AuthBootstrap from '@/components/AuthBootstrap'
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <AuthBootstrap><Routes>
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -29,7 +30,7 @@ export default function App() {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      </Routes></AuthBootstrap>
     </BrowserRouter>
   )
 }

@@ -38,14 +38,15 @@ test('regular users request only published movie details', async (t) => {
     return null
   })
 
-  const response = createResponse()
-  await movieController.getById(
-    { params: { id: 'movie-1' }, user: { role: 'USER' } },
-    response,
+  await assert.rejects(
+    movieController.getById(
+      { params: { id: 'movie-1' }, user: { role: 'USER' } },
+      createResponse(),
+    ),
+    (error) => error.statusCode === 404 && error.code === 'MOVIE_NOT_FOUND',
   )
 
   assert.equal(receivedIncludeUnpublished, false)
-  assert.equal(response.statusCode, 404)
 })
 
 test('admins may request unpublished movie details', async (t) => {

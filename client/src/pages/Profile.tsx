@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import Layout from '@/components/layout/Layout'
 import { useAuthStore } from '@/store/auth.store'
 import { api } from '@/lib/axios'
@@ -14,7 +15,8 @@ type Tab = 'info' | 'password' | 'language'
 
 export default function Profile() {
   const { t, i18n } = useTranslation()
-  const { user, setUser } = useAuthStore()
+  const navigate = useNavigate()
+  const { user, setUser, logout } = useAuthStore()
   const [tab, setTab] = useState<Tab>('info')
 
   // Profile form
@@ -55,8 +57,8 @@ export default function Profile() {
         oldPassword: passForm.oldPassword,
         newPassword: passForm.newPassword,
       })
-      setPassMsg({ type: 'ok', text: 'Đổi mật khẩu thành công!' })
-      setPassForm({ oldPassword: '', newPassword: '', confirmPassword: '' })
+      logout()
+      navigate('/login?notice=password_changed', { replace: true })
     } catch (err: unknown) {
       setPassMsg({ type: 'err', text: getApiErrorMessage(err, t('common.error')) })
     } finally {
@@ -66,7 +68,7 @@ export default function Profile() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'info', label: t('profile.updateProfile') },
-    { key: 'password', label: t('profile.changePassword') },
+    ...(user?.hasPassword ? [{ key: 'password' as const, label: t('profile.changePassword') }] : []),
     { key: 'language', label: 'Ngôn ngữ' },
   ]
 
@@ -205,6 +207,12 @@ export default function Profile() {
                 {passLoading ? t('common.loading') : t('profile.changePassword')}
               </button>
             </form>
+          )}
+
+          {tab === 'info' && user && !user.hasPassword && (
+            <p className="mt-6 rounded border border-blue-700 bg-blue-900/20 px-4 py-3 text-sm text-blue-300">
+              Tài khoản này đăng nhập bằng Google nên chưa có mật khẩu riêng.
+            </p>
           )}
 
           {/* Tab: Language */}

@@ -3,8 +3,8 @@ import crypto from 'crypto'
 import { prisma } from '../lib/prisma'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util'
 import { sendTempPasswordEmail } from '../lib/mailer'
-
-const REFRESH_TOKEN_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000
+import { AppError } from '../errors/app-error'
+import { config } from '../config'
 
 export const register = async (email: string, password: string, name?: string) => {
   const existing = await prisma.user.findUnique({ where: { email } })
@@ -16,9 +16,9 @@ export const register = async (email: string, password: string, name?: string) =
       const hashed = await bcrypt.hash(tempPassword, 10)
       await prisma.user.update({ where: { email }, data: { password: hashed } })
       await sendTempPasswordEmail(email, tempPassword)
-      throw new Error('OAUTH_ACCOUNT_TEMP_PASSWORD_SENT')
+      throw new AppError(409, 'A temporary password was sent to your email', 'TEMP_PASSWORD_SENT')
     }
-    throw new Error('Email already exists')
+    throw new AppError(409, 'Email already exists', 'EMAIL_EXISTS')
   }
 
   const hashed = await bcrypt.hash(password, 10)
@@ -31,12 +31,12 @@ export const register = async (email: string, password: string, name?: string) =
 
 export const login = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({ where: { email } })
-  if (!user) throw new Error('Invalid credentials')
-  if (!user.password) throw new Error('OAUTH_ACCOUNT')
-  if (user.isBlocked) throw new Error('Account is blocked')
+  if (!user) throw new AppError(401, 'Invalid credentials', 'INVALID_CREDENTIALS')
+  if (!user.password) throw new AppError(403, 'Please sign in with Google', 'OAUTH_ACCOUNT')
+  if (user.isBlocked) throw new AppError(403, 'Account is blocked', 'ACCOUNT_BLOCKED')
 
   const valid = await bcrypt.compare(password, user.password)
-  if (!valid) throw new Error('Invalid credentials')
+  if (!valid) throw new AppError(401, 'Invalid credentials', 'INVALID_CREDENTIALS')
 
   return buildTokenResponse(user)
 }
@@ -45,13 +45,13 @@ export const refreshTokens = async (token: string) => {
   const payload = verifyRefreshToken(token)
 
   const stored = await prisma.refreshToken.findUnique({ where: { token } })
-  if (!stored || stored.expiresAt < new Date()) throw new Error('Invalid refresh token')
+  if (!stored || stored.expiresAt < new Date()) throw new AppError(401, 'Invalid refresh token', 'INVALID_REFRESH_TOKEN')
 
   const user = await prisma.user.findUnique({ where: { id: payload.userId } })
-  if (!user) throw new Error('User not found')
+  if (!user) throw new AppError(401, 'User not found', 'USER_NOT_FOUND')
   if (user.isBlocked) {
     await prisma.refreshToken.deleteMany({ where: { userId: user.id } })
-    throw new Error('Account is blocked')
+    throw new AppError(403, 'Account is blocked', 'ACCOUNT_BLOCKED')
   }
 
   // Rotate: xóa token cũ, tạo token mới
@@ -73,7 +73,7 @@ export const buildTokenResponse = async (user: { id: string; email: string; role
     data: {
       userId: user.id,
       token: refreshToken,
-      expiresAt: new Date(Date.now() + REFRESH_TOKEN_EXPIRES_MS),
+      expiresAt: new Date(Date.now() + config.jwt.refreshExpiresInMs),
     },
   })
 
@@ -81,26 +81,31 @@ export const buildTokenResponse = async (user: { id: string; email: string; role
 }
 
 export const getMe = async (userId: string) => {
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, name: true, avatar: true, role: true, createdAt: true },
+    select: { id: true, email: true, name: true, avatar: true, role: true, password: true, createdAt: true },
   })
+  if (!user) return null
+  const { password, ...safeUser } = user
+  return { ...safeUser, hasPassword: Boolean(password) }
 }
 
 export const updateProfile = async (userId: string, data: { name?: string; avatar?: string }) => {
-  return prisma.user.update({
+  const user = await prisma.user.update({
     where: { id: userId },
     data,
-    select: { id: true, email: true, name: true, avatar: true, role: true, createdAt: true },
+    select: { id: true, email: true, name: true, avatar: true, role: true, password: true, createdAt: true },
   })
+  const { password, ...safeUser } = user
+  return { ...safeUser, hasPassword: Boolean(password) }
 }
 
 export const changePassword = async (userId: string, oldPassword: string, newPassword: string) => {
   const user = await prisma.user.findUnique({ where: { id: userId } })
-  if (!user || !user.password) throw new Error('Cannot change password for OAuth accounts')
+  if (!user || !user.password) throw new AppError(400, 'Cannot change password for OAuth accounts', 'OAUTH_ACCOUNT')
 
   const valid = await bcrypt.compare(oldPassword, user.password)
-  if (!valid) throw new Error('Old password is incorrect')
+  if (!valid) throw new AppError(400, 'Old password is incorrect', 'INVALID_OLD_PASSWORD')
 
   const hashed = await bcrypt.hash(newPassword, 10)
   await prisma.$transaction([

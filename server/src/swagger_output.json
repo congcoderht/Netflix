@@ -7,9 +7,43 @@
   },
   "host": "localhost:5000",
   "basePath": "/",
+  "tags": [
+    {
+      "name": "System",
+      "description": "Health and operational endpoints"
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication and profile management"
+    },
+    {
+      "name": "Genres",
+      "description": "Genre management"
+    },
+    {
+      "name": "Movies",
+      "description": "Movies, actors and discovery"
+    },
+    {
+      "name": "Episodes",
+      "description": "Season and episode management"
+    },
+    {
+      "name": "Upload",
+      "description": "Admin media uploads"
+    }
+  ],
   "schemes": [
     "http"
   ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Use: Bearer <access-token>"
+    }
+  },
   "consumes": [
     "application/json"
   ],
@@ -34,35 +68,9 @@
     "/api/auth/send-otp": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
             "description": "Bad Request"
-          },
-          "409": {
-            "description": "Conflict"
           }
         }
       }
@@ -70,27 +78,7 @@
     "/api/auth/verify-otp": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "example": "any"
-                },
-                "otp": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           }
@@ -100,35 +88,9 @@
     "/api/auth/login": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
             "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
@@ -137,11 +99,8 @@
       "post": {
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -150,11 +109,8 @@
       "post": {
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -170,17 +126,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -193,27 +140,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "avatar": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -231,27 +160,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "oldPassword": {
-                  "example": "any"
-                },
-                "newPassword": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -285,11 +196,8 @@
       "get": {
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       },
@@ -300,24 +208,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -326,12 +219,6 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "409": {
-            "description": "Conflict"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -344,24 +231,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -370,9 +242,6 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -391,24 +260,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -417,12 +271,6 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -442,20 +290,14 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -468,22 +310,14 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "q",
-            "in": "query",
-            "type": "string"
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -496,30 +330,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "avatar": {
-                  "example": "any"
-                },
-                "bio": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -528,9 +341,6 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -543,42 +353,14 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "genreId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -589,48 +371,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "example": "any"
-                },
-                "description": {
-                  "example": "any"
-                },
-                "thumbnail": {
-                  "example": "any"
-                },
-                "trailerUrl": {
-                  "example": "any"
-                },
-                "type": {
-                  "example": "any"
-                },
-                "videoUrl": {
-                  "example": "any"
-                },
-                "duration": {
-                  "example": "any"
-                },
-                "isPublished": {
-                  "example": "any"
-                },
-                "genreIds": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -639,9 +382,6 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -663,17 +403,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -693,20 +427,14 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -726,20 +454,14 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -758,32 +480,17 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "actors": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -805,14 +512,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -829,27 +533,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "number": {
-                  "example": "any"
-                },
-                "title": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -858,12 +544,6 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "409": {
-            "description": "Conflict"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -891,20 +571,14 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -930,20 +604,14 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -971,14 +639,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -1001,36 +666,9 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "number": {
-                  "example": "any"
-                },
-                "title": {
-                  "example": "any"
-                },
-                "videoUrl": {
-                  "example": "any"
-                },
-                "duration": {
-                  "example": "any"
-                },
-                "thumbnail": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
@@ -1039,12 +677,6 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "409": {
-            "description": "Conflict"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -1078,20 +710,14 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -1123,20 +749,14 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -1152,20 +772,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -1181,21 +792,107 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Error": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "error"
+        },
+        "code": {
+          "type": "string",
+          "example": "ERROR_CODE"
+        },
+        "message": {
+          "type": "string",
+          "example": "Human-readable error message"
+        }
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "error"
+        },
+        "code": {
+          "type": "string",
+          "example": "VALIDATION_ERROR"
+        },
+        "message": {
+          "type": "string",
+          "example": "Invalid request data"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "example": "field"
+              },
+              "message": {
+                "type": "string",
+                "example": "Validation message"
+              }
+            }
+          }
+        }
+      }
+    },
+    "MovieInput": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "Example movie"
+        },
+        "description": {
+          "type": "string",
+          "example": "Movie description"
+        },
+        "type": {
+          "type": "string",
+          "example": "MOVIE"
+        },
+        "duration": {
+          "type": "number",
+          "example": 120
+        },
+        "isPublished": {
+          "type": "boolean",
+          "example": false
+        },
+        "genreIds": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        }
+      }
+    },
+    "LoginInput": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "user@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password"
         }
       }
     }

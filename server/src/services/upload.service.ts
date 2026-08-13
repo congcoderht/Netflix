@@ -1,10 +1,13 @@
 import { cloudinary } from '../lib/cloudinary'
 import { Readable } from 'stream'
+import { UploadApiResponse } from 'cloudinary'
+import { AppError } from '../errors/app-error'
 
-const streamUpload = (buffer: Buffer, options: object): Promise<any> => {
+const streamUpload = (buffer: Buffer, options: object): Promise<UploadApiResponse> => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
-      if (error) reject(error)
+      if (error) reject(new AppError(502, 'Media storage upload failed', 'UPLOAD_FAILED'))
+      else if (!result) reject(new AppError(502, 'Media storage returned no result', 'UPLOAD_FAILED'))
       else resolve(result)
     })
     Readable.from(buffer).pipe(uploadStream)

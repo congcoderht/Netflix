@@ -8,6 +8,7 @@ import { getApiErrorBody } from '@/lib/api-error'
 const NOTICES: Record<string, string> = {
   registered: 'Đăng ký thành công! Hãy đăng nhập để tiếp tục.',
   temp_password: 'Tài khoản này đã đăng nhập bằng Google. Chúng tôi đã gửi mật khẩu tạm thời vào email của bạn.',
+  password_changed: 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại.',
 }
 
 export default function Login() {
@@ -24,6 +25,9 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   const notice = params.get('notice')
+  const oauthError = params.get('error') === 'oauth_failed'
+  const returnTo = params.get('returnTo')
+  const safeReturnTo = returnTo?.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/'
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -35,7 +39,7 @@ export default function Login() {
         headers: { Authorization: `Bearer ${data.accessToken}` },
       })
       setAuth(me.data, data.accessToken)
-      navigate('/')
+      navigate(safeReturnTo, { replace: true })
     } catch (err: unknown) {
       const error = getApiErrorBody(err)
       if (error.code === 'OAUTH_ACCOUNT') {
@@ -64,6 +68,11 @@ export default function Login() {
         {error && (
           <div className="bg-red-600 bg-opacity-20 border border-red-600 text-red-400 rounded px-4 py-3 mb-4 text-sm">
             {error}
+          </div>
+        )}
+        {oauthError && !error && (
+          <div className="bg-red-600 bg-opacity-20 border border-red-600 text-red-400 rounded px-4 py-3 mb-4 text-sm">
+            Đăng nhập Google không thành công. Vui lòng thử lại.
           </div>
         )}
 
