@@ -24,5 +24,5 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Prisma
-server/prisma/migrations/
+# Prisma migrations are source code and must be committed so every
+# environment applies the same schema history.

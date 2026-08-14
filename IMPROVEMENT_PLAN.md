@@ -50,9 +50,10 @@
 - [x] Kiểm tra trạng thái `isBlocked` khi access token, refresh token và Google OAuth.
   - Tài khoản bị khóa không được tiếp tục tạo phiên mới.
 - [x] Thu hồi toàn bộ refresh token sau khi đổi mật khẩu hoặc phát hiện tài khoản bị khóa.
-- [ ] Không lưu refresh token dạng thô trong database.
+- [x] Không lưu refresh token dạng thô trong database.
   - Chuyển sang lưu hash của token để giảm thiệt hại khi database bị lộ.
-- [ ] Rà soát cookie production.
+  - Refresh token có `familyId`, trạng thái used/revoked và phát hiện reuse để thu hồi cả chuỗi phiên.
+- [x] Rà soát cookie production ở mức ứng dụng: `HttpOnly`, `SameSite=Lax`, `Secure` trong production và thời hạn đồng bộ config.
   - Xác định chính xác `secure`, `sameSite`, domain và reverse-proxy configuration.
 - [x] Bổ sung rate limit phù hợp cho login, gửi OTP, xác minh OTP và refresh token.
 - [x] Không để ứng dụng production chạy với JWT secret mặc định.

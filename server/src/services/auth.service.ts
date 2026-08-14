@@ -6,6 +6,19 @@ import { sendTempPasswordEmail } from '../lib/mailer'
 import { AppError } from '../errors/app-error'
 import { config } from '../config'
 
+const hashRefreshToken = (token: string) =>
+  crypto.createHash('sha256').update(token).digest('hex')
+
+const issueTokens = (user: { id: string; email: string; role: string }) => {
+  const payload = { userId: user.id, email: user.email, role: user.role }
+  const refreshToken = generateRefreshToken(payload)
+  return {
+    accessToken: generateAccessToken(payload),
+    refreshToken,
+    refreshTokenHash: hashRefreshToken(refreshToken),
+  }
+}
+
 export const register = async (email: string, password: string, name?: string) => {
   const existing = await prisma.user.findUnique({ where: { email } })
 
@@ -43,41 +56,90 @@ export const login = async (email: string, password: string) => {
 
 export const refreshTokens = async (token: string) => {
   const payload = verifyRefreshToken(token)
+  const tokenHash = hashRefreshToken(token)
+  const now = new Date()
 
-  const stored = await prisma.refreshToken.findUnique({ where: { token } })
-  if (!stored || stored.expiresAt < new Date()) throw new AppError(401, 'Invalid refresh token', 'INVALID_REFRESH_TOKEN')
+  const stored = await prisma.refreshToken.findUnique({ where: { tokenHash } })
+  if (!stored) throw new AppError(401, 'Invalid refresh token', 'INVALID_REFRESH_TOKEN')
+
+  if (stored.usedAt || stored.revokedAt) {
+    await prisma.refreshToken.updateMany({
+      where: { familyId: stored.familyId, revokedAt: null },
+      data: { revokedAt: now },
+    })
+    throw new AppError(401, 'Refresh token reuse detected. Please sign in again.', 'REFRESH_TOKEN_REUSE')
+  }
+
+  if (stored.expiresAt < now) {
+    await prisma.refreshToken.updateMany({
+      where: { familyId: stored.familyId, revokedAt: null },
+      data: { revokedAt: now },
+    })
+    throw new AppError(401, 'Invalid refresh token', 'INVALID_REFRESH_TOKEN')
+  }
 
   const user = await prisma.user.findUnique({ where: { id: payload.userId } })
   if (!user) throw new AppError(401, 'User not found', 'USER_NOT_FOUND')
   if (user.isBlocked) {
-    await prisma.refreshToken.deleteMany({ where: { userId: user.id } })
+    await prisma.refreshToken.updateMany({ where: { userId: user.id, revokedAt: null }, data: { revokedAt: now } })
     throw new AppError(403, 'Account is blocked', 'ACCOUNT_BLOCKED')
   }
 
-  // Rotate: xóa token cũ, tạo token mới
-  await prisma.refreshToken.delete({ where: { token } })
-  return buildTokenResponse(user)
+  const next = issueTokens(user)
+  const rotated = await prisma.$transaction(async (tx) => {
+    const claimed = await tx.refreshToken.updateMany({
+      where: { id: stored.id, usedAt: null, revokedAt: null },
+      data: { usedAt: now, replacedByTokenHash: next.refreshTokenHash },
+    })
+    if (claimed.count !== 1) return false
+
+    await tx.refreshToken.create({
+      data: {
+        userId: user.id,
+        tokenHash: next.refreshTokenHash,
+        familyId: stored.familyId,
+        expiresAt: new Date(Date.now() + config.jwt.refreshExpiresInMs),
+      },
+    })
+    return true
+  })
+
+  if (!rotated) {
+    await prisma.refreshToken.updateMany({
+      where: { familyId: stored.familyId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    })
+    throw new AppError(401, 'Refresh token reuse detected. Please sign in again.', 'REFRESH_TOKEN_REUSE')
+  }
+
+  return { accessToken: next.accessToken, refreshToken: next.refreshToken }
 }
 
 export const logout = async (token: string) => {
-  await prisma.refreshToken.deleteMany({ where: { token } })
+  const stored = await prisma.refreshToken.findUnique({
+    where: { tokenHash: hashRefreshToken(token) },
+    select: { familyId: true },
+  })
+  if (!stored) return
+  await prisma.refreshToken.updateMany({
+    where: { familyId: stored.familyId, revokedAt: null },
+    data: { revokedAt: new Date() },
+  })
 }
 
 export const buildTokenResponse = async (user: { id: string; email: string; role: string }) => {
-  const payload = { userId: user.id, email: user.email, role: user.role }
-
-  const accessToken = generateAccessToken(payload)
-  const refreshToken = generateRefreshToken(payload)
+  const tokens = issueTokens(user)
 
   await prisma.refreshToken.create({
     data: {
       userId: user.id,
-      token: refreshToken,
+      tokenHash: tokens.refreshTokenHash,
+      familyId: crypto.randomUUID(),
       expiresAt: new Date(Date.now() + config.jwt.refreshExpiresInMs),
     },
   })
 
-  return { accessToken, refreshToken }
+  return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken }
 }
 
 export const getMe = async (userId: string) => {
@@ -110,6 +172,9 @@ export const changePassword = async (userId: string, oldPassword: string, newPas
   const hashed = await bcrypt.hash(newPassword, 10)
   await prisma.$transaction([
     prisma.user.update({ where: { id: userId }, data: { password: hashed } }),
-    prisma.refreshToken.deleteMany({ where: { userId } }),
+    prisma.refreshToken.updateMany({
+      where: { userId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    }),
   ])
 }
