@@ -53,7 +53,7 @@ export default function HeroBanner({ movie }: Props) {
 
         <div className="flex gap-3">
           <button
-            onClick={() => navigate(`/watch/${movie.id}`)}
+            onClick={() => navigate(`/movies/${movie.id}?play=1`)}
             className="flex items-center gap-2 bg-white text-black font-bold px-6 py-2.5 rounded hover:bg-gray-200 transition-colors text-sm sm:text-base"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

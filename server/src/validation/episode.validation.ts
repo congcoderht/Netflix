@@ -1,16 +1,17 @@
 import { z } from 'zod'
+import { resourceIdSchema } from './common.validation'
 
 const optionalUrl = z.union([z.url(), z.literal('')]).optional()
 
-export const movieParamsSchema = z.object({ movieId: z.uuid() })
+export const movieParamsSchema = z.object({ movieId: resourceIdSchema })
 export const seasonParamsSchema = z.object({
-  movieId: z.uuid(),
-  seasonId: z.uuid(),
+  movieId: resourceIdSchema,
+  seasonId: resourceIdSchema,
 })
 export const episodeParamsSchema = z.object({
-  movieId: z.uuid(),
-  seasonId: z.uuid(),
-  episodeId: z.uuid(),
+  movieId: resourceIdSchema,
+  seasonId: resourceIdSchema,
+  episodeId: resourceIdSchema,
 })
 
 export const seasonCreateSchema = z.object({

@@ -10,6 +10,7 @@ import { genreRouter } from './routes/genre.routes';
 import { movieRouter } from './routes/movie.routes';
 import { episodeRouter } from './routes/episode.routes';
 import { uploadRouter } from './routes/upload.routes';
+import { watchProgressRouter } from './routes/watch-progress.routes';
 import { errorHandler } from './middlewares/error.middleware';
 import './config/passport';
 
@@ -39,6 +40,7 @@ app.use('/api/genres', genreRouter);
 app.use('/api/movies', movieRouter);
 app.use('/api/movies/:movieId', episodeRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/watch-progress', watchProgressRouter);
 
 app.use(errorHandler);
 

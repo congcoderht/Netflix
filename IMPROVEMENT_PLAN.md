@@ -180,12 +180,14 @@
 
 ### Giai đoạn 4 — Hoàn thiện trải nghiệm xem phim
 
-- [ ] API lưu và lấy `WatchProgress`.
-- [ ] Tự lưu tiến độ định kỳ và khi rời video.
-- [ ] Resume playback.
+- [x] API lưu và lấy `WatchProgress` với kiểm tra movie/episode ownership.
+- [x] Tự lưu tiến độ mỗi 10 giây, khi pause, kết thúc và rời player.
+- [x] Resume playback; nội dung đã xem từ 95% sẽ phát lại từ đầu.
 - [ ] Watch history.
 - [ ] Watchlist.
 - [ ] UI “Tiếp tục xem” và “Danh sách của tôi”.
+  - [x] Hàng “Tiếp tục xem” trên Home với episode, progress bar và deep-link resume.
+  - [ ] “Danh sách của tôi” sẽ hoàn tất cùng Watchlist.
 
 **Điều kiện hoàn tất:** Người dùng có thể dừng, quay lại xem tiếp và quản lý danh sách cá nhân.
 

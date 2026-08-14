@@ -67,7 +67,7 @@ export const getById = (id: string, includeUnpublished = false) =>
           id: true, number: true, title: true,
           episodes: {
             orderBy: { number: 'asc' },
-            select: { id: true, number: true, title: true, duration: true, thumbnail: true },
+            select: { id: true, number: true, title: true, videoUrl: true, duration: true, thumbnail: true },
           },
         },
       },

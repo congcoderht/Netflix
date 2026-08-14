@@ -9,6 +9,7 @@ export interface Episode {
   id: string
   number: number
   title: string
+  videoUrl: string | null
   duration: number | null
   thumbnail: string | null
 }

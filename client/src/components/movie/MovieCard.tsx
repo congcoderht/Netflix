@@ -49,7 +49,7 @@ export default function MovieCard({ movie, gridMode = false }: Props) {
           <div className="mt-2 flex gap-1.5">
             <button
               className="flex-1 bg-white text-black text-[11px] font-bold py-1 rounded flex items-center justify-center gap-1"
-              onClick={(e) => { e.stopPropagation(); navigate(`/watch/${movie.id}`) }}
+              onClick={(e) => { e.stopPropagation(); navigate(`/movies/${movie.id}?play=1`) }}
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
               Play

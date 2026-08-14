@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Layout from '@/components/layout/Layout'
 import VideoPlayer from '@/components/movie/VideoPlayer'
 import { getMovie } from '@/services/movie.service'
 import type { Movie } from '@/types/movie'
+import type { Episode } from '@/types/movie'
+import { getWatchProgress, saveWatchProgress } from '@/services/watch-progress.service'
 
 const CREW_ROLES = ['Đạo diễn', 'Giám đốc sản xuất', 'Nhà sản xuất', 'Biên kịch']
 
@@ -46,12 +48,17 @@ export default function MovieDetail() {
   const { id } = useParams<{ id: string }>()
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const shouldAutoPlay = searchParams.get('play') === '1'
+  const requestedEpisodeId = searchParams.get('episodeId')
   const [movie, setMovie] = useState<Movie | null>(null)
   const [loading, setLoading] = useState(true)
   const [playing, setPlaying] = useState(false)
   const [showTrailer, setShowTrailer] = useState(false)
   const [activeSeason, setActiveSeason] = useState(0)
   const [activeEpisode, setActiveEpisode] = useState<{ url: string; title: string; id: string } | null>(null)
+  const [resumeFromSec, setResumeFromSec] = useState(0)
+  const startingPlaybackRef = useRef(false)
 
   useEffect(() => {
     if (!id) return
@@ -60,6 +67,47 @@ export default function MovieDetail() {
       .catch(() => navigate('/'))
       .finally(() => setLoading(false))
   }, [id, navigate])
+
+  const startPlayback = useCallback(async (episode?: Episode) => {
+    if (!id || startingPlaybackRef.current) return
+    if (episode && !episode.videoUrl) return
+    startingPlaybackRef.current = true
+
+    setActiveEpisode(episode ? {
+      url: episode.videoUrl as string,
+      title: `Tập ${episode.number}: ${episode.title}`,
+      id: episode.id,
+    } : null)
+
+    try {
+      const progress = await getWatchProgress(id, episode?.id)
+      setResumeFromSec(progress.resumeFromSec)
+    } catch {
+      setResumeFromSec(0)
+    } finally {
+      startingPlaybackRef.current = false
+    }
+    setPlaying(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [id])
+
+  useEffect(() => {
+    if (!movie || !shouldAutoPlay || playing) return
+    if (movie.type === 'MOVIE') {
+      if (movie.videoUrl) void startPlayback()
+      return
+    }
+
+    const episodes = movie.seasons?.flatMap((season) => season.episodes) || []
+    const episode = episodes.find((item) => item.id === requestedEpisodeId)
+      || episodes.find((item) => item.videoUrl)
+    if (episode?.videoUrl) void startPlayback(episode)
+  }, [movie, playing, requestedEpisodeId, shouldAutoPlay, startPlayback])
+
+  const persistProgress = (seconds: number) => {
+    if (!id) return
+    void saveWatchProgress(id, seconds, activeEpisode?.id).catch(() => undefined)
+  }
 
   if (loading) return (
     <Layout>
@@ -88,7 +136,12 @@ export default function MovieDetail() {
           {playing && currentVideoUrl ? (
             <div className="max-w-5xl mx-auto px-4 py-6">
               <div className="flex items-center gap-3 mb-3">
-                <button onClick={() => { setPlaying(false); setActiveEpisode(null) }}
+                <button onClick={() => {
+                  setPlaying(false)
+                  setActiveEpisode(null)
+                  setResumeFromSec(0)
+                  navigate(`/movies/${id}`, { replace: true })
+                }}
                   className="text-gray-400 hover:text-white flex items-center gap-1 text-sm transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -97,7 +150,12 @@ export default function MovieDetail() {
                 </button>
                 {activeEpisode && <span className="text-white text-sm font-medium">{activeEpisode.title}</span>}
               </div>
-              <VideoPlayer url={currentVideoUrl} autoPlay />
+              <VideoPlayer
+                url={currentVideoUrl}
+                autoPlay
+                initialTime={resumeFromSec}
+                onProgress={persistProgress}
+              />
             </div>
           ) : (
             <div className="relative w-full h-[55vw] max-h-[680px] min-h-[320px]">
@@ -112,7 +170,7 @@ export default function MovieDetail() {
               {(movie.videoUrl || (movie.seasons && movie.seasons.length > 0)) && (
                 <button
                   onClick={() => {
-                    if (movie.type === 'MOVIE') setPlaying(true)
+                    if (movie.type === 'MOVIE') void startPlayback()
                     else document.getElementById('episodes-section')?.scrollIntoView({ behavior: 'smooth' })
                   }}
                   className="absolute inset-0 flex items-center justify-center group"
@@ -152,7 +210,7 @@ export default function MovieDetail() {
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3 mb-6">
               {movie.type === 'MOVIE' && movie.videoUrl && (
-                <button onClick={() => { setPlaying(true); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                <button onClick={() => { void startPlayback() }}
                   className="flex items-center gap-2 bg-white text-black font-bold px-8 py-3 rounded hover:bg-gray-200 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                   {t('home.hero.watchNow')}
@@ -250,8 +308,8 @@ export default function MovieDetail() {
                 {movie.seasons[activeSeason]?.episodes.map((ep, idx) => {
                   const isActive = activeEpisode?.id === ep.id
                   return (
-                    <div key={ep.id} onClick={() => { setActiveEpisode({ url: ep.id, title: `Tập ${ep.number}: ${ep.title}`, id: ep.id }); setPlaying(true); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                      className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border ${isActive ? 'bg-white/10 border-white/20' : 'bg-gray-800/40 border-transparent hover:bg-gray-800 hover:border-gray-700'}`}>
+                    <div key={ep.id} onClick={() => { if (ep.videoUrl) void startPlayback(ep) }}
+                      className={`flex items-center gap-4 p-4 rounded-xl transition-all border ${ep.videoUrl ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${isActive ? 'bg-white/10 border-white/20' : 'bg-gray-800/40 border-transparent hover:bg-gray-800 hover:border-gray-700'}`}>
                       <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm font-bold"
                         style={{ background: isActive ? 'white' : '#374151', color: isActive ? 'black' : 'white' }}>
                         {isActive
