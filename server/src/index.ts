@@ -11,6 +11,9 @@ import { movieRouter } from './routes/movie.routes';
 import { episodeRouter } from './routes/episode.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { watchProgressRouter } from './routes/watch-progress.routes';
+import { watchHistoryRouter } from './routes/watch-history.routes';
+import { watchlistRouter } from './routes/watchlist.routes';
+import { communityRouter } from './routes/community.routes';
 import { errorHandler } from './middlewares/error.middleware';
 import './config/passport';
 
@@ -39,8 +42,11 @@ app.use('/api/auth', authRouter);
 app.use('/api/genres', genreRouter);
 app.use('/api/movies', movieRouter);
 app.use('/api/movies/:movieId', episodeRouter);
+app.use('/api/movies/:movieId/community', communityRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/watch-progress', watchProgressRouter);
+app.use('/api/watch-history', watchHistoryRouter);
+app.use('/api/watchlist', watchlistRouter);
 
 app.use(errorHandler);
 

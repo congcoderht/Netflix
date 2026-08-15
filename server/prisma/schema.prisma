@@ -284,6 +284,7 @@ model WatchHistory {
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   episode   Episode? @relation(fields: [episodeId], references: [id], onDelete: SetNull)
 
+  @@index([userId, watchedAt])
   @@map("watch_histories")
 }
 
@@ -334,6 +335,8 @@ model Comment {
   parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies   Comment[] @relation("CommentReplies")
 
+  @@index([movieId, createdAt])
+  @@index([parentId])
   @@map("comments")
 }
 
@@ -348,6 +351,7 @@ model Rating {
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
   @@id([userId, movieId])
+  @@index([movieId])
   @@map("ratings")
 }
 

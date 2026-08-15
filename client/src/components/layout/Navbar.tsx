@@ -143,6 +143,16 @@ export default function Navbar() {
                   </svg>
                   {t('nav.profile')}
                 </Link>
+                <Link
+                  to="/history"
+                  onClick={() => setUserMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Lịch sử xem
+                </Link>
                 {user?.role === 'ADMIN' && (
                   <Link
                     to="/admin/movies"

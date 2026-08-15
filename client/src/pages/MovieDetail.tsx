@@ -7,6 +7,8 @@ import { getMovie } from '@/services/movie.service'
 import type { Movie } from '@/types/movie'
 import type { Episode } from '@/types/movie'
 import { getWatchProgress, saveWatchProgress } from '@/services/watch-progress.service'
+import { addToWatchlist, getWatchlistStatus, removeFromWatchlist } from '@/services/watchlist.service'
+import CommunitySection from '@/components/movie/CommunitySection'
 
 const CREW_ROLES = ['Đạo diễn', 'Giám đốc sản xuất', 'Nhà sản xuất', 'Biên kịch']
 
@@ -58,6 +60,8 @@ export default function MovieDetail() {
   const [activeSeason, setActiveSeason] = useState(0)
   const [activeEpisode, setActiveEpisode] = useState<{ url: string; title: string; id: string } | null>(null)
   const [resumeFromSec, setResumeFromSec] = useState(0)
+  const [inWatchlist, setInWatchlist] = useState(false)
+  const [watchlistLoading, setWatchlistLoading] = useState(false)
   const startingPlaybackRef = useRef(false)
 
   useEffect(() => {
@@ -67,6 +71,23 @@ export default function MovieDetail() {
       .catch(() => navigate('/'))
       .finally(() => setLoading(false))
   }, [id, navigate])
+
+  useEffect(() => {
+    if (!id) return
+    getWatchlistStatus(id).then(setInWatchlist).catch(() => undefined)
+  }, [id])
+
+  const toggleWatchlist = async () => {
+    if (!id || watchlistLoading) return
+    setWatchlistLoading(true)
+    try {
+      if (inWatchlist) await removeFromWatchlist(id)
+      else await addToWatchlist(id)
+      setInWatchlist((current) => !current)
+    } finally {
+      setWatchlistLoading(false)
+    }
+  }
 
   const startPlayback = useCallback(async (episode?: Episode) => {
     if (!id || startingPlaybackRef.current) return
@@ -233,6 +254,11 @@ export default function MovieDetail() {
                   {t('movie.trailer')}
                 </button>
               )}
+              <button onClick={() => void toggleWatchlist()} disabled={watchlistLoading}
+                className="flex items-center gap-2 rounded bg-gray-700/80 px-6 py-3 font-semibold text-white hover:bg-gray-600/80 disabled:opacity-50">
+                <span className="text-xl">{inWatchlist ? '✓' : '+'}</span>
+                {inWatchlist ? 'Đã thêm vào danh sách' : 'Thêm vào danh sách'}
+              </button>
             </div>
 
             {/* Description */}
@@ -331,6 +357,8 @@ export default function MovieDetail() {
               </div>
             </div>
           )}
+
+          <CommunitySection movieId={movie.id} />
         </div>
       </div>
     </Layout>

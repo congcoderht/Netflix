@@ -183,11 +183,11 @@
 - [x] API lưu và lấy `WatchProgress` với kiểm tra movie/episode ownership.
 - [x] Tự lưu tiến độ mỗi 10 giây, khi pause, kết thúc và rời player.
 - [x] Resume playback; nội dung đã xem từ 95% sẽ phát lại từ đầu.
-- [ ] Watch history.
-- [ ] Watchlist.
-- [ ] UI “Tiếp tục xem” và “Danh sách của tôi”.
+- [x] Watch history: tự ghi nhận từ progress, danh sách phân trang, xóa từng mục hoặc toàn bộ.
+- [x] Watchlist: API trạng thái/thêm/xóa/danh sách, trang `/my-list` và nút trên chi tiết phim.
+- [x] UI “Tiếp tục xem” và “Danh sách của tôi”.
   - [x] Hàng “Tiếp tục xem” trên Home với episode, progress bar và deep-link resume.
-  - [ ] “Danh sách của tôi” sẽ hoàn tất cùng Watchlist.
+  - [x] “Danh sách của tôi” hoàn tất cùng Watchlist.
 
 **Điều kiện hoàn tất:** Người dùng có thể dừng, quay lại xem tiếp và quản lý danh sách cá nhân.
 
@@ -204,11 +204,11 @@
 
 ### Giai đoạn 6 — Tương tác và thông báo
 
-- [ ] Comment/reply và soft delete.
-- [ ] Rating với constraint từ 1 đến 5.
+- [x] Comment/reply một cấp, sửa nội dung và soft delete; chủ bình luận hoặc admin được xóa.
+- [x] Rating 1–5, mỗi user một đánh giá/phim và có constraint tại database.
 - [ ] Notification list/read state.
-- [ ] Chống spam và phân trang.
-- [ ] UI tương ứng.
+- [ ] Chống spam; bình luận đã có phân trang phía server.
+- [x] UI đánh giá sao, bình luận, trả lời, sửa/xóa và chuyển trang.
 
 **Điều kiện hoàn tất:** Có kiểm soát quyền, validation và moderation cơ bản.
 

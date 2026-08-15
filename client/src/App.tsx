@@ -10,6 +10,8 @@ import MovieDetail from '@/pages/MovieDetail'
 import AdminMovies from '@/pages/admin/AdminMovies'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import AuthBootstrap from '@/components/AuthBootstrap'
+import WatchHistory from '@/pages/WatchHistory'
+import MyList from '@/pages/MyList'
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/movies" element={<ProtectedRoute><Movies /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><WatchHistory /></ProtectedRoute>} />
+        <Route path="/my-list" element={<ProtectedRoute><MyList /></ProtectedRoute>} />
         <Route path="/movies/:id" element={<ProtectedRoute><MovieDetail /></ProtectedRoute>} />
         <Route path="/admin/movies" element={<ProtectedRoute adminOnly><AdminMovies /></ProtectedRoute>} />
 

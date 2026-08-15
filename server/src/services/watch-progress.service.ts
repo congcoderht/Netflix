@@ -58,17 +58,28 @@ export const saveProgress = async (
       where: { userId, movieId, episodeId: content.episodeId },
       select: { id: true },
     })
-    if (existing) {
-      return tx.watchProgress.update({
+    const progress = existing
+      ? await tx.watchProgress.update({
         where: { id: existing.id },
         data: { progressSec },
         select: { progressSec: true, updatedAt: true },
       })
-    }
-    return tx.watchProgress.create({
+      : await tx.watchProgress.create({
       data: { userId, movieId, episodeId: content.episodeId, progressSec },
       select: { progressSec: true, updatedAt: true },
     })
+
+    const history = await tx.watchHistory.findFirst({
+      where: { userId, movieId, episodeId: content.episodeId },
+      select: { id: true },
+    })
+    if (history) {
+      await tx.watchHistory.update({ where: { id: history.id }, data: { watchedAt: new Date() } })
+    } else {
+      await tx.watchHistory.create({ data: { userId, movieId, episodeId: content.episodeId } })
+    }
+
+    return progress
   })
 
   return formatProgress(saved.progressSec, content.durationSec, saved.updatedAt)
