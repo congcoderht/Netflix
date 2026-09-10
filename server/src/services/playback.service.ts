@@ -4,6 +4,21 @@ import { prisma } from '../lib/prisma'
 
 const SESSION_TIMEOUT_MS = 90_000
 
+export const listActivePlayback = async (userId: string) => {
+  const cutoff = new Date(Date.now() - SESSION_TIMEOUT_MS)
+  const sessions = await prisma.playbackSession.findMany({
+    where: { userId, endedAt: null, lastHeartbeat: { gte: cutoff } },
+    orderBy: { lastHeartbeat: 'desc' },
+    select: { id: true, deviceId: true, movieId: true, episodeId: true, startedAt: true, lastHeartbeat: true },
+  })
+  const movies = await prisma.movie.findMany({
+    where: { id: { in: [...new Set(sessions.map((session) => session.movieId))] } },
+    select: { id: true, title: true },
+  })
+  const movieNames = new Map(movies.map((movie) => [movie.id, movie.title]))
+  return sessions.map((session) => ({ ...session, movieTitle: movieNames.get(session.movieId) || 'Unknown title' }))
+}
+
 export const startPlayback = async (userId: string, role: string, movieId: string, episodeId: string | undefined, deviceId: string) => {
   const movie = await prisma.movie.findFirst({
     where: { id: movieId, ...(role === 'ADMIN' ? {} : { isPublished: true }) },

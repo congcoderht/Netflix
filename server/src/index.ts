@@ -18,6 +18,7 @@ import { billingRouter } from './routes/billing.routes';
 import { playbackRouter } from './routes/playback.routes';
 import { errorHandler } from './middlewares/error.middleware';
 import './config/passport';
+import { startMaintenance } from './services/maintenance.service';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -25,6 +26,7 @@ import * as path from 'path';
 validateConfig();
 
 const app = express();
+startMaintenance();
 
 app.use(helmet());
 app.use(cors({ origin: config.cors.origin, credentials: true }));

@@ -9,8 +9,8 @@ import type { Episode } from '@/types/movie'
 import { getWatchProgress, saveWatchProgress } from '@/services/watch-progress.service'
 import { addToWatchlist, getWatchlistStatus, removeFromWatchlist } from '@/services/watchlist.service'
 import CommunitySection from '@/components/movie/CommunitySection'
-import { endPlaybackSession, heartbeatPlaybackSession, startPlaybackSession } from '@/services/playback.service'
-import { getApiErrorMessage } from '@/lib/api-error'
+import { endPlaybackSession, getActivePlaybackSessions, getDeviceId, heartbeatPlaybackSession, startPlaybackSession, type ActivePlaybackSession } from '@/services/playback.service'
+import { getApiErrorBody, getApiErrorMessage } from '@/lib/api-error'
 
 const CREW_ROLES = ['Đạo diễn', 'Giám đốc sản xuất', 'Nhà sản xuất', 'Biên kịch']
 
@@ -67,7 +67,11 @@ export default function MovieDetail() {
   const [playbackSessionId, setPlaybackSessionId] = useState<string | null>(null)
   const [playbackUrl, setPlaybackUrl] = useState('')
   const [playbackError, setPlaybackError] = useState('')
+  const [playbackIssue, setPlaybackIssue] = useState<'subscription' | 'screens' | null>(null)
+  const [activeSessions, setActiveSessions] = useState<ActivePlaybackSession[]>([])
+  const [endingSession, setEndingSession] = useState<string | null>(null)
   const startingPlaybackRef = useRef(false)
+  const requestedPlaybackRef = useRef<Episode | undefined>(undefined)
 
   useEffect(() => {
     if (!id) return
@@ -98,6 +102,7 @@ export default function MovieDetail() {
     if (!id || startingPlaybackRef.current) return
     if (episode && !episode.hasVideo && !episode.videoUrl) return
     startingPlaybackRef.current = true
+    requestedPlaybackRef.current = episode
     setPlaybackError('')
     try {
       const session = await startPlaybackSession(id, episode?.id)
@@ -113,11 +118,34 @@ export default function MovieDetail() {
       setPlaying(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (error) {
-      setPlaybackError(getApiErrorMessage(error, 'Không thể bắt đầu phát phim'))
+      const code = getApiErrorBody(error).code
+      if (code === 'SUBSCRIPTION_REQUIRED') {
+        setPlaybackIssue('subscription')
+      } else if (code === 'SCREEN_LIMIT_REACHED') {
+        setPlaybackIssue('screens')
+        void getActivePlaybackSessions().then(setActiveSessions).catch(() => setActiveSessions([]))
+      } else {
+        setPlaybackError(getApiErrorMessage(error, 'Không thể bắt đầu phát phim'))
+      }
     } finally {
       startingPlaybackRef.current = false
     }
   }, [id])
+
+  const stopActiveSession = async (sessionId: string) => {
+    setEndingSession(sessionId)
+    try {
+      await endPlaybackSession(sessionId)
+      setActiveSessions((sessions) => sessions.filter((session) => session.id !== sessionId))
+    } finally {
+      setEndingSession(null)
+    }
+  }
+
+  const retryPlayback = () => {
+    setPlaybackIssue(null)
+    void startPlayback(requestedPlaybackRef.current)
+  }
 
   useEffect(() => {
     if (!playbackSessionId) return
@@ -168,6 +196,30 @@ export default function MovieDetail() {
       {showTrailer && movie.trailerUrl && (
         <TrailerModal url={movie.trailerUrl} onClose={() => setShowTrailer(false)} />
       )}
+
+      {playbackIssue === 'subscription' && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onMouseDown={() => setPlaybackIssue(null)}>
+        <section role="dialog" aria-modal="true" aria-labelledby="subscription-required-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-900 p-7 text-center shadow-2xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-2xl">▶</div>
+          <h2 id="subscription-required-title" className="mt-5 text-2xl font-bold text-white">Bạn cần đăng ký gói</h2>
+          <p className="mt-3 text-gray-400">Chọn một gói phù hợp để xem phim và sử dụng đầy đủ nội dung.</p>
+          <div className="mt-7 flex gap-3"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Để sau</button><button onClick={() => navigate('/billing')} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white">Xem các gói</button></div>
+        </section>
+      </div>}
+
+      {playbackIssue === 'screens' && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onMouseDown={() => setPlaybackIssue(null)}>
+        <section role="dialog" aria-modal="true" aria-labelledby="screen-limit-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-lg rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl">
+          <h2 id="screen-limit-title" className="text-2xl font-bold text-white">Đã đạt giới hạn màn hình</h2>
+          <p className="mt-2 text-sm text-gray-400">Dừng một thiết bị đang xem rồi thử lại.</p>
+          <div className="mt-5 max-h-72 space-y-3 overflow-y-auto">
+            {activeSessions.map((session) => <div key={session.id} className="flex items-center justify-between gap-4 rounded-xl bg-gray-800 p-4">
+              <div className="min-w-0"><p className="truncate font-semibold text-white">{session.movieTitle}</p><p className="mt-1 text-xs text-gray-400">{session.deviceId === getDeviceId() ? 'Thiết bị này' : `Thiết bị ${session.deviceId.slice(0, 8)}`} · hoạt động {new Date(session.lastHeartbeat).toLocaleTimeString('vi-VN')}</p></div>
+              <button disabled={endingSession === session.id} onClick={() => void stopActiveSession(session.id)} className="shrink-0 rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">Dừng</button>
+            </div>)}
+            {!activeSessions.length && <p className="rounded-lg bg-gray-800 p-5 text-center text-gray-400">Không còn phiên xem hoạt động.</p>}
+          </div>
+          <div className="mt-6 flex gap-3"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Đóng</button><button onClick={retryPlayback} className="flex-1 rounded-lg bg-white px-4 py-3 font-bold text-black">Thử lại</button></div>
+        </section>
+      </div>}
 
       <div className="min-h-screen pt-16">
         {/* Hero / Player area */}

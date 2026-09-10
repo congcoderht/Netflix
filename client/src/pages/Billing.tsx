@@ -16,6 +16,13 @@ const money = (amount: number) => new Intl.NumberFormat('vi-VN', { style: 'curre
 const date = (value: string) => new Intl.DateTimeFormat('vi-VN').format(new Date(value))
 const providerName = (provider: PaymentProvider | 'MOMO') => provider === 'MOCK_VNPAY' ? 'VNPAY' : 'MoMo'
 const providerLogo = (provider: PaymentProvider | 'MOMO') => provider === 'MOCK_VNPAY' ? '/payments/vnpay.svg' : '/payments/momo.svg'
+const paymentStatus = (status: Payment['status']) => ({
+  PENDING: 'Đang xử lý',
+  SUCCESS: 'Thành công',
+  FAILED: 'Thất bại',
+  EXPIRED: 'Hết hạn',
+  REFUNDED: 'Đã hoàn tiền',
+})[status]
 
 function ProviderLogo({ provider }: { provider: PaymentProvider | 'MOMO' }) {
   return <span className="flex h-10 w-28 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-1.5">
@@ -98,7 +105,7 @@ export default function Billing() {
                 <td className="p-4"><span className="flex items-center gap-3"><ProviderLogo provider={payment.provider} /><span>{providerName(payment.provider)}</span></span></td>
                 <td className="p-4">{money(payment.amount)}</td>
                 <td className="p-4">{date(payment.createdAt)}</td>
-                <td className="p-4">{payment.status}</td>
+                <td className="p-4">{paymentStatus(payment.status)}</td>
               </tr>)}
               {!payments.length && <tr><td colSpan={5} className="p-6 text-center text-gray-500">Chưa có giao dịch</td></tr>}
             </tbody>

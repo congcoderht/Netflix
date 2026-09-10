@@ -22,11 +22,18 @@ export default function PaymentResult() {
     : payment?.status === 'PENDING'
       ? 'Đang xác nhận thanh toán'
       : 'Thanh toán chưa thành công'
+  const status = payment && ({
+    PENDING: 'Đang xử lý',
+    SUCCESS: 'Thành công',
+    FAILED: 'Thất bại',
+    EXPIRED: 'Hết hạn',
+    REFUNDED: 'Đã hoàn tiền',
+  } as const)[payment.status]
 
   return <Layout><main className="flex min-h-screen items-center justify-center px-4 pt-16">
     <div className="w-full max-w-lg rounded-2xl bg-gray-900 p-8 text-center">
       <h1 className="text-2xl font-bold text-white">{queryError || error || title}</h1>
-      {payment && <p className="mt-3 text-gray-400">Giao dịch {payment.orderId}<br />Trạng thái: {payment.status}</p>}
+      {payment && <p className="mt-3 text-gray-400">Giao dịch {payment.orderId}<br />Trạng thái: {status}</p>}
       <div className="mt-7 flex justify-center gap-3">
         <Link to="/billing" className="rounded bg-red-600 px-5 py-3 font-bold text-white">Quản lý gói</Link>
         <Link to="/" className="rounded bg-gray-700 px-5 py-3 text-white">Trang chủ</Link>

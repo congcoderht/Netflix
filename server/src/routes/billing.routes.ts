@@ -11,15 +11,17 @@ import {
   paymentParamsSchema,
 } from '../validation/billing.validation'
 import * as controller from '../controllers/billing.controller'
+import { checkoutRateLimit } from '../middlewares/rate-limit.middleware'
 
 export const billingRouter = Router()
 
 billingRouter.get('/plans', asyncHandler(controller.listPlans))
 billingRouter.get('/subscriptions/me', authenticate, asyncHandler(controller.currentSubscription))
-billingRouter.post('/payments/checkout', authenticate, validate(checkoutSchema), asyncHandler(controller.checkout))
+billingRouter.post('/payments/checkout', authenticate, checkoutRateLimit, validate(checkoutSchema), asyncHandler(controller.checkout))
 billingRouter.post(
   '/payments/mock/:provider/complete',
   authenticate,
+  checkoutRateLimit,
   validate(mockPaymentParamsSchema, 'params'),
   validate(mockPaymentCompletionSchema),
   asyncHandler(controller.completeMockPayment),

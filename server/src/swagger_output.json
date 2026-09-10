@@ -2770,6 +2770,28 @@
       }
     },
     "/api/playback-sessions": {
+      "get": {
+        "tags": [
+          "Playback"
+        ],
+        "parameters": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
       "post": {
         "tags": [
           "Playback"

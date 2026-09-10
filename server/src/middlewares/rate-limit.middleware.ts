@@ -25,3 +25,24 @@ export const refreshRateLimit = rateLimit({
   limit: 60,
   message: { message: 'Too many refresh requests. Please try again later.' },
 })
+
+export const checkoutRateLimit = rateLimit({
+  ...commonOptions,
+  windowMs: 10 * 60 * 1000,
+  limit: 10,
+  message: { status: 'error', code: 'CHECKOUT_RATE_LIMITED', message: 'Too many checkout requests. Please try again later.' },
+})
+
+export const playbackStartRateLimit = rateLimit({
+  ...commonOptions,
+  windowMs: 60 * 1000,
+  limit: 30,
+  message: { status: 'error', code: 'PLAYBACK_RATE_LIMITED', message: 'Too many playback requests. Please try again later.' },
+})
+
+export const playbackHeartbeatRateLimit = rateLimit({
+  ...commonOptions,
+  windowMs: 60 * 1000,
+  limit: 180,
+  message: { status: 'error', code: 'HEARTBEAT_RATE_LIMITED', message: 'Too many heartbeat requests.' },
+})

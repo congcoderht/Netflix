@@ -4,6 +4,10 @@ import * as service from '../services/playback.service'
 
 const userFrom = (req: Request) => req.user as unknown as JwtPayload
 
+export const list = async (req: Request, res: Response) => {
+  res.json(await service.listActivePlayback(userFrom(req).userId))
+}
+
 export const start = async (req: Request, res: Response) => {
   const user = userFrom(req)
   res.status(201).json(await service.startPlayback(user.userId, user.role, req.body.movieId, req.body.episodeId, req.body.deviceId))
