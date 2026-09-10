@@ -25,12 +25,21 @@ const assertEpisodeOwnership = async (seasonId: string, episodeId: string) => {
 
 // ── Season ──────────────────────────────────────────────────────────────────
 
-export const getSeasons = (movieId: string) =>
-  prisma.season.findMany({
+export const getSeasons = async (movieId: string, isAdmin: boolean) => {
+  const seasons = await prisma.season.findMany({
     where: { movieId },
     orderBy: { number: 'asc' },
     include: { episodes: { orderBy: { number: 'asc' } } },
   })
+  if (isAdmin) return seasons
+  return seasons.map((season) => ({
+    ...season,
+    episodes: season.episodes.map(({ videoUrl, ...episode }) => ({
+      ...episode,
+      hasVideo: Boolean(videoUrl),
+    })),
+  }))
+}
 
 export const createSeason = async (movieId: string, number: number, title?: string) => {
   await assertMovieExists(movieId)
@@ -49,9 +58,11 @@ export const removeSeason = async (movieId: string, id: string) => {
 
 // ── Episode ──────────────────────────────────────────────────────────────────
 
-export const getEpisodes = async (movieId: string, seasonId: string) => {
+export const getEpisodes = async (movieId: string, seasonId: string, isAdmin: boolean) => {
   await assertSeasonOwnership(movieId, seasonId)
-  return prisma.episode.findMany({ where: { seasonId }, orderBy: { number: 'asc' } })
+  const episodes = await prisma.episode.findMany({ where: { seasonId }, orderBy: { number: 'asc' } })
+  if (isAdmin) return episodes
+  return episodes.map(({ videoUrl, ...episode }) => ({ ...episode, hasVideo: Boolean(videoUrl) }))
 }
 
 export const createEpisode = async (movieId: string, seasonId: string, data: {

@@ -30,7 +30,11 @@ export const getHistory = async (userId: string, page: number, limit: number) =>
     }),
     prisma.watchHistory.count({ where }),
   ])
-  return { items, total, page, limit, totalPages: Math.ceil(total / limit) }
+  const safeItems = items.map(({ movie, ...item }) => {
+    const { videoUrl, ...publicMovie } = movie
+    return { ...item, movie: { ...publicMovie, hasVideo: Boolean(videoUrl) } }
+  })
+  return { items: safeItems, total, page, limit, totalPages: Math.ceil(total / limit) }
 }
 
 export const removeHistoryItem = async (userId: string, id: string) => {

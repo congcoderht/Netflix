@@ -13,7 +13,10 @@ export const getWatchlist = async (userId: string) => {
     orderBy: { createdAt: 'desc' },
     select: { createdAt: true, movie: { select: MOVIE_SELECT } },
   })
-  return rows
+  return rows.map(({ movie, ...row }) => {
+    const { videoUrl, ...publicMovie } = movie
+    return { ...row, movie: { ...publicMovie, hasVideo: Boolean(videoUrl) } }
+  })
 }
 
 export const getStatus = async (userId: string, movieId: string) => ({

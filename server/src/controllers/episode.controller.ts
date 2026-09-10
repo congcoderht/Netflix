@@ -1,10 +1,13 @@
 import { Request, Response } from 'express'
 import * as episodeService from '../services/episode.service'
+import { JwtPayload } from '../utils/jwt.util'
+
+const isAdmin = (req: Request) => (req.user as unknown as JwtPayload).role === 'ADMIN'
 
 // ── Season ──────────────────────────────────────────────────────────────────
 
 export const getSeasons = async (req: Request, res: Response) => {
-  res.json(await episodeService.getSeasons(req.params.movieId as string))
+  res.json(await episodeService.getSeasons(req.params.movieId as string, isAdmin(req)))
 }
 
 export const createSeason = async (req: Request, res: Response) => {
@@ -33,6 +36,7 @@ export const getEpisodes = async (req: Request, res: Response) => {
   res.json(await episodeService.getEpisodes(
     req.params.movieId as string,
     req.params.seasonId as string,
+    isAdmin(req),
   ))
 }
 

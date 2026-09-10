@@ -132,8 +132,9 @@ export const getContinueWatching = async (userId: string, limit: number) => {
     if (durationSec > 0 && row.progressSec >= durationSec * 0.95) return []
 
     seenMovies.add(row.movie.id)
+    const { videoUrl, ...publicMovie } = row.movie
     return [{
-      movie: row.movie,
+      movie: { ...publicMovie, hasVideo: Boolean(videoUrl) },
       episode: row.episode ? {
         id: row.episode.id,
         number: row.episode.number,
