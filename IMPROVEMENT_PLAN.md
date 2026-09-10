@@ -193,12 +193,12 @@
 
 ### Giai đoạn 5 — Subscription và thanh toán
 
-- [ ] Chốt nhà cung cấp thanh toán và yêu cầu nghiệp vụ.
-- [ ] API quản lý plan.
-- [ ] Checkout và webhook có idempotency.
-- [ ] Kích hoạt/gia hạn/hết hạn subscription.
-- [ ] Middleware kiểm tra subscription khi phát nội dung.
-- [ ] Lịch sử thanh toán và UI gói cước.
+- [x] Chốt hai cổng thanh toán giả lập MoMo/VNPAY cho development, thanh toán một lần theo chu kỳ 30 ngày và không dùng profile.
+- [ ] API đọc plan đã có; API quản trị plan làm ở giai đoạn admin.
+- [x] Checkout MoMo/VNPAY mock, xác minh chữ ký HMAC và xử lý idempotency.
+- [x] Kích hoạt, gia hạn và kiểm tra hết hạn subscription.
+- [x] Chặn phát nội dung nếu không có subscription và giới hạn phiên theo `maxScreens`.
+- [x] Lịch sử thanh toán và UI gói cước/kết quả thanh toán.
 
 **Điều kiện hoàn tất:** Trạng thái thanh toán được xác nhận từ server/webhook, không dựa vào dữ liệu client.
 

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 56" role="img" aria-labelledby="title">
+  <title id="title">MoMo</title>
+  <rect width="160" height="56" rx="12" fill="#a50064"/>
+  <circle cx="29" cy="28" r="19" fill="#fff"/>
+  <text x="29" y="34" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#a50064">mo</text>
+  <text x="57" y="36" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#fff">MoMo</text>
+</svg>

@@ -562,33 +562,39 @@ async function main() {
   // ============================================================
   const plans = await Promise.all([
     prisma.plan.upsert({
-      where: { name: 'Basic' },
-      update: {},
+      where: { code: 'BASIC' },
+      update: { name: 'Basic', price: 59000, maxScreens: 1 },
       create: {
+        code: 'BASIC',
         name: 'Basic',
-        price: 99000,
-        description: '1 màn hình, chất lượng SD',
+        price: 59000,
+        description: '1 màn hình xem cùng lúc',
         maxScreens: 1,
+        sortOrder: 1,
       },
     }),
     prisma.plan.upsert({
-      where: { name: 'Standard' },
-      update: {},
+      where: { code: 'STANDARD' },
+      update: { name: 'Standard', price: 99000, maxScreens: 2 },
       create: {
+        code: 'STANDARD',
         name: 'Standard',
-        price: 179000,
-        description: '2 màn hình, chất lượng HD',
+        price: 99000,
+        description: '2 màn hình xem cùng lúc',
         maxScreens: 2,
+        sortOrder: 2,
       },
     }),
     prisma.plan.upsert({
-      where: { name: 'Premium' },
-      update: {},
+      where: { code: 'PREMIUM' },
+      update: { name: 'Premium', price: 149000, maxScreens: 4 },
       create: {
+        code: 'PREMIUM',
         name: 'Premium',
-        price: 249000,
-        description: '4 màn hình, chất lượng 4K',
+        price: 149000,
+        description: '4 màn hình xem cùng lúc',
         maxScreens: 4,
+        sortOrder: 3,
       },
     }),
   ])
@@ -604,7 +610,7 @@ async function main() {
 
   await prisma.subscription.upsert({
     where: { id: 'sub-alice-001' },
-    update: {},
+    update: { planId: standardPlan.id, status: SubscriptionStatus.ACTIVE, startedAt: now, expiresAt: nextMonth },
     create: {
       id: 'sub-alice-001',
       userId: user1.id,
@@ -623,6 +629,11 @@ async function main() {
       userId: user1.id,
       planId: standardPlan.id,
       amount: standardPlan.price,
+      orderId: 'legacy-pay-alice-001',
+      requestId: 'legacy-pay-alice-001',
+      planName: standardPlan.name,
+      durationDays: standardPlan.durationDays,
+      expiresAt: new Date(now.getTime() + 30 * 60 * 1000),
       status: PaymentStatus.SUCCESS,
       paidAt: now,
     },
@@ -630,7 +641,7 @@ async function main() {
 
   await prisma.subscription.upsert({
     where: { id: 'sub-bob-001' },
-    update: {},
+    update: { planId: basicPlan.id, status: SubscriptionStatus.ACTIVE, startedAt: now, expiresAt: nextMonth },
     create: {
       id: 'sub-bob-001',
       userId: user2.id,
@@ -649,6 +660,11 @@ async function main() {
       userId: user2.id,
       planId: basicPlan.id,
       amount: basicPlan.price,
+      orderId: 'legacy-pay-bob-001',
+      requestId: 'legacy-pay-bob-001',
+      planName: basicPlan.name,
+      durationDays: basicPlan.durationDays,
+      expiresAt: new Date(now.getTime() + 30 * 60 * 1000),
       status: PaymentStatus.SUCCESS,
       paidAt: now,
     },

@@ -1,131 +1,284 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.3",
   "info": {
     "version": "1.0.0",
     "title": "Netflix Fullstack API",
-    "description": "Auto-generated API documentation using swagger-autogen"
+    "description": "Generated automatically from Express routes and Zod validation schemas"
   },
-  "host": "localhost:5000",
-  "basePath": "/",
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
   "tags": [
     {
-      "name": "System",
-      "description": "Health and operational endpoints"
+      "name": "System"
     },
     {
-      "name": "Auth",
-      "description": "Authentication and profile management"
+      "name": "Auth"
     },
     {
-      "name": "Genres",
-      "description": "Genre management"
+      "name": "Genres"
     },
     {
-      "name": "Movies",
-      "description": "Movies, actors and discovery"
+      "name": "Movies"
     },
     {
-      "name": "Episodes",
-      "description": "Season and episode management"
+      "name": "Episodes"
     },
     {
-      "name": "Upload",
-      "description": "Admin media uploads"
+      "name": "Community"
+    },
+    {
+      "name": "Upload"
+    },
+    {
+      "name": "Watch progress"
+    },
+    {
+      "name": "Watch history"
+    },
+    {
+      "name": "Watchlist"
+    },
+    {
+      "name": "Billing"
+    },
+    {
+      "name": "Playback"
     }
   ],
-  "schemes": [
-    "http"
-  ],
-  "securityDefinitions": {
-    "bearerAuth": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header",
-      "description": "Use: Bearer <access-token>"
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Paste the access token only; Swagger adds the Bearer prefix automatically."
+      }
     }
   },
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
   "paths": {
-    "/api/health/": {
+    "/api/health": {
       "get": {
         "tags": [
           "System"
         ],
-        "summary": "Health Check",
-        "description": "Returns the health status of the API",
+        "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/api/auth/send-otp": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 72
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/api/auth/verify-otp": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "pattern": "^\\d{6}$"
+                  }
+                },
+                "required": [
+                  "email",
+                  "otp"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/api/auth/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 72
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/api/auth/refresh": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/api/auth/logout": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/api/auth/me": {
       "get": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
           "401": {
             "description": "Unauthorized"
           }
@@ -134,17 +287,51 @@
     },
     "/api/auth/profile": {
       "patch": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "avatar": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -154,17 +341,48 @@
     },
     "/api/auth/change-password": {
       "patch": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 72
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 72
+                  }
+                },
+                "required": [
+                  "oldPassword",
+                  "newPassword"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -174,147 +392,278 @@
     },
     "/api/auth/google": {
       "get": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/api/auth/google/callback": {
       "get": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
-    "/api/genres/": {
+    "/api/genres": {
       "get": {
-        "description": "",
+        "tags": [
+          "Genres"
+        ],
+        "parameters": [],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "post": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Genres"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/genres/find-or-create": {
       "post": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Genres"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/genres/{id}": {
       "patch": {
-        "description": "",
+        "tags": [
+          "Genres"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Genres"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/actors/search": {
       "get": {
-        "description": "",
+        "tags": [
+          "Movies"
+        ],
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "",
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -324,40 +673,137 @@
     },
     "/api/movies/actors": {
       "post": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "avatar": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "bio": {
+                    "type": "string",
+                    "maxLength": 5000
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
-    "/api/movies/": {
+    "/api/movies": {
       "get": {
-        "description": "",
+        "tags": [
+          "Movies"
+        ],
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "MOVIE",
+                "SERIES"
+              ]
+            }
+          },
+          {
+            "name": "genreId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -365,46 +811,144 @@
         }
       },
       "post": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 5000
+                  },
+                  "thumbnail": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "trailerUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "MOVIE",
+                      "SERIES"
+                    ]
+                  },
+                  "videoUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1440
+                  },
+                  "isPublished": {
+                    "type": "boolean"
+                  },
+                  "genreIds": {
+                    "maxItems": 30,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                    }
+                  }
+                },
+                "required": [
+                  "title",
+                  "type"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Movies"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -412,108 +956,263 @@
         }
       },
       "patch": {
-        "description": "",
+        "tags": [
+          "Movies"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 5000
+                  },
+                  "thumbnail": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "trailerUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "MOVIE",
+                      "SERIES"
+                    ]
+                  },
+                  "videoUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1440
+                  },
+                  "isPublished": {
+                    "type": "boolean"
+                  },
+                  "genreIds": {
+                    "maxItems": 30,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Movies"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/{id}/actors": {
       "put": {
-        "description": "",
+        "tags": [
+          "Movies"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "actors": {
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "actorId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                        },
+                        "role": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 150
+                        }
+                      },
+                      "required": [
+                        "actorId",
+                        "role"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "actors"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/{movieId}/seasons": {
       "get": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -521,126 +1220,221 @@
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 10000
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "number"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/{movieId}/seasons/{seasonId}": {
       "patch": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "seasonId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 10000
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "seasonId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/{movieId}/seasons/{seasonId}/episodes": {
       "get": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "seasonId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -648,138 +1442,324 @@
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "seasonId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 100000
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "videoUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1440
+                  },
+                  "thumbnail": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "number",
+                  "title"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/{movieId}/seasons/{seasonId}/episodes/{episodeId}": {
       "patch": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "seasonId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "episodeId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 100000
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "videoUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1440
+                  },
+                  "thumbnail": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "string",
+                        "const": ""
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Episodes"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "seasonId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "episodeId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/movies/{movieId}/community/comments": {
       "get": {
-        "description": "",
+        "tags": [
+          "Community"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -787,23 +1767,67 @@
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Community"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "parentId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "content"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -813,29 +1837,65 @@
     },
     "/api/movies/{movieId}/community/comments/{commentId}": {
       "patch": {
-        "description": "",
+        "tags": [
+          "Community"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "commentId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "content"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -843,29 +1903,44 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Community"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
             "name": "commentId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -875,23 +1950,33 @@
     },
     "/api/movies/{movieId}/community/rating": {
       "get": {
-        "description": "",
+        "tags": [
+          "Community"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -899,23 +1984,54 @@
         }
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Community"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "score": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                  }
+                },
+                "required": [
+                  "score"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -925,57 +2041,81 @@
     },
     "/api/upload/video": {
       "post": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Upload"
+        ],
+        "parameters": [],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
     "/api/upload/image": {
       "post": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Upload"
+        ],
+        "parameters": [],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
       }
     },
-    "/api/watch-progress/": {
+    "/api/watch-progress": {
       "get": {
-        "description": "",
+        "tags": [
+          "Watch progress"
+        ],
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -985,23 +2125,44 @@
     },
     "/api/watch-progress/{movieId}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Watch progress"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "name": "episodeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -1009,23 +2170,67 @@
         }
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Watch progress"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "episodeId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "progressSec": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 604800
+                  }
+                },
+                "required": [
+                  "progressSec"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -1033,19 +2238,46 @@
         }
       }
     },
-    "/api/watch-history/": {
+    "/api/watch-history": {
       "get": {
-        "description": "",
+        "tags": [
+          "Watch history"
+        ],
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -1053,15 +2285,22 @@
         }
       },
       "delete": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Watch history"
+        ],
+        "parameters": [],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
           "401": {
             "description": "Unauthorized"
           }
@@ -1070,23 +2309,33 @@
     },
     "/api/watch-history/{id}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Watch history"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -1094,17 +2343,24 @@
         }
       }
     },
-    "/api/watchlist/": {
+    "/api/watchlist": {
       "get": {
-        "description": "",
-        "parameters": [
+        "tags": [
+          "Watchlist"
+        ],
+        "parameters": [],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
           "401": {
             "description": "Unauthorized"
           }
@@ -1113,23 +2369,33 @@
     },
     "/api/watchlist/{movieId}/status": {
       "get": {
-        "description": "",
+        "tags": [
+          "Watchlist"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -1139,23 +2405,33 @@
     },
     "/api/watchlist/{movieId}": {
       "post": {
-        "description": "",
+        "tags": [
+          "Watchlist"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
@@ -1163,122 +2439,463 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Watchlist"
+        ],
         "parameters": [
           {
             "name": "movieId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request data"
           },
           "401": {
             "description": "Unauthorized"
           }
         }
       }
-    }
-  },
-  "definitions": {
-    "Error": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "string",
-          "example": "error"
-        },
-        "code": {
-          "type": "string",
-          "example": "ERROR_CODE"
-        },
-        "message": {
-          "type": "string",
-          "example": "Human-readable error message"
-        }
-      }
     },
-    "ValidationError": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "string",
-          "example": "error"
-        },
-        "code": {
-          "type": "string",
-          "example": "VALIDATION_ERROR"
-        },
-        "message": {
-          "type": "string",
-          "example": "Invalid request data"
-        },
-        "details": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "path": {
-                "type": "string",
-                "example": "field"
-              },
-              "message": {
-                "type": "string",
-                "example": "Validation message"
-              }
-            }
+    "/api/plans": {
+      "get": {
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
-    "MovieInput": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string",
-          "example": "Example movie"
-        },
-        "description": {
-          "type": "string",
-          "example": "Movie description"
-        },
-        "type": {
-          "type": "string",
-          "example": "MOVIE"
-        },
-        "duration": {
-          "type": "number",
-          "example": 120
-        },
-        "isPublished": {
-          "type": "boolean",
-          "example": false
-        },
-        "genreIds": {
-          "type": "array",
-          "example": [],
-          "items": {}
+    "/api/subscriptions/me": {
+      "get": {
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
         }
       }
     },
-    "LoginInput": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "example": "user@example.com"
+    "/api/payments/checkout": {
+      "post": {
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "planId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                  },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "MOCK_MOMO",
+                      "MOCK_VNPAY"
+                    ]
+                  }
+                },
+                "required": [
+                  "planId",
+                  "idempotencyKey",
+                  "provider"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
         },
-        "password": {
-          "type": "string",
-          "example": "password"
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/payments/mock/{provider}/complete": {
+      "post": {
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "MOCK_MOMO",
+                "MOCK_VNPAY"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paymentId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                  },
+                  "checkoutToken": {
+                    "type": "string",
+                    "minLength": 64,
+                    "maxLength": 128,
+                    "pattern": "^[a-f0-9]+$"
+                  },
+                  "outcome": {
+                    "type": "string",
+                    "enum": [
+                      "SUCCESS",
+                      "FAILED",
+                      "CANCELLED"
+                    ]
+                  }
+                },
+                "required": [
+                  "paymentId",
+                  "checkoutToken",
+                  "outcome"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/payments": {
+      "get": {
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/payments/order/{orderId}": {
+      "get": {
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "pattern": "^[0-9A-Za-z][0-9A-Za-z_.-]*$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/payments/{id}": {
+      "get": {
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/playback-sessions": {
+      "post": {
+        "tags": [
+          "Playback"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "movieId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                  },
+                  "episodeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "movieId",
+                  "deviceId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/playback-sessions/{id}/heartbeat": {
+      "patch": {
+        "tags": [
+          "Playback"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/playback-sessions/{id}": {
+      "delete": {
+        "tags": [
+          "Playback"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
         }
       }
     }

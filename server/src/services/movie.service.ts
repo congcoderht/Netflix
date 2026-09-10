@@ -53,11 +53,16 @@ export const getList = async (filters: MovieFilters) => {
     prisma.movie.count({ where }),
   ])
 
-  return { items, total, page, limit, totalPages: Math.ceil(total / limit) }
+  const safeItems = published === undefined ? items : items.map((movie) => ({
+    ...movie,
+    hasVideo: Boolean(movie.videoUrl),
+    videoUrl: null,
+  }))
+  return { items: safeItems, total, page, limit, totalPages: Math.ceil(total / limit) }
 }
 
-export const getById = (id: string, includeUnpublished = false) =>
-  prisma.movie.findUnique({
+export const getById = async (id: string, includeUnpublished = false) => {
+  const movie = await prisma.movie.findUnique({
     where: { id, ...(includeUnpublished ? {} : { isPublished: true }) },
     select: {
       ...MOVIE_SELECT,
@@ -73,6 +78,17 @@ export const getById = (id: string, includeUnpublished = false) =>
       },
     },
   })
+  if (!movie || includeUnpublished) return movie
+  return {
+    ...movie,
+    hasVideo: Boolean(movie.videoUrl),
+    videoUrl: null,
+    seasons: movie.seasons.map((season) => ({
+      ...season,
+      episodes: season.episodes.map((episode) => ({ ...episode, hasVideo: Boolean(episode.videoUrl), videoUrl: null })),
+    })),
+  }
+}
 
 export const create = async (data: MovieCreateInput) => {
   const { genreIds, ...rest } = data

@@ -10,6 +10,7 @@ export interface Episode {
   number: number
   title: string
   videoUrl: string | null
+  hasVideo?: boolean
   duration: number | null
   thumbnail: string | null
 }
@@ -36,6 +37,7 @@ export interface Movie {
   trailerUrl: string | null
   type: ContentType
   videoUrl: string | null
+  hasVideo?: boolean
   duration: number | null
   isPublished: boolean
   createdAt: string

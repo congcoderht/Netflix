@@ -46,6 +46,12 @@ export const config = {
     pass: process.env.SMTP_PASS || '',
     from: process.env.SMTP_FROM || 'Netflix <no-reply@netflix.com>',
   },
+  payment: {
+    mode: process.env.PAYMENT_MODE || 'mock',
+    mockSecret: process.env.MOCK_PAYMENT_SECRET || 'mock-payment-secret-for-local-development-only',
+    mockCheckoutUrl: process.env.MOCK_PAYMENT_URL || 'http://localhost:5173/mock-payment',
+    resultUrl: process.env.PAYMENT_RESULT_URL || 'http://localhost:5173/payment/result',
+  },
 };
 
 export const validateConfig = () => {
@@ -54,6 +60,9 @@ export const validateConfig = () => {
   }
 
   if (config.nodeEnv === 'production') {
+    if (config.payment.mode === 'mock') {
+      throw new Error('Mock payment must not be enabled in production')
+    }
     const insecureSecrets = [
       config.jwt.accessSecret,
       config.jwt.refreshSecret,

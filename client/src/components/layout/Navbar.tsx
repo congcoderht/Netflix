@@ -46,6 +46,7 @@ export default function Navbar() {
     { to: '/', label: t('nav.home') },
     { to: '/movies', label: t('nav.movies') },
     { to: '/my-list', label: t('nav.myList') },
+    { to: '/billing', label: 'Gói cước' },
   ]
 
   if (user?.role === 'ADMIN') {

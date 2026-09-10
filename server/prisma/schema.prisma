@@ -38,6 +38,8 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+  EXPIRED
+  REFUNDED
 }
 
 enum NotificationType {
@@ -72,6 +74,7 @@ model User {
   comments       Comment[]
   ratings        Rating[]
   notifications  Notification[]
+  playbackSessions PlaybackSession[]
 
   @@map("users")
 }
@@ -224,10 +227,14 @@ model Episode {
 
 model Plan {
   id          String   @id @default(uuid())
-  name        String   @unique  // Basic, Standard, Premium
-  price       Float
+  code        String   @unique
+  name        String   @unique
+  price       Int
+  currency    String   @default("VND")
+  durationDays Int     @default(30) @map("duration_days")
   description String?
   maxScreens  Int      @default(1) @map("max_screens")
+  sortOrder   Int      @default(0) @map("sort_order")
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -250,23 +257,58 @@ model Subscription {
 
   user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan      Plan               @relation(fields: [planId], references: [id])
+  payments  Payment[]
 
+  @@index([userId, status, expiresAt])
   @@map("subscriptions")
 }
 
 model Payment {
-  id        String        @id @default(uuid())
-  userId    String        @map("user_id")
-  planId    String        @map("plan_id")
-  amount    Float
-  status    PaymentStatus @default(PENDING)
-  paidAt    DateTime?     @map("paid_at")
-  createdAt DateTime      @default(now()) @map("created_at")
+  id                    String        @id @default(uuid())
+  userId                String        @map("user_id")
+  planId                String        @map("plan_id")
+  subscriptionId        String?       @map("subscription_id")
+  orderId               String        @unique @map("order_id")
+  requestId             String        @unique @map("request_id")
+  providerTransactionId String?       @unique @map("provider_transaction_id")
+  provider              String        @default("MOMO")
+  amount                Int
+  currency              String        @default("VND")
+  planName              String        @map("plan_name")
+  durationDays          Int           @map("duration_days")
+  status                PaymentStatus @default(PENDING)
+  failureCode           String?       @map("failure_code")
+  failureMessage        String?       @map("failure_message")
+  paymentUrl            String?       @map("payment_url")
+  expiresAt             DateTime      @map("expires_at")
+  paidAt                DateTime?     @map("paid_at")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
 
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan      Plan          @relation(fields: [planId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan         Plan          @relation(fields: [planId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
 
+  @@index([userId, createdAt])
+  @@index([status])
   @@map("payments")
+}
+
+model PlaybackSession {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  deviceId      String    @map("device_id")
+  movieId       String    @map("movie_id")
+  episodeId     String?   @map("episode_id")
+  startedAt     DateTime  @default(now()) @map("started_at")
+  lastHeartbeat DateTime  @default(now()) @map("last_heartbeat")
+  endedAt       DateTime? @map("ended_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, endedAt, lastHeartbeat])
+  @@index([deviceId])
+  @@map("playback_sessions")
 }
 
 // ============================================================

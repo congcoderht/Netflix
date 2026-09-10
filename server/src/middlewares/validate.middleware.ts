@@ -3,8 +3,15 @@ import { ZodType } from 'zod'
 
 type RequestTarget = 'body' | 'params' | 'query'
 
-export const validate = (schema: ZodType, target: RequestTarget = 'body') =>
-  (req: Request, res: Response, next: NextFunction) => {
+export const API_VALIDATION = Symbol.for('netflix.apiValidation')
+
+export interface ApiValidationMetadata {
+  schema: ZodType
+  target: RequestTarget
+}
+
+export const validate = (schema: ZodType, target: RequestTarget = 'body') => {
+  const middleware = (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req[target])
 
     if (!result.success) {
@@ -23,3 +30,7 @@ export const validate = (schema: ZodType, target: RequestTarget = 'body') =>
     Object.assign(req[target], result.data)
     next()
   }
+
+  Object.assign(middleware, { [API_VALIDATION]: { schema, target } })
+  return middleware
+}

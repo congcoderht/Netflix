@@ -14,6 +14,8 @@ import { watchProgressRouter } from './routes/watch-progress.routes';
 import { watchHistoryRouter } from './routes/watch-history.routes';
 import { watchlistRouter } from './routes/watchlist.routes';
 import { communityRouter } from './routes/community.routes';
+import { billingRouter } from './routes/billing.routes';
+import { playbackRouter } from './routes/playback.routes';
 import { errorHandler } from './middlewares/error.middleware';
 import './config/passport';
 
@@ -47,6 +49,8 @@ app.use('/api/upload', uploadRouter);
 app.use('/api/watch-progress', watchProgressRouter);
 app.use('/api/watch-history', watchHistoryRouter);
 app.use('/api/watchlist', watchlistRouter);
+app.use('/api', billingRouter);
+app.use('/api/playback-sessions', playbackRouter);
 
 app.use(errorHandler);
 

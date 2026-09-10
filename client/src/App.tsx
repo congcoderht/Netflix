@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from '@/pages/auth/Login'
 import Register from '@/pages/auth/Register'
@@ -13,10 +14,14 @@ import AuthBootstrap from '@/components/AuthBootstrap'
 import WatchHistory from '@/pages/WatchHistory'
 import MyList from '@/pages/MyList'
 
+const Billing = lazy(() => import('@/pages/Billing'))
+const PaymentResult = lazy(() => import('@/pages/PaymentResult'))
+const MockCheckout = lazy(() => import('@/pages/MockCheckout'))
+
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthBootstrap><Routes>
+      <AuthBootstrap><Suspense fallback={<div className="min-h-screen bg-black" />}><Routes>
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -29,12 +34,15 @@ export default function App() {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/history" element={<ProtectedRoute><WatchHistory /></ProtectedRoute>} />
         <Route path="/my-list" element={<ProtectedRoute><MyList /></ProtectedRoute>} />
+        <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
+        <Route path="/payment/result" element={<ProtectedRoute><PaymentResult /></ProtectedRoute>} />
+        <Route path="/mock-payment/:provider" element={<ProtectedRoute><MockCheckout /></ProtectedRoute>} />
         <Route path="/movies/:id" element={<ProtectedRoute><MovieDetail /></ProtectedRoute>} />
         <Route path="/admin/movies" element={<ProtectedRoute adminOnly><AdminMovies /></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes></AuthBootstrap>
+      </Routes></Suspense></AuthBootstrap>
     </BrowserRouter>
   )
 }

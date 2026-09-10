@@ -9,6 +9,8 @@ import type { Episode } from '@/types/movie'
 import { getWatchProgress, saveWatchProgress } from '@/services/watch-progress.service'
 import { addToWatchlist, getWatchlistStatus, removeFromWatchlist } from '@/services/watchlist.service'
 import CommunitySection from '@/components/movie/CommunitySection'
+import { endPlaybackSession, heartbeatPlaybackSession, startPlaybackSession } from '@/services/playback.service'
+import { getApiErrorMessage } from '@/lib/api-error'
 
 const CREW_ROLES = ['Đạo diễn', 'Giám đốc sản xuất', 'Nhà sản xuất', 'Biên kịch']
 
@@ -62,6 +64,9 @@ export default function MovieDetail() {
   const [resumeFromSec, setResumeFromSec] = useState(0)
   const [inWatchlist, setInWatchlist] = useState(false)
   const [watchlistLoading, setWatchlistLoading] = useState(false)
+  const [playbackSessionId, setPlaybackSessionId] = useState<string | null>(null)
+  const [playbackUrl, setPlaybackUrl] = useState('')
+  const [playbackError, setPlaybackError] = useState('')
   const startingPlaybackRef = useRef(false)
 
   useEffect(() => {
@@ -91,38 +96,51 @@ export default function MovieDetail() {
 
   const startPlayback = useCallback(async (episode?: Episode) => {
     if (!id || startingPlaybackRef.current) return
-    if (episode && !episode.videoUrl) return
+    if (episode && !episode.hasVideo && !episode.videoUrl) return
     startingPlaybackRef.current = true
-
-    setActiveEpisode(episode ? {
-      url: episode.videoUrl as string,
-      title: `Tập ${episode.number}: ${episode.title}`,
-      id: episode.id,
-    } : null)
-
+    setPlaybackError('')
     try {
+      const session = await startPlaybackSession(id, episode?.id)
+      setPlaybackSessionId(session.sessionId)
+      setPlaybackUrl(session.videoUrl)
+      setActiveEpisode(episode ? {
+        url: session.videoUrl,
+        title: `Tập ${episode.number}: ${episode.title}`,
+        id: episode.id,
+      } : null)
       const progress = await getWatchProgress(id, episode?.id)
       setResumeFromSec(progress.resumeFromSec)
-    } catch {
-      setResumeFromSec(0)
+      setPlaying(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (error) {
+      setPlaybackError(getApiErrorMessage(error, 'Không thể bắt đầu phát phim'))
     } finally {
       startingPlaybackRef.current = false
     }
-    setPlaying(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [id])
+
+  useEffect(() => {
+    if (!playbackSessionId) return
+    const timer = window.setInterval(() => {
+      void heartbeatPlaybackSession(playbackSessionId).catch(() => setPlaying(false))
+    }, 30_000)
+    return () => {
+      window.clearInterval(timer)
+      void endPlaybackSession(playbackSessionId).catch(() => undefined)
+    }
+  }, [playbackSessionId])
 
   useEffect(() => {
     if (!movie || !shouldAutoPlay || playing) return
     if (movie.type === 'MOVIE') {
-      if (movie.videoUrl) void startPlayback()
+      if (movie.hasVideo || movie.videoUrl) void startPlayback()
       return
     }
 
     const episodes = movie.seasons?.flatMap((season) => season.episodes) || []
     const episode = episodes.find((item) => item.id === requestedEpisodeId)
-      || episodes.find((item) => item.videoUrl)
-    if (episode?.videoUrl) void startPlayback(episode)
+      || episodes.find((item) => item.hasVideo || item.videoUrl)
+    if (episode?.hasVideo || episode?.videoUrl) void startPlayback(episode)
   }, [movie, playing, requestedEpisodeId, shouldAutoPlay, startPlayback])
 
   const persistProgress = (seconds: number) => {
@@ -143,7 +161,7 @@ export default function MovieDetail() {
   const actors = movie.actors?.filter((a) => !CREW_ROLES.includes(a.role || '')) || []
   const crew = movie.actors?.filter((a) => CREW_ROLES.includes(a.role || '')) || []
 
-  const currentVideoUrl = activeEpisode?.url || movie.videoUrl || ''
+  const currentVideoUrl = playbackUrl
 
   return (
     <Layout>
@@ -159,6 +177,9 @@ export default function MovieDetail() {
               <div className="flex items-center gap-3 mb-3">
                 <button onClick={() => {
                   setPlaying(false)
+                  if (playbackSessionId) void endPlaybackSession(playbackSessionId)
+                  setPlaybackSessionId(null)
+                  setPlaybackUrl('')
                   setActiveEpisode(null)
                   setResumeFromSec(0)
                   navigate(`/movies/${id}`, { replace: true })
@@ -188,7 +209,7 @@ export default function MovieDetail() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
 
               {/* Play button overlay */}
-              {(movie.videoUrl || (movie.seasons && movie.seasons.length > 0)) && (
+              {(movie.hasVideo || movie.videoUrl || (movie.seasons && movie.seasons.length > 0)) && (
                 <button
                   onClick={() => {
                     if (movie.type === 'MOVIE') void startPlayback()
@@ -230,7 +251,7 @@ export default function MovieDetail() {
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3 mb-6">
-              {movie.type === 'MOVIE' && movie.videoUrl && (
+              {movie.type === 'MOVIE' && (movie.hasVideo || movie.videoUrl) && (
                 <button onClick={() => { void startPlayback() }}
                   className="flex items-center gap-2 bg-white text-black font-bold px-8 py-3 rounded hover:bg-gray-200 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
@@ -260,6 +281,8 @@ export default function MovieDetail() {
                 {inWatchlist ? 'Đã thêm vào danh sách' : 'Thêm vào danh sách'}
               </button>
             </div>
+
+            {playbackError && <p className="mb-5 rounded bg-red-950/60 p-3 text-sm text-red-300">{playbackError}</p>}
 
             {/* Description */}
             {movie.description && (
@@ -334,8 +357,8 @@ export default function MovieDetail() {
                 {movie.seasons[activeSeason]?.episodes.map((ep, idx) => {
                   const isActive = activeEpisode?.id === ep.id
                   return (
-                    <div key={ep.id} onClick={() => { if (ep.videoUrl) void startPlayback(ep) }}
-                      className={`flex items-center gap-4 p-4 rounded-xl transition-all border ${ep.videoUrl ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${isActive ? 'bg-white/10 border-white/20' : 'bg-gray-800/40 border-transparent hover:bg-gray-800 hover:border-gray-700'}`}>
+                    <div key={ep.id} onClick={() => { if (ep.hasVideo || ep.videoUrl) void startPlayback(ep) }}
+                      className={`flex items-center gap-4 p-4 rounded-xl transition-all border ${(ep.hasVideo || ep.videoUrl) ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${isActive ? 'bg-white/10 border-white/20' : 'bg-gray-800/40 border-transparent hover:bg-gray-800 hover:border-gray-700'}`}>
                       <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm font-bold"
                         style={{ background: isActive ? 'white' : '#374151', color: isActive ? 'black' : 'white' }}>
                         {isActive
