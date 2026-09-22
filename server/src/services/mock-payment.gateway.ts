@@ -97,7 +97,7 @@ export const createAndVerifyMockIpn = (
 }
 
 export const assertMockPaymentEnabled = () => {
-  if (config.payment.mode !== 'mock' || config.nodeEnv === 'production') {
+  if (config.payment.mode !== 'mock') {
     throw new AppError(404, 'Mock payment is not available', 'MOCK_PAYMENT_DISABLED')
   }
 }
