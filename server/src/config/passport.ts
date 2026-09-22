@@ -3,8 +3,13 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { config } from './index'
 import { prisma } from '../lib/prisma'
 
-passport.use(
-  new GoogleStrategy(
+export const isGoogleOAuthConfigured = Boolean(
+  config.google.clientId && config.google.clientSecret,
+)
+
+if (isGoogleOAuthConfigured) {
+  passport.use(
+    new GoogleStrategy(
     {
       clientID: config.google.clientId,
       clientSecret: config.google.clientSecret,
@@ -61,7 +66,8 @@ passport.use(
         return done(err)
       }
     }
+    )
   )
-)
+}
 
 export default passport
