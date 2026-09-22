@@ -81,7 +81,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 const refreshTokenCookieOptions = {
   httpOnly: true,
   secure: config.nodeEnv === 'production',
-  sameSite: 'lax' as const,
+  sameSite: config.nodeEnv === 'production' ? 'none' as const : 'lax' as const,
 }
 
 const setRefreshTokenCookie = (res: Response, token: string) => {

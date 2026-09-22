@@ -5,11 +5,12 @@ type RefreshResponse = { accessToken: string }
 type RetryableRequest = { _retry?: boolean; headers: Record<string, string> }
 
 let refreshPromise: Promise<string> | null = null
+export const apiBaseUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || '/api'
 
 const refreshAccessToken = () => {
   if (!refreshPromise) {
     refreshPromise = axios
-      .post<RefreshResponse>('/api/auth/refresh', {}, { withCredentials: true })
+      .post<RefreshResponse>(`${apiBaseUrl}/auth/refresh`, {}, { withCredentials: true })
       .then(({ data }) => {
         useAuthStore.getState().setAccessToken(data.accessToken)
         return data.accessToken
@@ -28,7 +29,7 @@ const redirectToLogin = () => {
 
 export const bootstrapSession = async () => {
   const token = await refreshAccessToken()
-  const { data: user } = await axios.get('/api/auth/me', {
+  const { data: user } = await axios.get(`${apiBaseUrl}/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
     withCredentials: true,
   })
@@ -36,7 +37,7 @@ export const bootstrapSession = async () => {
 }
 
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: apiBaseUrl,
   withCredentials: true,
 })
 

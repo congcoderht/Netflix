@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { api } from '@/lib/axios'
+import { api, apiBaseUrl } from '@/lib/axios'
 import { useAuthStore } from '@/store/auth.store'
 import { getApiErrorBody } from '@/lib/api-error'
 
@@ -110,7 +110,7 @@ export default function Login() {
         </div>
 
         <a
-          href="/api/auth/google"
+          href={`${apiBaseUrl}/auth/google`}
           className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-3 rounded hover:bg-gray-100 transition-colors"
         >
           <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />

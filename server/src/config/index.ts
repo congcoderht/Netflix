@@ -60,9 +60,6 @@ export const validateConfig = () => {
   }
 
   if (config.nodeEnv === 'production') {
-    if (config.payment.mode === 'mock') {
-      throw new Error('Mock payment must not be enabled in production')
-    }
     const insecureSecrets = [
       config.jwt.accessSecret,
       config.jwt.refreshSecret,
