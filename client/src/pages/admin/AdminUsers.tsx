@@ -31,9 +31,9 @@ export default function AdminUsers() {
   }
 
   return <>
-    <form onSubmit={(event) => { event.preventDefault(); setPage(1); setSearch(searchInput.trim()) }} className="flex max-w-xl gap-2">
+    <form onSubmit={(event) => { event.preventDefault(); setPage(1); setSearch(searchInput.trim()) }} className="flex max-w-xl flex-col gap-2 sm:flex-row">
       <input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="Tìm theo tên hoặc email..." className="min-w-0 flex-1 rounded-lg border border-gray-700 bg-gray-900 px-4 py-2.5 text-white outline-none focus:border-red-500" />
-      <button className="rounded-lg bg-red-600 px-5 py-2.5 font-semibold text-white">Tìm kiếm</button>
+      <button className="rounded-lg bg-red-600 px-5 py-2.5 font-semibold text-white sm:shrink-0">Tìm kiếm</button>
     </form>
 
     {loading ? <p className="py-20 text-center text-gray-400">Đang tải...</p> : <div className="mt-6 overflow-x-auto rounded-xl border border-gray-800">
@@ -50,6 +50,6 @@ export default function AdminUsers() {
     </div>}
 
     {totalPages > 1 && <div className="mt-6 flex justify-center gap-3"><button disabled={page <= 1} onClick={() => setPage((value) => value - 1)} className="rounded bg-gray-800 px-4 py-2 text-white disabled:opacity-40">Trước</button><span className="px-3 py-2 text-gray-400">{page}/{totalPages}</span><button disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)} className="rounded bg-gray-800 px-4 py-2 text-white disabled:opacity-40">Sau</button></div>}
-    {toast && <div role="status" className="fixed right-5 top-20 z-[60] rounded-xl border border-gray-700 bg-gray-900 px-5 py-4 text-white shadow-2xl">{toast}<button onClick={() => setToast('')} className="ml-4 text-gray-400">×</button></div>}
+    {toast && <div role="status" className="fixed left-4 right-4 top-20 z-[60] rounded-xl border border-gray-700 bg-gray-900 px-5 py-4 text-white shadow-2xl sm:left-auto sm:right-5 sm:max-w-sm">{toast}<button onClick={() => setToast('')} className="ml-4 text-gray-400">×</button></div>}
   </>
 }

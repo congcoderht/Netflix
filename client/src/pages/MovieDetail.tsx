@@ -198,11 +198,11 @@ export default function MovieDetail() {
       )}
 
       {playbackIssue === 'subscription' && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onMouseDown={() => setPlaybackIssue(null)}>
-        <section role="dialog" aria-modal="true" aria-labelledby="subscription-required-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-900 p-7 text-center shadow-2xl">
+        <section role="dialog" aria-modal="true" aria-labelledby="subscription-required-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-900 p-5 text-center shadow-2xl sm:p-7">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-2xl">▶</div>
           <h2 id="subscription-required-title" className="mt-5 text-2xl font-bold text-white">Bạn cần đăng ký gói</h2>
           <p className="mt-3 text-gray-400">Chọn một gói phù hợp để xem phim và sử dụng đầy đủ nội dung.</p>
-          <div className="mt-7 flex gap-3"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Để sau</button><button onClick={() => navigate('/billing')} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white">Xem các gói</button></div>
+          <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Để sau</button><button onClick={() => navigate('/billing')} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white">Xem các gói</button></div>
         </section>
       </div>}
 
@@ -217,7 +217,7 @@ export default function MovieDetail() {
             </div>)}
             {!activeSessions.length && <p className="rounded-lg bg-gray-800 p-5 text-center text-gray-400">Không còn phiên xem hoạt động.</p>}
           </div>
-          <div className="mt-6 flex gap-3"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Đóng</button><button onClick={retryPlayback} className="flex-1 rounded-lg bg-white px-4 py-3 font-bold text-black">Thử lại</button></div>
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Đóng</button><button onClick={retryPlayback} className="flex-1 rounded-lg bg-white px-4 py-3 font-bold text-black">Thử lại</button></div>
         </section>
       </div>}
 
@@ -252,7 +252,7 @@ export default function MovieDetail() {
               />
             </div>
           ) : (
-            <div className="relative w-full h-[55vw] max-h-[680px] min-h-[320px]">
+            <div className="relative h-[65svh] min-h-[380px] max-h-[680px] w-full sm:h-[55vw] sm:min-h-[320px]">
               {movie.thumbnail
                 ? <img src={movie.thumbnail} alt={movie.title} className="w-full h-full object-cover object-top" />
                 : <div className="w-full h-full bg-gray-900" />
@@ -305,14 +305,14 @@ export default function MovieDetail() {
             <div className="flex flex-wrap gap-3 mb-6">
               {movie.type === 'MOVIE' && (movie.hasVideo || movie.videoUrl) && (
                 <button onClick={() => { void startPlayback() }}
-                  className="flex items-center gap-2 bg-white text-black font-bold px-8 py-3 rounded hover:bg-gray-200 transition-colors">
+                  className="flex flex-1 items-center justify-center gap-2 rounded bg-white px-5 py-3 font-bold text-black transition-colors hover:bg-gray-200 sm:flex-none sm:px-8">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                   {t('home.hero.watchNow')}
                 </button>
               )}
               {movie.type === 'SERIES' && (
                 <button onClick={() => document.getElementById('episodes-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="flex items-center gap-2 bg-white text-black font-bold px-8 py-3 rounded hover:bg-gray-200 transition-colors">
+                  className="flex flex-1 items-center justify-center gap-2 rounded bg-white px-5 py-3 font-bold text-black transition-colors hover:bg-gray-200 sm:flex-none sm:px-8">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                   Xem ngay
                 </button>

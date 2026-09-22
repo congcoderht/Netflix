@@ -9,11 +9,11 @@ interface Props {
 }
 
 export default function DashboardPeriodFilter({ period, month, year, years, onPeriodChange, onMonthChange, onYearChange }: Props) {
-  const buttonClass = (active: boolean) => `w-28 rounded-md py-2 text-sm transition-colors ${active ? 'bg-red-600 font-semibold text-white' : 'text-gray-400 hover:text-white'}`
-  const selectClass = 'h-10 w-28 rounded-lg border border-gray-700 bg-gray-800 px-3 text-white outline-none disabled:cursor-not-allowed disabled:opacity-40'
+  const buttonClass = (active: boolean) => `flex-1 rounded-md px-3 py-2 text-sm transition-colors sm:w-28 sm:flex-none ${active ? 'bg-red-600 font-semibold text-white' : 'text-gray-400 hover:text-white'}`
+  const selectClass = 'h-10 min-w-0 flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm text-white outline-none disabled:cursor-not-allowed disabled:opacity-40 sm:w-28 sm:flex-none sm:text-base'
 
-  return <div className="flex shrink-0 items-center gap-2">
-    <div className="flex rounded-lg bg-gray-800 p-1">
+  return <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0 sm:items-center">
+    <div className="col-span-2 flex rounded-lg bg-gray-800 p-1 sm:col-span-1">
       <button onClick={() => onPeriodChange('month')} className={buttonClass(period === 'month')}>Theo tháng</button>
       <button onClick={() => onPeriodChange('year')} className={buttonClass(period === 'year')}>Theo năm</button>
     </div>

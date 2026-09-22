@@ -12,6 +12,26 @@ const TYPES = [
   { value: 'SERIES', label: 'Phim bộ' },
 ]
 
+const preloadPosters = (items: Movie[]) => Promise.all(items.map((movie) => new Promise<void>((resolve) => {
+  if (!movie.thumbnail) {
+    resolve()
+    return
+  }
+
+  const image = new Image()
+  let settled = false
+  const finish = () => {
+    if (settled) return
+    settled = true
+    window.clearTimeout(timeout)
+    resolve()
+  }
+  const timeout = window.setTimeout(finish, 800)
+  image.onload = finish
+  image.onerror = finish
+  image.src = movie.thumbnail
+})))
+
 export default function Movies() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -26,6 +46,7 @@ export default function Movies() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [hasLoaded, setHasLoaded] = useState(false)
   const [error, setError] = useState('')
   const [searchInput, setSearchInput] = useState(searchParam)
 
@@ -59,8 +80,10 @@ export default function Movies() {
       page,
       limit: LIMIT,
     })
-      .then((res) => {
+      .then(async (res) => {
+        await preloadPosters(res.items)
         if (!active) return
+        setError('')
         setMovies(res.items)
         setTotal(res.total)
         setTotalPages(res.totalPages)
@@ -68,12 +91,12 @@ export default function Movies() {
       .catch(() => {
         if (!active) return
         setError('Không thể tải danh sách phim. Vui lòng thử lại.')
-        setMovies([])
-        setTotal(0)
-        setTotalPages(1)
       })
       .finally(() => {
-        if (active) setLoading(false)
+        if (active) {
+          setLoading(false)
+          setHasLoaded(true)
+        }
       })
 
     return () => { active = false }
@@ -103,13 +126,13 @@ export default function Movies() {
   return (
     <Layout>
       <div className="min-h-screen pt-20 pb-16 px-4 sm:px-8 md:px-12">
-        <div className="max-w-screen-xl mx-auto">
+        <div className="mx-auto max-w-screen-2xl">
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">{title}</h1>
-              {!loading && <p className="text-gray-400 text-sm mt-1">{total} phim</p>}
+              <p className="mt-1 min-h-5 text-sm text-gray-400">{hasLoaded ? `${total} phim` : 'Đang tải...'}</p>
             </div>
 
             {/* Search */}
@@ -136,9 +159,9 @@ export default function Movies() {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-4 mb-8">
+          <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start">
             {/* Type filter */}
-            <div className="flex bg-gray-800 rounded-lg p-1 gap-1">
+            <div className="flex w-fit shrink-0 rounded-lg bg-gray-800 p-1 gap-1">
               {TYPES.map((tp) => (
                 <button key={tp.value} onClick={() => setParam('type', tp.value)}
                   className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${typeParam === tp.value ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white'}`}>
@@ -148,7 +171,7 @@ export default function Movies() {
             </div>
 
             {/* Genre filter */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex min-w-0 flex-wrap gap-2">
               <button onClick={() => setParam('genreId', '')}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${!genreParam ? 'border-white text-white' : 'border-gray-600 text-gray-400 hover:border-gray-400 hover:text-white'}`}>
                 Tất cả thể loại
@@ -163,11 +186,11 @@ export default function Movies() {
           </div>
 
           {/* Grid */}
-          {loading ? (
+          {loading && !hasLoaded ? (
             <div className="flex justify-center py-20">
               <div className="w-10 h-10 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
             </div>
-          ) : error ? (
+          ) : error && movies.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-red-400 text-lg mb-4">{error}</p>
               <button
@@ -185,17 +208,22 @@ export default function Movies() {
               <p className="text-gray-500 text-lg">{t('common.noResults')}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {movies.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} gridMode />
-              ))}
+            <div className="relative min-h-[60vh]">
+              {loading && <div className="absolute -top-3 left-0 right-0 z-20 h-0.5 overflow-hidden rounded-full bg-gray-800"><div className="h-full w-1/3 animate-pulse rounded-full bg-red-600" /></div>}
+              <div className={`grid grid-cols-2 gap-3 transition-opacity duration-200 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 ${loading ? 'pointer-events-none opacity-55' : 'opacity-100'}`} aria-busy={loading}>
+                {movies.map((movie) => (
+                  <MovieCard key={movie.id} movie={movie} gridMode />
+                ))}
+              </div>
             </div>
           )}
 
+          {error && movies.length > 0 && <p className="mt-5 rounded-lg border border-red-900/70 bg-red-950/30 px-4 py-3 text-sm text-red-300">{error}</p>}
+
           {/* Pagination */}
-          {!loading && !error && totalPages > 1 && (
+          {!error && totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-10">
-              <button onClick={() => { setLoading(true); setError(''); setPage((p) => p - 1) }} disabled={page === 1}
+              <button onClick={() => { setLoading(true); setError(''); setPage((p) => p - 1) }} disabled={loading || page === 1}
                 className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -211,13 +239,13 @@ export default function Movies() {
                 }, [])
                 .map((p, i) => p === '...'
                   ? <span key={`dot-${i}`} className="text-gray-600 px-1">...</span>
-                  : <button key={p} onClick={() => { setLoading(true); setError(''); setPage(p as number) }}
+                  : <button key={p} disabled={loading} onClick={() => { setLoading(true); setError(''); setPage(p as number) }}
                       className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${page === p ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
                       {p}
                     </button>
                 )}
 
-              <button onClick={() => { setLoading(true); setError(''); setPage((p) => p + 1) }} disabled={page === totalPages}
+              <button onClick={() => { setLoading(true); setError(''); setPage((p) => p + 1) }} disabled={loading || page === totalPages}
                 className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

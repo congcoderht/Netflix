@@ -18,6 +18,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [langMenuOpen, setLangMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const langMenuRef = useRef<HTMLDivElement>(null)
 
@@ -56,9 +57,9 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#141414]' : 'bg-gradient-to-b from-black/80 to-transparent'}`}>
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 flex items-center h-16 gap-8">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 flex items-center h-16 gap-4 lg:gap-8">
         {/* Logo */}
-        <Link to={user?.role === 'ADMIN' ? '/admin' : '/'} className="text-red-600 text-3xl font-black tracking-tight shrink-0">
+        <Link to={user?.role === 'ADMIN' ? '/admin' : '/'} className="text-red-600 text-2xl font-black tracking-tight shrink-0 sm:text-3xl">
           NETFLIX
         </Link>
 
@@ -75,14 +76,18 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="ml-auto flex items-center gap-4">
-          {/* Search */}
-          <Link to="/search" className="text-gray-300 hover:text-white transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </Link>
-
+        <div className="ml-auto flex items-center gap-3 sm:gap-4">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((value) => !value)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-gray-300 transition hover:bg-white/10 hover:text-white md:hidden"
+            aria-label="Mở menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen
+              ? <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              : <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>}
+          </button>
           {/* Language switcher */}
           <div className="relative" ref={langMenuRef}>
             <button
@@ -178,6 +183,16 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+      {mobileMenuOpen && (
+        <div className="border-t border-white/10 bg-[#141414]/98 px-4 py-3 shadow-2xl backdrop-blur md:hidden">
+          <div className="mx-auto flex max-w-screen-2xl flex-col">
+            {navLinks.map((link) => {
+              const active = location.pathname + location.search === link.to || (location.pathname === link.to.split('?')[0] && !link.to.includes('?'))
+              return <Link key={link.to} to={link.to} onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-3 text-sm font-medium transition ${active ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}>{link.label}</Link>
+            })}
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

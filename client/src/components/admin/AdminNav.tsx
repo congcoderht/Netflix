@@ -8,7 +8,7 @@ const links = [
 ]
 
 export default function AdminNav() {
-  return <nav className="mt-6 flex flex-wrap gap-2 border-b border-gray-800 pb-3">
-    {links.map((link) => <NavLink key={link.to} to={link.to} end={link.end} className={({ isActive }) => `rounded-lg px-4 py-2 transition ${isActive ? 'bg-gray-800 font-semibold text-white' : 'text-gray-400 hover:text-white'}`}>{link.label}</NavLink>)}
+  return <nav className="scrollbar-none -mx-4 mt-4 flex gap-2 overflow-x-auto border-b border-gray-800 px-4 pb-3 sm:mx-0 sm:mt-6 sm:px-0">
+    {links.map((link) => <NavLink key={link.to} to={link.to} end={link.end} className={({ isActive }) => `shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm transition sm:text-base ${isActive ? 'bg-gray-800 font-semibold text-white' : 'text-gray-400 hover:text-white'}`}>{link.label}</NavLink>)}
   </nav>
 }

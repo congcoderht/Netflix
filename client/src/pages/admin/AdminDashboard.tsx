@@ -37,11 +37,11 @@ export default function AdminDashboard() {
 
   return <>
       {error ? <div className="mt-8 rounded-xl bg-red-950/40 p-5 text-red-300">{error}</div> : <div className={loading ? 'pointer-events-none opacity-50' : ''}>
-        <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map((card) => <Link key={card.label} to={card.to} className="group rounded-2xl border border-gray-800 bg-gray-900 p-5 transition hover:-translate-y-0.5 hover:border-gray-600 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"><p className="text-sm text-gray-400">{card.label}</p><p className={`mt-2 text-3xl font-black ${card.color}`}>{card.value}</p><p className="mt-2 text-xs text-gray-500 group-hover:text-gray-300">{card.note}</p></Link>)}</section>
+        <section className="mt-5 grid gap-4 sm:mt-7 sm:grid-cols-2 xl:grid-cols-4">{cards.map((card) => <Link key={card.label} to={card.to} className="group rounded-2xl border border-gray-800 bg-gray-900 p-5 transition hover:-translate-y-0.5 hover:border-gray-600 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"><p className="text-sm text-gray-400">{card.label}</p><p className={`mt-2 break-words text-2xl font-black sm:text-3xl ${card.color}`}>{card.value}</p><p className="mt-2 text-xs text-gray-500 group-hover:text-gray-300">{card.note}</p></Link>)}</section>
 
         {data && <><section className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(280px,1fr)]">
-          <article className="min-w-0 rounded-2xl border border-gray-800 bg-gray-900 p-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
+          <article className="min-w-0 rounded-2xl border border-gray-800 bg-gray-900 p-4 sm:p-6">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:flex-wrap sm:items-center">
               <h2 className="text-xl font-bold text-white">Doanh thu {periodLabel}</h2>
               <DashboardPeriodFilter period={period} month={month} year={year} years={availableYears} onPeriodChange={setPeriod} onMonthChange={setMonth} onYearChange={setYear} />
             </div>

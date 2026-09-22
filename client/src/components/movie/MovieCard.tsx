@@ -10,6 +10,7 @@ interface Props {
 export default function MovieCard({ movie, gridMode = false }: Props) {
   const navigate = useNavigate()
   const [hovered, setHovered] = useState(false)
+  const [imageFailed, setImageFailed] = useState(false)
 
   return (
     <div
@@ -20,12 +21,13 @@ export default function MovieCard({ movie, gridMode = false }: Props) {
     >
       {/* Thumbnail */}
       <div className="aspect-[2/3] rounded overflow-hidden bg-gray-800">
-        {movie.thumbnail ? (
+        {movie.thumbnail && !imageFailed ? (
           <img
             src={movie.thumbnail}
             alt={movie.title}
             className="w-full h-full object-cover"
             loading="lazy"
+            onError={() => setImageFailed(true)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-800">

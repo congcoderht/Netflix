@@ -73,7 +73,7 @@ export default function AdminPlans() {
 
   return <>
         <div className="flex justify-end">
-          <button onClick={openCreate} className="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700">+ Thêm gói</button>
+          <button onClick={openCreate} className="w-full rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 sm:w-auto">+ Thêm gói</button>
         </div>
 
         {loading ? <p className="py-20 text-center text-gray-400">Đang tải...</p> : <div className="mt-6 overflow-x-auto rounded-xl border border-gray-800">
@@ -89,7 +89,7 @@ export default function AdminPlans() {
           </table>
         </div>}
     {modalOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onMouseDown={() => !saving && setModalOpen(false)}>
-      <form onSubmit={(event) => void save(event)} onMouseDown={(event) => event.stopPropagation()} className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl">
+      <form onSubmit={(event) => void save(event)} onMouseDown={(event) => event.stopPropagation()} className="max-h-[calc(100svh-2rem)] w-full max-w-xl overflow-y-auto rounded-2xl border border-gray-700 bg-gray-900 p-4 shadow-2xl sm:p-6">
         <div className="flex justify-between gap-4"><h2 className="text-2xl font-bold text-white">{editing ? 'Chỉnh sửa gói' : 'Thêm gói mới'}</h2><button type="button" onClick={() => setModalOpen(false)} className="text-2xl text-gray-400">×</button></div>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="block"><span className="mb-1 block text-sm text-gray-300">Mã gói</span><input required maxLength={30} value={form.code} onChange={(event) => setForm((current) => ({ ...current, code: event.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, '') }))} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2.5 text-white focus:border-red-500" /></label>
@@ -99,9 +99,9 @@ export default function AdminPlans() {
           <label className="flex items-center gap-3 pt-7 text-white"><input type="checkbox" checked={form.isActive} onChange={(event) => setForm((current) => ({ ...current, isActive: event.target.checked }))} className="h-5 w-5 accent-red-600" />Mở bán ngay</label>
         </div>
         <label className="mt-4 block"><span className="mb-1 block text-sm text-gray-300">Mô tả</span><textarea rows={3} maxLength={500} value={form.description || ''} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value || null }))} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2.5 text-white focus:border-red-500" /></label>
-        <div className="mt-6 flex gap-3"><button type="button" disabled={saving} onClick={() => setModalOpen(false)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Hủy</button><button disabled={saving} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white disabled:opacity-50">{saving ? 'Đang lưu...' : 'Lưu gói'}</button></div>
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row"><button type="button" disabled={saving} onClick={() => setModalOpen(false)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Hủy</button><button disabled={saving} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white disabled:opacity-50">{saving ? 'Đang lưu...' : 'Lưu gói'}</button></div>
       </form>
     </div>}
-    {toast && <div role="status" className="fixed right-5 top-20 z-[60] max-w-sm rounded-xl border border-gray-700 bg-gray-900 px-5 py-4 text-white shadow-2xl"><span>{toast}</span><button onClick={() => setToast('')} className="ml-4 text-gray-400">×</button></div>}
+    {toast && <div role="status" className="fixed left-4 right-4 top-20 z-[60] rounded-xl border border-gray-700 bg-gray-900 px-5 py-4 text-white shadow-2xl sm:left-auto sm:right-5 sm:max-w-sm"><span>{toast}</span><button onClick={() => setToast('')} className="ml-4 text-gray-400">×</button></div>}
   </>
 }

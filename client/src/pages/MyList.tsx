@@ -23,12 +23,12 @@ export default function MyList() {
   return (
     <Layout>
       <main className="min-h-screen px-4 pb-16 pt-24 sm:px-8 md:px-16">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-screen-2xl">
           <h1 className="mb-8 text-3xl font-bold text-white">Danh sách của tôi</h1>
           {loading ? <div className="py-20 text-center text-gray-400">Đang tải...</div>
             : error ? <div className="py-20 text-center text-red-400">{error}</div>
             : items.length === 0 ? <div className="py-20 text-center text-gray-400">Bạn chưa thêm phim nào.</div>
-            : <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            : <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6">
               {items.map(({ movie }) => (
                 <div key={movie.id} className="relative">
                   <MovieCard movie={movie} gridMode />

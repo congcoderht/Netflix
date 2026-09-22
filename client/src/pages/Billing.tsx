@@ -25,8 +25,8 @@ const paymentStatus = (status: Payment['status']) => ({
 })[status]
 
 function ProviderLogo({ provider }: { provider: PaymentProvider | 'MOMO' }) {
-  return <span className="flex h-10 w-28 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-1.5">
-    <img src={providerLogo(provider)} alt={providerName(provider)} className="h-full w-full object-contain" />
+  return <span className="flex h-11 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+    <img src={providerLogo(provider)} alt={providerName(provider)} className="block h-full w-full object-contain" />
   </span>
 }
 
@@ -72,13 +72,13 @@ export default function Billing() {
 
   return <Layout>
     <main className="min-h-screen px-4 pb-16 pt-24 sm:px-8">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-3xl font-black text-white">Gói cước</h1>
+      <div className="mx-auto w-full max-w-screen-xl">
+        <h1 className="text-2xl font-black text-white sm:text-3xl">Gói cước</h1>
 
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {plans.map((plan) => {
             const isCurrent = subscription?.plan.id === plan.id
-            return <article key={plan.id} className={`relative flex flex-col rounded-2xl border p-6 ${isCurrent ? 'border-red-500 bg-red-950/20 ring-1 ring-red-500' : 'border-gray-700 bg-gray-900'}`}>
+            return <article key={plan.id} className={`relative flex flex-col rounded-2xl border p-5 transition-colors sm:p-6 ${isCurrent ? 'border-red-500/50 bg-red-950/10' : 'border-gray-700 bg-gray-900'}`}>
               {isCurrent && <span className="absolute right-4 top-4 rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white">Gói hiện tại</span>}
               <h2 className="pr-24 text-2xl font-bold text-white">{plan.name}</h2>
               <p className="mt-2 text-3xl font-black text-red-500">{money(plan.price)}</p>
@@ -115,7 +115,7 @@ export default function Billing() {
     </main>
 
     {selectedPlan && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" role="presentation" onMouseDown={() => !buying && setSelectedPlan(null)}>
-      <section role="dialog" aria-modal="true" aria-labelledby="payment-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-lg rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl">
+      <section role="dialog" aria-modal="true" aria-labelledby="payment-title" onMouseDown={(event) => event.stopPropagation()} className="max-h-[calc(100svh-2rem)] w-full max-w-xl overflow-y-auto rounded-2xl border border-gray-700 bg-gray-900 p-4 shadow-2xl sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div><p className="text-sm text-gray-400">Thanh toán gói</p><h2 id="payment-title" className="text-2xl font-bold text-white">{selectedPlan.name}</h2></div>
           <button disabled={buying} onClick={() => setSelectedPlan(null)} className="text-2xl text-gray-400 hover:text-white" aria-label="Đóng">×</button>
@@ -129,7 +129,7 @@ export default function Billing() {
         <fieldset className="mt-6">
           <legend className="mb-3 font-semibold text-white">Chọn phương thức thanh toán</legend>
           <div className="grid grid-cols-2 gap-3">
-            {(['MOCK_MOMO', 'MOCK_VNPAY'] as PaymentProvider[]).map((item) => <label key={item} className={`flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-3 transition ${provider === item ? 'border-red-500 bg-red-950/30 ring-1 ring-red-500' : 'border-gray-700 hover:border-gray-500'}`}>
+            {(['MOCK_MOMO', 'MOCK_VNPAY'] as PaymentProvider[]).map((item) => <label key={item} className={`flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-3 transition-colors ${provider === item ? 'border-red-500/60 bg-red-950/15' : 'border-gray-700 hover:border-gray-500'}`}>
               <input className="sr-only" type="radio" name="provider" checked={provider === item} onChange={() => setProvider(item)} />
               <ProviderLogo provider={item} />
               <span className="font-semibold text-white">{providerName(item)}</span>
@@ -137,14 +137,14 @@ export default function Billing() {
           </div>
         </fieldset>
 
-        <div className="mt-7 flex gap-3">
+        <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
           <button disabled={buying} onClick={() => setSelectedPlan(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 font-semibold text-white hover:bg-gray-600 disabled:opacity-50">Hủy</button>
           <button disabled={buying} onClick={() => void buy()} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white hover:bg-red-700 disabled:opacity-50">{buying ? 'Đang xử lý...' : 'Tiếp tục thanh toán'}</button>
         </div>
       </section>
     </div>}
 
-    {toast && <div role="status" className="fixed right-5 top-20 z-[60] max-w-sm rounded-xl border border-gray-700 bg-gray-900 px-5 py-4 text-white shadow-2xl">
+    {toast && <div role="status" className="fixed left-4 right-4 top-20 z-[60] rounded-xl border border-gray-700 bg-gray-900 px-5 py-4 text-white shadow-2xl sm:left-auto sm:right-5 sm:max-w-sm">
       <div className="flex items-start gap-4"><span className="mt-0.5 text-green-400">●</span><p className="flex-1">{toast}</p><button onClick={() => setToast('')} className="text-gray-400 hover:text-white" aria-label="Đóng thông báo">×</button></div>
     </div>}
   </Layout>

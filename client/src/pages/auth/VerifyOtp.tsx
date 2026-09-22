@@ -90,9 +90,9 @@ export default function VerifyOtp() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="bg-gray-900 rounded-lg p-10 w-full max-w-md text-center">
-        <h1 className="text-red-600 text-4xl font-bold mb-2">Netflix</h1>
+    <div className="flex min-h-screen items-center justify-center bg-black p-4 sm:p-6">
+      <div className="w-full max-w-md rounded-lg bg-gray-900 p-6 text-center sm:p-10">
+        <h1 className="mb-2 text-3xl font-bold text-red-600 sm:text-4xl">Netflix</h1>
         <h2 className="text-white text-2xl font-bold mb-2">Xác thực email</h2>
         <p className="text-gray-400 text-sm mb-8">
           Nhập mã OTP 6 số đã gửi đến <span className="text-white font-medium">{email}</span>
@@ -105,7 +105,7 @@ export default function VerifyOtp() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="flex justify-center gap-3 mb-8" onPaste={handlePaste}>
+          <div className="mb-8 flex justify-center gap-1.5 sm:gap-3" onPaste={handlePaste}>
             {otp.map((digit, i) => (
               <input
                 key={i}
@@ -116,7 +116,7 @@ export default function VerifyOtp() {
                 value={digit}
                 onChange={(e) => handleChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
-                className="w-12 h-14 text-center text-2xl font-bold bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-red-600 border border-gray-600"
+                className="h-12 min-w-0 flex-1 rounded-lg border border-gray-600 bg-gray-700 text-center text-xl font-bold text-white outline-none focus:ring-2 focus:ring-red-600 sm:h-14 sm:w-12 sm:flex-none sm:text-2xl"
               />
             ))}
           </div>

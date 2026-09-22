@@ -44,11 +44,11 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center"
+    <div className="flex min-h-screen items-center justify-center bg-black p-4 sm:p-6"
       style={{ backgroundImage: 'url(/hero.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="bg-black bg-opacity-80 rounded-lg p-10 w-full max-w-md">
-        <h1 className="text-red-600 text-4xl font-bold mb-8">{t('common.appName')}</h1>
-        <h2 className="text-white text-3xl font-bold mb-6">{t('auth.register')}</h2>
+      <div className="w-full max-w-md rounded-lg bg-black/85 p-6 sm:p-10">
+        <h1 className="mb-6 text-3xl font-bold text-red-600 sm:mb-8 sm:text-4xl">{t('common.appName')}</h1>
+        <h2 className="mb-6 text-2xl font-bold text-white sm:text-3xl">{t('auth.register')}</h2>
 
         {error && (
           <div className="bg-red-600 bg-opacity-20 border border-red-600 text-red-400 rounded px-4 py-3 mb-4 text-sm">
