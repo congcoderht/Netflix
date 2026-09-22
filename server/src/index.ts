@@ -16,6 +16,9 @@ import { watchlistRouter } from './routes/watchlist.routes';
 import { communityRouter } from './routes/community.routes';
 import { billingRouter } from './routes/billing.routes';
 import { playbackRouter } from './routes/playback.routes';
+import { adminPlanRouter } from './routes/admin-plan.routes';
+import { adminDashboardRouter } from './routes/admin-dashboard.routes';
+import { adminUserRouter } from './routes/admin-user.routes';
 import { errorHandler } from './middlewares/error.middleware';
 import './config/passport';
 import { startMaintenance } from './services/maintenance.service';
@@ -53,6 +56,9 @@ app.use('/api/watch-history', watchHistoryRouter);
 app.use('/api/watchlist', watchlistRouter);
 app.use('/api', billingRouter);
 app.use('/api/playback-sessions', playbackRouter);
+app.use('/api/admin/plans', adminPlanRouter);
+app.use('/api/admin/dashboard', adminDashboardRouter);
+app.use('/api/admin/users', adminUserRouter);
 
 app.use(errorHandler);
 

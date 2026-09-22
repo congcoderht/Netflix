@@ -39,3 +39,11 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
   }
   next()
 }
+
+export const requireCustomer = (req: Request, res: Response, next: NextFunction) => {
+  if ((req.user as JwtPayload | undefined)?.role === 'ADMIN') {
+    res.status(403).json({ status: 'error', code: 'CUSTOMER_ONLY', message: 'This action is only available to customer accounts' })
+    return
+  }
+  next()
+}

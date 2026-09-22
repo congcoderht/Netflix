@@ -194,7 +194,7 @@
 ### Giai đoạn 5 — Subscription và thanh toán
 
 - [x] Chốt hai cổng thanh toán giả lập MoMo/VNPAY cho development, thanh toán một lần theo chu kỳ 30 ngày và không dùng profile.
-- [ ] API đọc plan đã có; API quản trị plan làm ở giai đoạn admin.
+- [x] API đọc plan và API quản trị plan cho Admin: thêm/sửa, bật/tắt bán, không hard-delete.
 - [x] Checkout MoMo/VNPAY mock, xác minh chữ ký HMAC và xử lý idempotency.
 - [x] Kích hoạt, gia hạn và kiểm tra hết hạn subscription.
 - [x] Chặn phát nội dung nếu không có subscription và giới hạn phiên theo `maxScreens`.
@@ -214,10 +214,10 @@
 
 ### Giai đoạn 7 — Admin và thống kê
 
-- [ ] Quản lý user, khóa/mở khóa và phân quyền.
-- [ ] Quản lý plan/subscription.
-- [ ] Dashboard tổng quan.
-- [ ] Thống kê user, lượt xem, phim phổ biến và doanh thu.
+- [x] Quản lý user: tìm kiếm, phân trang, xem gói, khóa/mở khóa và phân quyền; chặn tự khóa/hạ quyền.
+- [x] Quản lý plan; quản lý subscription theo user sẽ thực hiện cùng màn hình quản lý user.
+- [x] Dashboard tổng quan cho Admin.
+- [x] Thống kê user, subscription, giao dịch, nội dung, phim phổ biến và doanh thu tùy chọn theo tháng/năm, chuẩn hóa múi giờ Việt Nam.
 - [ ] Audit log cho hành động quản trị quan trọng.
 
 **Điều kiện hoàn tất:** Các thao tác admin nhạy cảm được phân quyền, validate và ghi audit.

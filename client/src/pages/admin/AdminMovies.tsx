@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import Layout from '@/components/layout/Layout'
+import { useNavigate } from 'react-router-dom'
 import { api } from '@/lib/axios'
 import type { Movie, Genre, Actor } from '@/types/movie'
 import { getApiErrorMessage } from '@/lib/api-error'
@@ -37,6 +37,7 @@ const EMPTY_FORM: FormData = {
 
 export default function AdminMovies() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [movies, setMovies] = useState<Movie[]>([])
   const [genres, setGenres] = useState<Genre[]>([])
   const [showForm, setShowForm] = useState(false)
@@ -196,11 +197,8 @@ export default function AdminMovies() {
   const isUploading = uploadProgress.thumb || uploadProgress.trailer || uploadProgress.video
 
   return (
-    <Layout>
-      <div className="min-h-screen pt-20 pb-16 px-4 sm:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-white">{t('admin.movies')}</h1>
+    <>
+          <div className="flex items-center justify-end mb-6">
             <button onClick={openCreate} className="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2.5 rounded transition-colors flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
               Thêm phim
@@ -220,7 +218,22 @@ export default function AdminMovies() {
               </thead>
               <tbody>
                 {movies.map((movie) => (
-                  <tr key={movie.id} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                  <tr
+                    key={movie.id}
+                    role="link"
+                    tabIndex={0}
+                    onClick={(event) => {
+                      if ((event.target as HTMLElement).closest('button')) return
+                      navigate(`/movies/${movie.id}`)
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) return
+                      event.preventDefault()
+                      navigate(`/movies/${movie.id}`)
+                    }}
+                    className="cursor-pointer border-b border-gray-800 transition-colors hover:bg-gray-800/70 focus:bg-gray-800/70 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-red-500"
+                    aria-label={`Xem chi tiết ${movie.title}`}
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-16 rounded bg-gray-700 overflow-hidden shrink-0">
@@ -265,9 +278,6 @@ export default function AdminMovies() {
             </table>
             {movies.length === 0 && <div className="text-center py-16 text-gray-500">Chưa có phim nào</div>}
           </div>
-        </div>
-      </div>
-
       {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-start justify-center overflow-y-auto py-8 px-4">
@@ -533,6 +543,6 @@ export default function AdminMovies() {
           </div>
         </div>
       )}
-    </Layout>
+    </>
   )
 }

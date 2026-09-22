@@ -13,6 +13,9 @@ import { watchProgressRouter } from './routes/watch-progress.routes'
 import { watchlistRouter } from './routes/watchlist.routes'
 import { billingRouter } from './routes/billing.routes'
 import { playbackRouter } from './routes/playback.routes'
+import { adminPlanRouter } from './routes/admin-plan.routes'
+import { adminDashboardRouter } from './routes/admin-dashboard.routes'
+import { adminUserRouter } from './routes/admin-user.routes'
 import { API_VALIDATION, ApiValidationMetadata } from './middlewares/validate.middleware'
 
 type JsonObject = Record<string, unknown>
@@ -36,6 +39,9 @@ const routers: Array<{ basePath: string; tag: string; router: unknown; protected
   { basePath: '/api/watchlist', tag: 'Watchlist', router: watchlistRouter },
   { basePath: '/api', tag: 'Billing', router: billingRouter },
   { basePath: '/api/playback-sessions', tag: 'Playback', router: playbackRouter, protected: true },
+  { basePath: '/api/admin/plans', tag: 'Admin plans', router: adminPlanRouter, protected: true },
+  { basePath: '/api/admin/dashboard', tag: 'Admin dashboard', router: adminDashboardRouter, protected: true },
+  { basePath: '/api/admin/users', tag: 'Admin users', router: adminUserRouter, protected: true },
 ]
 
 const jsonSchema = (schema: ZodType): JsonObject => {
