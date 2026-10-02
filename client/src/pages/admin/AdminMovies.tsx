@@ -12,7 +12,6 @@ type CastEntry = { actorId: string; name: string; avatar: string | null; role: s
 type FormData = {
   title: string
   description: string
-  type: 'MOVIE' | 'SERIES'
   genreIds: string[]
   trailerFile: File | null
   trailerUrl: string
@@ -28,7 +27,7 @@ type FormData = {
 }
 
 const EMPTY_FORM: FormData = {
-  title: '', description: '', type: 'MOVIE', genreIds: [],
+  title: '', description: '', genreIds: [],
   trailerFile: null, trailerUrl: '', trailerMode: 'url',
   thumbnailFile: null, thumbnailUrl: '', thumbnailMode: 'file',
   videoFile: null, videoUrl: '', videoMode: 'file', duration: '',
@@ -87,7 +86,6 @@ export default function AdminMovies() {
     setForm({
       title: movie.title,
       description: movie.description || '',
-      type: movie.type,
       genreIds: movie.genres.map((g) => g.genre.id),
       trailerFile: null,
       trailerUrl: movie.trailerUrl || '',
@@ -164,7 +162,7 @@ export default function AdminMovies() {
         setUploadProgress((p) => ({ ...p, video: false }))
       }
 
-      const payload = { title: form.title, description: form.description, type: form.type, genreIds: form.genreIds, trailerUrl: trailerUrl || undefined, thumbnail: thumbnailUrl || undefined, videoUrl: videoUrl || undefined, duration }
+      const payload = { title: form.title, description: form.description, genreIds: form.genreIds, trailerUrl: trailerUrl || undefined, thumbnail: thumbnailUrl || undefined, videoUrl: videoUrl || undefined, duration }
       let movieId = editing?.id
 
       if (editing) {
@@ -210,7 +208,6 @@ export default function AdminMovies() {
               <thead>
                 <tr className="border-b border-gray-700 text-gray-400 text-left">
                   <th className="px-4 py-3">Phim</th>
-                  <th className="px-4 py-3 hidden sm:table-cell">Loại</th>
                   <th className="px-4 py-3 hidden md:table-cell">Thể loại</th>
                   <th className="px-4 py-3">Trạng thái</th>
                   <th className="px-4 py-3 text-right">Thao tác</th>
@@ -242,7 +239,6 @@ export default function AdminMovies() {
                         <span className="text-white font-medium line-clamp-2">{movie.title}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 hidden sm:table-cell text-gray-400">{movie.type === 'MOVIE' ? 'Phim lẻ' : 'Phim bộ'}</td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {movie.genres.slice(0, 2).map(({ genre }) => (
@@ -304,19 +300,6 @@ export default function AdminMovies() {
                 <label className="block text-gray-400 text-sm mb-1.5">Mô tả</label>
                 <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded px-4 py-2.5 outline-none focus:border-gray-400 resize-none" />
-              </div>
-
-              {/* Type */}
-              <div>
-                <label className="block text-gray-400 text-sm mb-1.5">Loại</label>
-                <div className="flex gap-3">
-                  {(['MOVIE', 'SERIES'] as const).map((tp) => (
-                    <button key={tp} type="button" onClick={() => setForm((f) => ({ ...f, type: tp }))}
-                      className={`px-5 py-2 rounded text-sm font-medium transition-colors ${form.type === tp ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}>
-                      {tp === 'MOVIE' ? 'Phim lẻ' : 'Phim bộ'}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Genres */}
@@ -415,8 +398,7 @@ export default function AdminMovies() {
               </div>
 
               {/* Video */}
-              {form.type === 'MOVIE' && (
-                <div>
+              <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-gray-400 text-sm">Video</label>
                     <div className="flex gap-1">
@@ -466,8 +448,7 @@ export default function AdminMovies() {
                       {uploadProgress.video && <p className="text-yellow-400 text-xs mt-1">Đang upload video (có thể mất vài phút)...</p>}
                     </>
                   )}
-                </div>
-              )}
+              </div>
 
               {/* Cast & Crew */}
               <div>

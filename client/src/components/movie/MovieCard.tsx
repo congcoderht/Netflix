@@ -41,9 +41,6 @@ export default function MovieCard({ movie, gridMode = false }: Props) {
         <div className={`absolute inset-0 bg-black/60 flex flex-col justify-end p-3 transition-opacity duration-200 rounded ${hovered ? 'opacity-100' : 'opacity-0'}`}>
           <p className="text-white text-xs font-semibold line-clamp-2 mb-1">{movie.title}</p>
           <div className="flex items-center gap-1 flex-wrap">
-            {movie.type === 'SERIES' && (
-              <span className="text-red-400 text-[10px] font-medium">Series</span>
-            )}
             {movie.duration && (
               <span className="text-gray-300 text-[10px]">{movie.duration}m</span>
             )}

@@ -6,12 +6,6 @@ import MovieCard from '@/components/movie/MovieCard'
 import { getMovies, getGenres } from '@/services/movie.service'
 import type { Movie, Genre } from '@/types/movie'
 
-const TYPES = [
-  { value: '', label: 'Tất cả' },
-  { value: 'MOVIE', label: 'Phim lẻ' },
-  { value: 'SERIES', label: 'Phim bộ' },
-]
-
 const preloadPosters = (items: Movie[]) => Promise.all(items.map((movie) => new Promise<void>((resolve) => {
   if (!movie.thumbnail) {
     resolve()
@@ -36,7 +30,6 @@ export default function Movies() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const typeParam = searchParams.get('type') || ''
   const genreParam = searchParams.get('genreId') || ''
   const searchParam = searchParams.get('search') || ''
 
@@ -74,7 +67,6 @@ export default function Movies() {
     let active = true
 
     getMovies({
-      type: typeParam || undefined,
       genreId: genreParam || undefined,
       search: searchParam || undefined,
       page,
@@ -100,7 +92,7 @@ export default function Movies() {
       })
 
     return () => { active = false }
-  }, [typeParam, genreParam, searchParam, page])
+  }, [genreParam, searchParam, page])
 
   // Debounce search
   useEffect(() => {
@@ -121,7 +113,7 @@ export default function Movies() {
     return () => clearTimeout(t)
   }, [searchInput, searchParam, setSearchParams])
 
-  const title = typeParam === 'MOVIE' ? t('nav.movies') : typeParam === 'SERIES' ? t('nav.series') : 'Tất cả phim'
+  const title = t('nav.movies')
 
   return (
     <Layout>
@@ -160,16 +152,6 @@ export default function Movies() {
 
           {/* Filters */}
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start">
-            {/* Type filter */}
-            <div className="flex w-fit shrink-0 rounded-lg bg-gray-800 p-1 gap-1">
-              {TYPES.map((tp) => (
-                <button key={tp.value} onClick={() => setParam('type', tp.value)}
-                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${typeParam === tp.value ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white'}`}>
-                  {tp.label}
-                </button>
-              ))}
-            </div>
-
             {/* Genre filter */}
             <div className="flex min-w-0 flex-wrap gap-2">
               <button onClick={() => setParam('genreId', '')}

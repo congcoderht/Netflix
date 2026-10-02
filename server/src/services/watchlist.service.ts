@@ -3,7 +3,7 @@ import { AppError } from '../errors/app-error'
 
 const MOVIE_SELECT = {
   id: true, title: true, description: true, thumbnail: true, trailerUrl: true,
-  type: true, videoUrl: true, duration: true, isPublished: true, createdAt: true,
+  videoUrl: true, duration: true, isPublished: true, createdAt: true,
   genres: { select: { genre: { select: { id: true, name: true } } } },
 }
 

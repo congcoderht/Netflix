@@ -15,15 +15,9 @@ export const getHistory = async (userId: string, page: number, limit: number) =>
         movie: {
           select: {
             id: true, title: true, description: true, thumbnail: true,
-            trailerUrl: true, type: true, videoUrl: true, duration: true,
+            trailerUrl: true, videoUrl: true, duration: true,
             isPublished: true, createdAt: true,
             genres: { select: { genre: { select: { id: true, name: true } } } },
-          },
-        },
-        episode: {
-          select: {
-            id: true, number: true, title: true, thumbnail: true,
-            season: { select: { number: true } },
           },
         },
       },

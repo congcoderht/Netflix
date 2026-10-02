@@ -2,7 +2,6 @@ import { api } from '@/lib/axios'
 import type { Movie, MovieListResponse, Genre } from '@/types/movie'
 
 export const getMovies = async (params?: {
-  type?: string
   genreId?: string
   search?: string
   page?: number

@@ -56,15 +56,13 @@ export default function WatchHistory() {
             : <div className="space-y-3">
               {items.map((item) => {
                 const query = new URLSearchParams({ play: '1' })
-                if (item.episode) query.set('episodeId', item.episode.id)
                 return (
                   <article key={item.id} className="flex gap-4 rounded-lg bg-gray-900 p-3">
                     <button onClick={() => navigate(`/movies/${item.movie.id}?${query}`)} className="h-24 w-40 shrink-0 overflow-hidden rounded bg-gray-800">
-                      {(item.episode?.thumbnail || item.movie.thumbnail) && <img src={item.episode?.thumbnail || item.movie.thumbnail || ''} alt={item.movie.title} className="h-full w-full object-cover" />}
+                      {item.movie.thumbnail && <img src={item.movie.thumbnail} alt={item.movie.title} className="h-full w-full object-cover" />}
                     </button>
                     <button onClick={() => navigate(`/movies/${item.movie.id}?${query}`)} className="min-w-0 flex-1 text-left">
                       <h2 className="truncate font-semibold text-white">{item.movie.title}</h2>
-                      {item.episode && <p className="mt-1 text-sm text-gray-400">Phần {item.episode.season.number}, Tập {item.episode.number}: {item.episode.title}</p>}
                       <p className="mt-2 text-xs text-gray-500">{new Date(item.watchedAt).toLocaleString('vi-VN')}</p>
                     </button>
                     <button onClick={() => void removeItem(item.id)} className="self-center px-3 text-sm text-gray-400 hover:text-red-400">Xóa</button>

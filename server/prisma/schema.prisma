@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -22,11 +22,6 @@ enum Role {
 
 enum OAuthProvider {
   GOOGLE
-}
-
-enum ContentType {
-  MOVIE
-  SERIES
 }
 
 enum SubscriptionStatus {
@@ -44,10 +39,9 @@ enum PaymentStatus {
 }
 
 enum NotificationType {
-  NEW_MOVIE       // phim mới được thêm
-  NEW_EPISODE     // tập mới của series
-  SUBSCRIPTION    // sắp hết hạn, đã gia hạn
-  SYSTEM          // thông báo hệ thống
+  NEW_MOVIE // phim mới được thêm
+  SUBSCRIPTION // sắp hết hạn, đã gia hạn
+  SYSTEM // thông báo hệ thống
 }
 
 // ============================================================
@@ -65,16 +59,16 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  oauthAccounts  OAuthAccount[]
-  refreshTokens  RefreshToken[]
-  subscriptions  Subscription[]
-  payments       Payment[]
-  watchHistories WatchHistory[]
-  watchProgresses WatchProgress[]
-  watchList      WatchList[]
-  comments       Comment[]
-  ratings        Rating[]
-  notifications  Notification[]
+  oauthAccounts    OAuthAccount[]
+  refreshTokens    RefreshToken[]
+  subscriptions    Subscription[]
+  payments         Payment[]
+  watchHistories   WatchHistory[]
+  watchProgresses  WatchProgress[]
+  watchList        WatchList[]
+  comments         Comment[]
+  ratings          Rating[]
+  notifications    Notification[]
   playbackSessions PlaybackSession[]
 
   @@map("users")
@@ -88,7 +82,7 @@ model OAuthAccount {
   accessToken       String?       @map("access_token")
   createdAt         DateTime      @default(now()) @map("created_at")
 
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("oauth_accounts")
@@ -105,7 +99,7 @@ model RefreshToken {
   revokedAt           DateTime? @map("revoked_at")
   createdAt           DateTime  @default(now()) @map("created_at")
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([familyId])
   @@index([userId, revokedAt])
@@ -136,31 +130,25 @@ model Actor {
 }
 
 model Movie {
-  id          String      @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
   description String?
   thumbnail   String?
-  trailerUrl  String?     @map("trailer_url")
-  type        ContentType @default(MOVIE)
-  isPublished Boolean     @default(false) @map("is_published")
+  trailerUrl  String? @map("trailer_url")
+  isPublished Boolean @default(false) @map("is_published")
+  videoUrl    String? @map("video_url")
+  duration    Int? // phút
 
-  // Chỉ dùng khi type = MOVIE
-  videoUrl    String?     @map("video_url")
-  duration    Int?        // phút
-
-  // Chỉ dùng khi type = SERIES
-  seasons     Season[]
-
-  genres      GenreOnMovie[]
-  actors      ActorOnMovie[]
-  watchHistories WatchHistory[]
+  genres          GenreOnMovie[]
+  actors          ActorOnMovie[]
+  watchHistories  WatchHistory[]
   watchProgresses WatchProgress[]
-  watchList   WatchList[]
-  comments    Comment[]
-  ratings     Rating[]
+  watchList       WatchList[]
+  comments        Comment[]
+  ratings         Rating[]
 
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("movies")
 }
@@ -169,57 +157,23 @@ model GenreOnMovie {
   movieId String @map("movie_id")
   genreId String @map("genre_id")
 
-  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
 
   @@id([movieId, genreId])
   @@map("genre_on_movies")
 }
 
 model ActorOnMovie {
-  movieId String @map("movie_id")
-  actorId String @map("actor_id")
+  movieId String  @map("movie_id")
+  actorId String  @map("actor_id")
   role    String?
 
-  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  actor   Actor  @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  actor Actor @relation(fields: [actorId], references: [id], onDelete: Cascade)
 
   @@id([movieId, actorId])
   @@map("actor_on_movies")
-}
-
-model Season {
-  id        String    @id @default(uuid())
-  movieId   String    @map("movie_id")
-  number    Int
-  title     String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-
-  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  episodes  Episode[]
-
-  @@unique([movieId, number])
-  @@map("seasons")
-}
-
-model Episode {
-  id        String   @id @default(uuid())
-  seasonId  String   @map("season_id")
-  number    Int
-  title     String
-  videoUrl  String?  @map("video_url")
-  duration  Int?     // phút
-  thumbnail String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  watchHistories WatchHistory[]
-  watchProgresses WatchProgress[]
-
-  @@unique([seasonId, number])
-  @@map("episodes")
 }
 
 // ============================================================
@@ -227,18 +181,18 @@ model Episode {
 // ============================================================
 
 model Plan {
-  id          String   @id @default(uuid())
-  code        String   @unique
-  name        String   @unique
-  price       Int
-  currency    String   @default("VND")
-  durationDays Int     @default(30) @map("duration_days")
-  description String?
-  maxScreens  Int      @default(1) @map("max_screens")
-  sortOrder   Int      @default(0) @map("sort_order")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String   @unique
+  price        Int
+  currency     String   @default("VND")
+  durationDays Int      @default(30) @map("duration_days")
+  description  String?
+  maxScreens   Int      @default(1) @map("max_screens")
+  sortOrder    Int      @default(0) @map("sort_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   subscriptions Subscription[]
   payments      Payment[]
@@ -256,9 +210,9 @@ model Subscription {
   createdAt DateTime           @default(now()) @map("created_at")
   updatedAt DateTime           @updatedAt @map("updated_at")
 
-  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan      Plan               @relation(fields: [planId], references: [id])
-  payments  Payment[]
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan     Plan      @relation(fields: [planId], references: [id])
+  payments Payment[]
 
   @@index([userId, status, expiresAt])
   @@map("subscriptions")
@@ -300,7 +254,6 @@ model PlaybackSession {
   userId        String    @map("user_id")
   deviceId      String    @map("device_id")
   movieId       String    @map("movie_id")
-  episodeId     String?   @map("episode_id")
   startedAt     DateTime  @default(now()) @map("started_at")
   lastHeartbeat DateTime  @default(now()) @map("last_heartbeat")
   endedAt       DateTime? @map("ended_at")
@@ -320,13 +273,12 @@ model WatchHistory {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
   movieId   String   @map("movie_id")
-  episodeId String?  @map("episode_id") // null nếu là phim lẻ
   watchedAt DateTime @default(now()) @map("watched_at")
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  episode   Episode? @relation(fields: [episodeId], references: [id], onDelete: SetNull)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, movieId], map: "watch_histories_user_movie_key")
   @@index([userId, watchedAt])
   @@map("watch_histories")
 }
@@ -335,15 +287,13 @@ model WatchProgress {
   id          String   @id @default(uuid())
   userId      String   @map("user_id")
   movieId     String   @map("movie_id")
-  episodeId   String?  @map("episode_id") // null nếu là phim lẻ
   progressSec Int      @default(0) @map("progress_sec") // giây đã xem đến
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie       Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  episode     Episode? @relation(fields: [episodeId], references: [id], onDelete: SetNull)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, movieId, episodeId])
+  @@unique([userId, movieId])
   @@map("watch_progresses")
 }
 
@@ -352,8 +302,8 @@ model WatchList {
   movieId   String   @map("movie_id")
   createdAt DateTime @default(now()) @map("created_at")
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
   @@id([userId, movieId])
   @@map("watch_list")
@@ -364,19 +314,19 @@ model WatchList {
 // ============================================================
 
 model Comment {
-  id        String    @id @default(uuid())
-  userId    String    @map("user_id")
-  movieId   String    @map("movie_id")
-  parentId  String?   @map("parent_id") // null = comment gốc, có giá trị = reply
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  movieId   String   @map("movie_id")
+  parentId  String?  @map("parent_id") // null = comment gốc, có giá trị = reply
   content   String
-  isDeleted Boolean   @default(false) @map("is_deleted")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  replies   Comment[] @relation("CommentReplies")
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie   Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
 
   @@index([movieId, createdAt])
   @@index([parentId])
@@ -386,12 +336,12 @@ model Comment {
 model Rating {
   userId    String   @map("user_id")
   movieId   String   @map("movie_id")
-  score     Int      // 1 - 5
+  score     Int // 1 - 5
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
   @@id([userId, movieId])
   @@index([movieId])
@@ -411,7 +361,7 @@ model Notification {
   isRead    Boolean          @default(false) @map("is_read")
   createdAt DateTime         @default(now()) @map("created_at")
 
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }

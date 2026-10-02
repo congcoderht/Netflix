@@ -1,8 +1,6 @@
 import { prisma } from '../lib/prisma'
-import { ContentType } from '@prisma/client'
 
 interface MovieFilters {
-  type?: ContentType
   genreId?: string
   search?: string
   page?: number
@@ -15,7 +13,6 @@ interface MovieCreateInput {
   description?: string
   thumbnail?: string
   trailerUrl?: string
-  type: ContentType
   videoUrl?: string
   duration?: number
   isPublished?: boolean
@@ -28,7 +25,6 @@ const MOVIE_SELECT = {
   description: true,
   thumbnail: true,
   trailerUrl: true,
-  type: true,
   videoUrl: true,
   duration: true,
   isPublished: true,
@@ -39,11 +35,10 @@ const MOVIE_SELECT = {
 }
 
 export const getList = async (filters: MovieFilters) => {
-  const { type, genreId, search, page = 1, limit = 20, published } = filters
+  const { genreId, search, page = 1, limit = 20, published } = filters
   const skip = (page - 1) * limit
 
   const where: any = {}
-  if (type) where.type = type
   if (published !== undefined) where.isPublished = published
   if (search) where.title = { contains: search, mode: 'insensitive' }
   if (genreId) where.genres = { some: { genreId } }
@@ -64,29 +59,13 @@ export const getList = async (filters: MovieFilters) => {
 export const getById = async (id: string, includeUnpublished = false) => {
   const movie = await prisma.movie.findUnique({
     where: { id, ...(includeUnpublished ? {} : { isPublished: true }) },
-    select: {
-      ...MOVIE_SELECT,
-      seasons: {
-        orderBy: { number: 'asc' },
-        select: {
-          id: true, number: true, title: true,
-          episodes: {
-            orderBy: { number: 'asc' },
-            select: { id: true, number: true, title: true, videoUrl: true, duration: true, thumbnail: true },
-          },
-        },
-      },
-    },
+    select: MOVIE_SELECT,
   })
   if (!movie || includeUnpublished) return movie
   return {
     ...movie,
     hasVideo: Boolean(movie.videoUrl),
     videoUrl: null,
-    seasons: movie.seasons.map((season) => ({
-      ...season,
-      episodes: season.episodes.map((episode) => ({ ...episode, hasVideo: Boolean(episode.videoUrl), videoUrl: null })),
-    })),
   }
 }
 

@@ -11,13 +11,6 @@ export interface WatchProgress {
 
 export interface ContinueWatchingItem {
   movie: Movie
-  episode: {
-    id: string
-    number: number
-    title: string
-    thumbnail: string | null
-    seasonNumber: number
-  } | null
   progressSec: number
   durationSec: number | null
   progressPercent: number
@@ -29,20 +22,16 @@ export const getContinueWatching = async (limit = 20) => {
   return data
 }
 
-export const getWatchProgress = async (movieId: string, episodeId?: string) => {
-  const { data } = await api.get<WatchProgress>(`/watch-progress/${movieId}`, {
-    params: { episodeId },
-  })
+export const getWatchProgress = async (movieId: string) => {
+  const { data } = await api.get<WatchProgress>(`/watch-progress/${movieId}`)
   return data
 }
 
 export const saveWatchProgress = async (
   movieId: string,
   progressSec: number,
-  episodeId?: string,
 ) => {
   const { data } = await api.put<WatchProgress>(`/watch-progress/${movieId}`, {
-    episodeId: episodeId ?? null,
     progressSec: Math.max(0, Math.floor(progressSec)),
   })
   return data

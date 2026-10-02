@@ -25,10 +25,9 @@ export default function ContinueWatchingRow({ items }: { items: ContinueWatching
         <div ref={rowRef} className="flex gap-3 overflow-x-auto pb-2 scroll-smooth" style={{ scrollbarWidth: 'none' }}>
           {items.map((item) => {
             const query = new URLSearchParams({ play: '1' })
-            if (item.episode) query.set('episodeId', item.episode.id)
-            const image = item.episode?.thumbnail || item.movie.thumbnail
+            const image = item.movie.thumbnail
             return (
-              <button key={`${item.movie.id}-${item.episode?.id || 'movie'}`}
+              <button key={item.movie.id}
                 onClick={() => navigate(`/movies/${item.movie.id}?${query}`)}
                 className="group/card w-64 sm:w-72 shrink-0 text-left">
                 <div className="relative aspect-video overflow-hidden rounded bg-gray-800">
@@ -41,11 +40,7 @@ export default function ContinueWatchingRow({ items }: { items: ContinueWatching
                   </div>
                 </div>
                 <p className="mt-2 truncate text-sm font-semibold text-white">{item.movie.title}</p>
-                <p className="truncate text-xs text-gray-400">
-                  {item.episode
-                    ? `P${item.episode.seasonNumber}:T${item.episode.number} · ${item.episode.title}`
-                    : `Đã xem ${item.progressPercent}%`}
-                </p>
+                <p className="truncate text-xs text-gray-400">Đã xem {item.progressPercent}%</p>
               </button>
             )
           })}

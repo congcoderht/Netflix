@@ -1,4 +1,4 @@
-import { ContentType, PaymentStatus, Role, SubscriptionStatus } from '@prisma/client'
+import { PaymentStatus, Role, SubscriptionStatus } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 
 const VIETNAM_OFFSET_HOURS = 7
@@ -22,14 +22,13 @@ export const getDashboard = async (period: 'month' | 'year', year: number, selec
   const userMonthStart = vietnamBoundaryUtc(currentVietnam.year, currentVietnam.month - 1)
 
   const [
-    totalUsers, newUsersThisMonth, activeSubscriptions, movies, series,
+    totalUsers, newUsersThisMonth, activeSubscriptions, movies,
     successfulPayments, failedPayments, recentPayments, periodPayments, popularMovieGroups,
   ] = await Promise.all([
     prisma.user.count({ where: { role: Role.USER } }),
     prisma.user.count({ where: { role: Role.USER, createdAt: { gte: userMonthStart } } }),
     prisma.subscription.count({ where: { status: SubscriptionStatus.ACTIVE, expiresAt: { gt: now } } }),
-    prisma.movie.count({ where: { type: ContentType.MOVIE } }),
-    prisma.movie.count({ where: { type: ContentType.SERIES } }),
+    prisma.movie.count(),
     prisma.payment.count({ where: { status: PaymentStatus.SUCCESS } }),
     prisma.payment.count({ where: { status: PaymentStatus.FAILED } }),
     prisma.payment.findMany({
@@ -78,7 +77,7 @@ export const getDashboard = async (period: 'month' | 'year', year: number, selec
 
   const popularMovies = await prisma.movie.findMany({
     where: { id: { in: popularMovieGroups.map((item) => item.movieId) } },
-    select: { id: true, title: true, thumbnail: true, type: true },
+    select: { id: true, title: true, thumbnail: true },
   })
   const movieById = new Map(popularMovies.map((movie) => [movie.id, movie]))
   const topMovies = popularMovieGroups.flatMap((item) => {
@@ -90,7 +89,7 @@ export const getDashboard = async (period: 'month' | 'year', year: number, selec
     period: { type: period, year, month: period === 'month' ? month : null, timezone: 'Asia/Ho_Chi_Minh' },
     summary: {
       totalUsers, newUsersThisMonth, activeSubscriptions, revenueInPeriod,
-      successfulPayments, failedPayments, movies, series,
+      successfulPayments, failedPayments, movies,
     },
     revenueSeries,
     topMovies,

@@ -22,15 +22,14 @@ export interface ActivePlaybackSession {
   id: string
   deviceId: string
   movieId: string
-  episodeId: string | null
   movieTitle: string
   startedAt: string
   lastHeartbeat: string
 }
 
-export const startPlaybackSession = async (movieId: string, episodeId?: string) => {
+export const startPlaybackSession = async (movieId: string) => {
   const { data } = await api.post<PlaybackSessionResponse>('/playback-sessions', {
-    movieId, episodeId, deviceId: getDeviceId(),
+    movieId, deviceId: getDeviceId(),
   })
   return data
 }

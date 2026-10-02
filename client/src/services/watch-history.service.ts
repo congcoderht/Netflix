@@ -5,13 +5,6 @@ export interface HistoryItem {
   id: string
   watchedAt: string
   movie: Movie
-  episode: {
-    id: string
-    number: number
-    title: string
-    thumbnail: string | null
-    season: { number: number }
-  } | null
 }
 
 export interface HistoryResponse {

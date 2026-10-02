@@ -8,7 +8,6 @@ export const idParamsSchema = z.object({
 })
 
 export const movieListQuerySchema = z.object({
-  type: z.enum(['MOVIE', 'SERIES']).optional(),
   genreId: resourceIdSchema.optional(),
   search: z.string().trim().max(100).optional(),
   page: z.coerce.number().int().min(1).default(1),
@@ -20,7 +19,6 @@ export const movieCreateSchema = z.object({
   description: z.string().trim().max(5000).optional(),
   thumbnail: optionalUrl,
   trailerUrl: optionalUrl,
-  type: z.enum(['MOVIE', 'SERIES']),
   videoUrl: optionalUrl,
   duration: z.coerce.number().int().positive().max(24 * 60).optional(),
   isPublished: z.boolean().optional(),

@@ -10,7 +10,7 @@ export const list = async (req: Request, res: Response) => {
 
 export const start = async (req: Request, res: Response) => {
   const user = userFrom(req)
-  res.status(201).json(await service.startPlayback(user.userId, user.role, req.body.movieId, req.body.episodeId, req.body.deviceId))
+  res.status(201).json(await service.startPlayback(user.userId, user.role, req.body.movieId, req.body.deviceId))
 }
 export const heartbeat = async (req: Request, res: Response) => {
   await service.heartbeat(userFrom(req).userId, req.params.id as string)

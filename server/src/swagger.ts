@@ -3,7 +3,6 @@ import path from 'path'
 import { z, ZodType } from 'zod'
 import { authRouter } from './routes/auth.routes'
 import { communityRouter } from './routes/community.routes'
-import { episodeRouter } from './routes/episode.routes'
 import { genreRouter } from './routes/genre.routes'
 import { healthRouter } from './routes/health.routes'
 import { movieRouter } from './routes/movie.routes'
@@ -31,7 +30,6 @@ const routers: Array<{ basePath: string; tag: string; router: unknown; protected
   { basePath: '/api/auth', tag: 'Auth', router: authRouter },
   { basePath: '/api/genres', tag: 'Genres', router: genreRouter },
   { basePath: '/api/movies', tag: 'Movies', router: movieRouter },
-  { basePath: '/api/movies/{movieId}', tag: 'Episodes', router: episodeRouter },
   { basePath: '/api/movies/{movieId}/community', tag: 'Community', router: communityRouter, protected: true },
   { basePath: '/api/upload', tag: 'Upload', router: uploadRouter },
   { basePath: '/api/watch-progress', tag: 'Watch progress', router: watchProgressRouter },

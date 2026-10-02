@@ -9,11 +9,10 @@ export interface AdminDashboardData {
     successfulPayments: number
     failedPayments: number
     movies: number
-    series: number
   }
   period: { type: 'month' | 'year'; year: number; month: number | null; timezone: string }
   revenueSeries: { key: string; label: string; amount: number }[]
-  topMovies: { id: string; title: string; thumbnail: string | null; type: 'MOVIE' | 'SERIES'; views: number }[]
+  topMovies: { id: string; title: string; thumbnail: string | null; views: number }[]
   recentPayments: {
     id: string
     orderId: string

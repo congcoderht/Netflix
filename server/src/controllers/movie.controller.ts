@@ -1,15 +1,13 @@
 import { Request, Response } from 'express'
 import * as movieService from '../services/movie.service'
-import { ContentType } from '@prisma/client'
 import { AppError } from '../errors/app-error'
 import { JwtPayload } from '../utils/jwt.util'
 
 export const getList = async (req: Request, res: Response) => {
-  const { type, genreId, search, page, limit } = req.query
+  const { genreId, search, page, limit } = req.query
   const isAdmin = (req.user as unknown as JwtPayload | undefined)?.role === 'ADMIN'
 
   const result = await movieService.getList({
-    type: type as ContentType | undefined,
     genreId: genreId as string | undefined,
     search: search as string | undefined,
     page: page as unknown as number,
@@ -27,8 +25,8 @@ export const getById = async (req: Request, res: Response) => {
 }
 
 export const create = async (req: Request, res: Response) => {
-  const { title, description, thumbnail, trailerUrl, type, videoUrl, duration, isPublished, genreIds } = req.body
-  const movie = await movieService.create({ title, description, thumbnail, trailerUrl, type, videoUrl, duration, isPublished, genreIds })
+  const { title, description, thumbnail, trailerUrl, videoUrl, duration, isPublished, genreIds } = req.body
+  const movie = await movieService.create({ title, description, thumbnail, trailerUrl, videoUrl, duration, isPublished, genreIds })
   res.status(201).json(movie)
 }
 

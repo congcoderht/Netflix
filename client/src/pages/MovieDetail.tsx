@@ -5,7 +5,6 @@ import Layout from '@/components/layout/Layout'
 import VideoPlayer from '@/components/movie/VideoPlayer'
 import { getMovie } from '@/services/movie.service'
 import type { Movie } from '@/types/movie'
-import type { Episode } from '@/types/movie'
 import { getWatchProgress, saveWatchProgress } from '@/services/watch-progress.service'
 import { addToWatchlist, getWatchlistStatus, removeFromWatchlist } from '@/services/watchlist.service'
 import CommunitySection from '@/components/movie/CommunitySection'
@@ -54,13 +53,10 @@ export default function MovieDetail() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const shouldAutoPlay = searchParams.get('play') === '1'
-  const requestedEpisodeId = searchParams.get('episodeId')
   const [movie, setMovie] = useState<Movie | null>(null)
   const [loading, setLoading] = useState(true)
   const [playing, setPlaying] = useState(false)
   const [showTrailer, setShowTrailer] = useState(false)
-  const [activeSeason, setActiveSeason] = useState(0)
-  const [activeEpisode, setActiveEpisode] = useState<{ url: string; title: string; id: string } | null>(null)
   const [resumeFromSec, setResumeFromSec] = useState(0)
   const [inWatchlist, setInWatchlist] = useState(false)
   const [watchlistLoading, setWatchlistLoading] = useState(false)
@@ -71,7 +67,6 @@ export default function MovieDetail() {
   const [activeSessions, setActiveSessions] = useState<ActivePlaybackSession[]>([])
   const [endingSession, setEndingSession] = useState<string | null>(null)
   const startingPlaybackRef = useRef(false)
-  const requestedPlaybackRef = useRef<Episode | undefined>(undefined)
 
   useEffect(() => {
     if (!id) return
@@ -98,22 +93,15 @@ export default function MovieDetail() {
     }
   }
 
-  const startPlayback = useCallback(async (episode?: Episode) => {
+  const startPlayback = useCallback(async () => {
     if (!id || startingPlaybackRef.current) return
-    if (episode && !episode.hasVideo && !episode.videoUrl) return
     startingPlaybackRef.current = true
-    requestedPlaybackRef.current = episode
     setPlaybackError('')
     try {
-      const session = await startPlaybackSession(id, episode?.id)
+      const session = await startPlaybackSession(id)
       setPlaybackSessionId(session.sessionId)
       setPlaybackUrl(session.videoUrl)
-      setActiveEpisode(episode ? {
-        url: session.videoUrl,
-        title: `Tập ${episode.number}: ${episode.title}`,
-        id: episode.id,
-      } : null)
-      const progress = await getWatchProgress(id, episode?.id)
+      const progress = await getWatchProgress(id)
       setResumeFromSec(progress.resumeFromSec)
       setPlaying(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -144,7 +132,7 @@ export default function MovieDetail() {
 
   const retryPlayback = () => {
     setPlaybackIssue(null)
-    void startPlayback(requestedPlaybackRef.current)
+    void startPlayback()
   }
 
   useEffect(() => {
@@ -160,20 +148,12 @@ export default function MovieDetail() {
 
   useEffect(() => {
     if (!movie || !shouldAutoPlay || playing) return
-    if (movie.type === 'MOVIE') {
-      if (movie.hasVideo || movie.videoUrl) void startPlayback()
-      return
-    }
-
-    const episodes = movie.seasons?.flatMap((season) => season.episodes) || []
-    const episode = episodes.find((item) => item.id === requestedEpisodeId)
-      || episodes.find((item) => item.hasVideo || item.videoUrl)
-    if (episode?.hasVideo || episode?.videoUrl) void startPlayback(episode)
-  }, [movie, playing, requestedEpisodeId, shouldAutoPlay, startPlayback])
+    if (movie.hasVideo || movie.videoUrl) void startPlayback()
+  }, [movie, playing, shouldAutoPlay, startPlayback])
 
   const persistProgress = (seconds: number) => {
     if (!id) return
-    void saveWatchProgress(id, seconds, activeEpisode?.id).catch(() => undefined)
+    void saveWatchProgress(id, seconds).catch(() => undefined)
   }
 
   if (loading) return (
@@ -232,7 +212,6 @@ export default function MovieDetail() {
                   if (playbackSessionId) void endPlaybackSession(playbackSessionId)
                   setPlaybackSessionId(null)
                   setPlaybackUrl('')
-                  setActiveEpisode(null)
                   setResumeFromSec(0)
                   navigate(`/movies/${id}`, { replace: true })
                 }}
@@ -242,7 +221,6 @@ export default function MovieDetail() {
                   </svg>
                   Quay lại
                 </button>
-                {activeEpisode && <span className="text-white text-sm font-medium">{activeEpisode.title}</span>}
               </div>
               <VideoPlayer
                 url={currentVideoUrl}
@@ -261,12 +239,9 @@ export default function MovieDetail() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
 
               {/* Play button overlay */}
-              {(movie.hasVideo || movie.videoUrl || (movie.seasons && movie.seasons.length > 0)) && (
+              {(movie.hasVideo || movie.videoUrl) && (
                 <button
-                  onClick={() => {
-                    if (movie.type === 'MOVIE') void startPlayback()
-                    else document.getElementById('episodes-section')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
+                  onClick={() => void startPlayback()}
                   className="absolute inset-0 flex items-center justify-center group"
                 >
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/50 group-hover:bg-white/30 transition-all">
@@ -288,9 +263,6 @@ export default function MovieDetail() {
               <div className="flex-1 min-w-0">
                 <h1 className="text-3xl sm:text-5xl font-black text-white mb-3 leading-tight">{movie.title}</h1>
                 <div className="flex flex-wrap items-center gap-2 mb-4">
-                  {movie.type === 'SERIES' && (
-                    <span className="text-xs font-bold text-red-400 border border-red-700 px-2 py-0.5 rounded">SERIES</span>
-                  )}
                   {movie.duration && (
                     <span className="text-gray-400 text-sm">{Math.floor(movie.duration / 60) > 0 ? `${Math.floor(movie.duration / 60)}g ` : ''}{movie.duration % 60}p</span>
                   )}
@@ -303,18 +275,11 @@ export default function MovieDetail() {
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3 mb-6">
-              {movie.type === 'MOVIE' && (movie.hasVideo || movie.videoUrl) && (
+              {(movie.hasVideo || movie.videoUrl) && (
                 <button onClick={() => { void startPlayback() }}
                   className="flex flex-1 items-center justify-center gap-2 rounded bg-white px-5 py-3 font-bold text-black transition-colors hover:bg-gray-200 sm:flex-none sm:px-8">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                   {t('home.hero.watchNow')}
-                </button>
-              )}
-              {movie.type === 'SERIES' && (
-                <button onClick={() => document.getElementById('episodes-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="flex flex-1 items-center justify-center gap-2 rounded bg-white px-5 py-3 font-bold text-black transition-colors hover:bg-gray-200 sm:flex-none sm:px-8">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                  Xem ngay
                 </button>
               )}
               {movie.trailerUrl && (
@@ -388,47 +353,6 @@ export default function MovieDetail() {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-          )}
-
-          {/* Episodes — Series */}
-          {movie.type === 'SERIES' && movie.seasons && movie.seasons.length > 0 && (
-            <div id="episodes-section" className="border-t border-gray-800 py-8">
-              <h2 className="text-xl font-bold text-white mb-5">Tập phim</h2>
-              <div className="flex gap-2 mb-6 flex-wrap">
-                {movie.seasons.map((season, i) => (
-                  <button key={season.id} onClick={() => setActiveSeason(i)}
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeSeason === i ? 'bg-white text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
-                    {season.title || `${t('movie.season')} ${season.number}`}
-                  </button>
-                ))}
-              </div>
-
-              <div className="space-y-2">
-                {movie.seasons[activeSeason]?.episodes.map((ep, idx) => {
-                  const isActive = activeEpisode?.id === ep.id
-                  return (
-                    <div key={ep.id} onClick={() => { if (ep.hasVideo || ep.videoUrl) void startPlayback(ep) }}
-                      className={`flex items-center gap-4 p-4 rounded-xl transition-all border ${(ep.hasVideo || ep.videoUrl) ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${isActive ? 'bg-white/10 border-white/20' : 'bg-gray-800/40 border-transparent hover:bg-gray-800 hover:border-gray-700'}`}>
-                      <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm font-bold"
-                        style={{ background: isActive ? 'white' : '#374151', color: isActive ? 'black' : 'white' }}>
-                        {isActive
-                          ? <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
-                          : idx + 1
-                        }
-                      </div>
-                      {ep.thumbnail && (
-                        <img src={ep.thumbnail} alt="" className="w-24 h-14 object-cover rounded hidden sm:block" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white font-semibold text-sm">{t('movie.episode')} {ep.number}: {ep.title}</p>
-                        {ep.duration && <p className="text-gray-400 text-xs mt-0.5">{ep.duration} phút</p>}
-                      </div>
-                      <svg className="w-5 h-5 text-gray-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                    </div>
-                  )
-                })}
               </div>
             </div>
           )}

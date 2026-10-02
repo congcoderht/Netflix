@@ -15,7 +15,6 @@ export const getProgress = async (req: Request, res: Response) => {
   res.json(await watchProgressService.getProgress(
     userIdFrom(req),
     req.params.movieId as string,
-    req.query.episodeId as string | undefined,
   ))
 }
 
@@ -23,7 +22,6 @@ export const saveProgress = async (req: Request, res: Response) => {
   res.json(await watchProgressService.saveProgress(
     userIdFrom(req),
     req.params.movieId as string,
-    req.body.episodeId,
     req.body.progressSec,
   ))
 }

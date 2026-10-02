@@ -1,25 +1,6 @@
-export type ContentType = 'MOVIE' | 'SERIES'
-
 export interface Genre {
   id: string
   name: string
-}
-
-export interface Episode {
-  id: string
-  number: number
-  title: string
-  videoUrl: string | null
-  hasVideo?: boolean
-  duration: number | null
-  thumbnail: string | null
-}
-
-export interface Season {
-  id: string
-  number: number
-  title: string | null
-  episodes: Episode[]
 }
 
 export interface Actor {
@@ -35,7 +16,6 @@ export interface Movie {
   description: string | null
   thumbnail: string | null
   trailerUrl: string | null
-  type: ContentType
   videoUrl: string | null
   hasVideo?: boolean
   duration: number | null
@@ -43,7 +23,6 @@ export interface Movie {
   createdAt: string
   genres: { genre: Genre }[]
   actors?: { role: string | null; actor: Actor }[]
-  seasons?: Season[]
 }
 
 export interface MovieListResponse {

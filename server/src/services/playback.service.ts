@@ -9,7 +9,7 @@ export const listActivePlayback = async (userId: string) => {
   const sessions = await prisma.playbackSession.findMany({
     where: { userId, endedAt: null, lastHeartbeat: { gte: cutoff } },
     orderBy: { lastHeartbeat: 'desc' },
-    select: { id: true, deviceId: true, movieId: true, episodeId: true, startedAt: true, lastHeartbeat: true },
+    select: { id: true, deviceId: true, movieId: true, startedAt: true, lastHeartbeat: true },
   })
   const movies = await prisma.movie.findMany({
     where: { id: { in: [...new Set(sessions.map((session) => session.movieId))] } },
@@ -19,18 +19,13 @@ export const listActivePlayback = async (userId: string) => {
   return sessions.map((session) => ({ ...session, movieTitle: movieNames.get(session.movieId) || 'Unknown title' }))
 }
 
-export const startPlayback = async (userId: string, role: string, movieId: string, episodeId: string | undefined, deviceId: string) => {
+export const startPlayback = async (userId: string, role: string, movieId: string, deviceId: string) => {
   const movie = await prisma.movie.findFirst({
     where: { id: movieId, ...(role === 'ADMIN' ? {} : { isPublished: true }) },
     select: { videoUrl: true },
   })
   if (!movie) throw new AppError(404, 'Movie not found', 'MOVIE_NOT_FOUND')
-  const episode = episodeId ? await prisma.episode.findFirst({
-    where: { id: episodeId, season: { movieId } },
-    select: { videoUrl: true },
-  }) : undefined
-  if (episodeId && !episode) throw new AppError(404, 'Episode not found', 'EPISODE_NOT_FOUND')
-  const videoUrl = episodeId ? episode?.videoUrl : movie.videoUrl
+  const videoUrl = movie.videoUrl
   if (!videoUrl) throw new AppError(409, 'Video is not available', 'VIDEO_NOT_AVAILABLE')
 
   const now = new Date()
@@ -53,7 +48,7 @@ export const startPlayback = async (userId: string, role: string, movieId: strin
     })
     const activeCount = await tx.playbackSession.count({ where: { userId, endedAt: null, lastHeartbeat: { gte: cutoff } } })
     if (activeCount >= maxScreens) throw new AppError(409, 'Concurrent screen limit reached', 'SCREEN_LIMIT_REACHED')
-    const session = await tx.playbackSession.create({ data: { userId, deviceId, movieId, episodeId } })
+    const session = await tx.playbackSession.create({ data: { userId, deviceId, movieId } })
     return { sessionId: session.id, videoUrl, heartbeatIntervalSec: 30, expiresAfterSec: 90 }
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable })
 }

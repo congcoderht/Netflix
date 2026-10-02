@@ -42,9 +42,6 @@ export default function HeroBanner({ movie }: Props) {
               {genre.name}
             </span>
           ))}
-          {movie.type === 'SERIES' && (
-            <span className="text-xs text-red-400 border border-red-700 px-2 py-0.5 rounded-full">Series</span>
-          )}
         </div>
 
         <p className="text-sm sm:text-base text-gray-200 mb-6 line-clamp-3 drop-shadow max-w-md">

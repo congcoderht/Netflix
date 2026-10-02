@@ -32,7 +32,7 @@ export default function AdminDashboard() {
     { label: 'Người dùng', value: number(data.summary.totalUsers), note: `+${number(data.summary.newUsersThisMonth)} trong tháng hiện tại`, color: 'text-blue-400', to: '/admin/users' },
     { label: 'Subscription hoạt động', value: number(data.summary.activeSubscriptions), note: 'Quản lý các gói cước', color: 'text-green-400', to: '/admin/plans' },
     { label: `Doanh thu ${periodLabel}`, value: money(data.summary.revenueInPeriod), note: 'Xem cấu hình gói và giao dịch', color: 'text-red-400', to: '/admin/plans' },
-    { label: 'Nội dung', value: number(data.summary.movies + data.summary.series), note: `${data.summary.movies} phim · ${data.summary.series} series`, color: 'text-purple-400', to: '/admin/movies' },
+    { label: 'Nội dung', value: number(data.summary.movies), note: `${data.summary.movies} phim`, color: 'text-purple-400', to: '/admin/movies' },
   ] : []
 
   return <>
