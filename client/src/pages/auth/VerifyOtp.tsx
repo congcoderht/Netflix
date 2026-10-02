@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from '@/lib/axios'
 import { useAuthStore } from '@/store/auth.store'
 import { getApiErrorMessage } from '@/lib/api-error'
+import { useTranslation } from 'react-i18next'
 
 type VerifyOtpLocationState = {
   email?: string
@@ -11,6 +12,7 @@ type VerifyOtpLocationState = {
 }
 
 export default function VerifyOtp() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)
@@ -70,7 +72,7 @@ export default function VerifyOtp() {
       setAuth(me.data, data.accessToken)
       navigate('/')
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, 'Có lỗi xảy ra'))
+      setError(getApiErrorMessage(err, t('common.error')))
       setOtp(['', '', '', '', '', ''])
       inputs.current[0]?.focus()
     } finally {
@@ -85,17 +87,17 @@ export default function VerifyOtp() {
       setResendCooldown(60)
       setError('')
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, 'Có lỗi xảy ra'))
+      setError(getApiErrorMessage(err, t('common.error')))
     }
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black p-4 sm:p-6">
       <div className="w-full max-w-md rounded-lg bg-gray-900 p-6 text-center sm:p-10">
-        <h1 className="mb-2 text-3xl font-bold text-red-600 sm:text-4xl">Netflix</h1>
-        <h2 className="text-white text-2xl font-bold mb-2">Xác thực email</h2>
+        <h1 className="mb-2 text-3xl font-bold text-red-600 sm:text-4xl">{t('common.appName')}</h1>
+        <h2 className="text-white text-2xl font-bold mb-2">{t('auth.verifyEmail')}</h2>
         <p className="text-gray-400 text-sm mb-8">
-          Nhập mã OTP 6 số đã gửi đến <span className="text-white font-medium">{email}</span>
+          {t('auth.otpDescription', { email })}
         </p>
 
         {error && (
@@ -126,17 +128,17 @@ export default function VerifyOtp() {
             disabled={loading || otp.join('').length < 6}
             className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-semibold py-3 rounded transition-colors mb-4"
           >
-            {loading ? 'Đang xác thực...' : 'Xác thực'}
+            {loading ? t('auth.verifying') : t('auth.verify')}
           </button>
         </form>
 
         <p className="text-gray-400 text-sm">
-          Không nhận được mã?{' '}
+          {t('auth.noCode')}{' '}
           {resendCooldown > 0 ? (
-            <span className="text-gray-500">Gửi lại sau {resendCooldown}s</span>
+            <span className="text-gray-500">{t('auth.resendAfter', { seconds: resendCooldown })}</span>
           ) : (
             <button onClick={handleResend} className="text-white hover:underline font-medium">
-              Gửi lại
+              {t('auth.resend')}
             </button>
           )}
         </p>

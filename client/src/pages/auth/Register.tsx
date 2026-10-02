@@ -17,7 +17,7 @@ export default function Register() {
     setError('')
 
     if (form.password !== form.confirmPassword) {
-      setError('Mật khẩu nhập lại không khớp')
+      setError(t('auth.passwordMismatch'))
       return
     }
 
@@ -34,7 +34,7 @@ export default function Register() {
     } catch (err: unknown) {
       const error = getApiErrorBody(err)
       if (error.code === 'OAUTH_ACCOUNT') {
-        setError('Email này đã đăng nhập bằng Google. Vui lòng đăng nhập bằng Google.')
+        setError(t('auth.oauthAccount'))
       } else {
         setError(error.message || t('common.error'))
       }
@@ -100,7 +100,7 @@ export default function Register() {
 
         <div className="my-4 flex items-center gap-3">
           <div className="flex-1 h-px bg-gray-600" />
-          <span className="text-gray-400 text-sm">hoặc</span>
+          <span className="text-gray-400 text-sm">{t('common.or')}</span>
           <div className="flex-1 h-px bg-gray-600" />
         </div>
 

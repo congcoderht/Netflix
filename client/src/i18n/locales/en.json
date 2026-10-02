@@ -10,7 +10,8 @@
     "edit": "Edit",
     "back": "Back",
     "search": "Search",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "previous": "Previous", "next": "Next", "close": "Close", "retry": "Try again", "remove": "Remove", "page": "Page {{current}}/{{total}}", "user": "User", "or": "or", "days": "{{count}} days"
   },
   "auth": {
     "login": "Sign In",
@@ -26,7 +27,8 @@
     "hasAccount": "Already have an account?",
     "loginSuccess": "Signed in successfully",
     "registerSuccess": "Account created successfully",
-    "logoutSuccess": "Signed out successfully"
+    "logoutSuccess": "Signed out successfully",
+    "oauthFailed": "Google sign-in failed. Please try again.", "oauthAccount": "This account uses Google sign-in. Please use the Sign in with Google button.", "passwordMismatch": "Passwords do not match", "registeredNotice": "Registration successful! Sign in to continue.", "tempPasswordNotice": "We sent a temporary password to your email.", "passwordChangedNotice": "Password changed. Please sign in again.", "verifyEmail": "Verify email", "otpDescription": "Enter the 6-digit OTP sent to {{email}}", "verifying": "Verifying...", "verify": "Verify", "noCode": "Didn't receive a code?", "resendAfter": "Resend in {{seconds}}s", "resend": "Resend"
   },
   "nav": {
     "home": "Home",
@@ -34,7 +36,7 @@
     "series": "TV Shows",
     "myList": "My List",
     "profile": "Profile",
-    "admin": "Admin"
+    "admin": "Admin", "billing": "Plans", "history": "Watch History", "managePlans": "Manage Plans", "openMenu": "Open menu"
   },
   "home": {
     "hero": {
@@ -46,7 +48,7 @@
       "trending": "Trending Now",
       "newRelease": "New Releases",
       "continueWatching": "Continue Watching",
-      "featuredSeries": "Featured Series"
+      "featuredSeries": "Featured Movies"
     }
   },
   "movie": {
@@ -54,24 +56,32 @@
     "trailer": "Watch Trailer",
     "addToList": "Add to My List",
     "removeFromList": "Remove from List",
-    "season": "Season",
-    "episode": "Episode",
     "genre": "Genre",
     "duration": "Duration",
     "releaseYear": "Release Year",
-    "description": "Description"
+    "description": "Description",
+    "crew": "Crew",
+    "addedToList": "Added to My List",
+    "castAndCrew": "Cast & Crew", "cast": "Cast", "back": "Back", "subscriptionRequired": "A subscription is required", "subscriptionRequiredDescription": "Choose a plan to watch this movie and access all content.", "later": "Not now", "viewPlans": "View plans", "screenLimit": "Screen limit reached", "screenLimitDescription": "Stop an active device, then try again.", "thisDevice": "This device", "device": "Device {{id}}", "activeAt": "active at {{time}}", "stop": "Stop", "noActiveSessions": "No active playback sessions.", "takenOver": "Playback moved to another device", "takenOverDescription": "Your current plan is being used on another device. You will be signed out here.", "confirmLogout": "Confirm and sign out", "playbackError": "Unable to start playback"
   },
+  "movies": { "count": "{{count}} movies", "allGenres": "All genres", "loadError": "Unable to load movies. Please try again." },
   "subscription": {
     "title": "Choose your plan",
     "basic": "Basic",
     "standard": "Standard",
     "premium": "Premium",
+    "planDescriptions": {
+      "BASIC": "1 screen, SD quality",
+      "STANDARD": "2 screens, HD quality",
+      "PREMIUM": "4 screens, 4K quality"
+    },
     "perMonth": "/month",
     "subscribe": "Subscribe",
     "currentPlan": "Current Plan",
     "expiresAt": "Expires",
     "renew": "Renew",
-    "paymentHistory": "Payment History"
+    "paymentHistory": "Payment History",
+    "loadError": "Unable to load plan information", "checkoutCreated": "Payment order created", "checkoutError": "Unable to create payment", "currentPlanBadge": "Current plan", "concurrentScreens": "{{count}} concurrent screens", "validUntil": "Valid until {{date}}", "changePlan": "Switch to this plan", "buyPlan": "Buy plan", "plan": "Plan", "method": "Method", "amount": "Amount", "createdAt": "Created", "status": "Status", "noPayments": "No payments yet", "paymentFor": "Payment for", "total": "Total", "replaceWarning": "{{newPlan}} will replace {{currentPlan}} immediately. Remaining time will not carry over.", "chooseMethod": "Choose a payment method", "continuePayment": "Continue to payment", "processing": "Processing...", "statuses": { "PENDING": "Processing", "SUCCESS": "Successful", "FAILED": "Failed", "EXPIRED": "Expired", "REFUNDED": "Refunded" }, "resultSuccess": "Payment successful", "resultPending": "Confirming payment", "resultFailed": "Payment unsuccessful", "missingOrder": "Missing order ID", "notFound": "Payment not found", "transaction": "Transaction {{id}}", "transactionStatus": "Status: {{status}}"
   },
   "profile": {
     "title": "Your Profile",
@@ -80,7 +90,8 @@
     "newPassword": "New Password",
     "updateProfile": "Update Profile",
     "watchHistory": "Watch History",
-    "myList": "My List"
+    "myList": "My List",
+    "info": "Information", "password": "Password", "language": "Language", "displayNamePlaceholder": "Enter a display name", "updateSuccess": "Updated successfully!", "googleNoPassword": "This account uses Google sign-in and does not have a separate password.", "languageDescription": "Choose the application display language"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -91,8 +102,15 @@
     "statistics": "Statistics",
     "totalUsers": "Total Users",
     "revenue": "Revenue",
-    "topMovies": "Top Movies"
+    "topMovies": "Top Movies", "title": "Admin", "overview": "Overview", "plans": "Plans", "byMonth": "By month", "byYear": "By year", "selectMonth": "Select month", "selectYear": "Select year", "month": "Month {{month}}", "dashboardLoadError": "Unable to load dashboard data", "periodMonth": "{{month}}/{{year}}", "periodYear": "{{year}}", "newUsers": "+{{count}} this month", "activeSubscriptions": "Active subscriptions", "manageSubscriptions": "Manage subscription plans", "periodRevenue": "Revenue {{period}}", "viewPlansAndPayments": "View plans and payments", "content": "Content", "movieCount": "{{count}} movies", "mostWatched": "Most watched", "views": "{{count}} views", "noViewData": "No viewing data", "recentPayments": "Recent payments", "customer": "Customer", "paymentDate": "Payment date"
   },
+  "list": { "loadError": "Unable to load your list.", "empty": "You have not added any movies yet.", "remove": "Remove from list" },
+  "history": { "loadError": "Unable to load watch history.", "clearConfirm": "Clear all watch history?", "clearAll": "Clear all", "empty": "No watch history yet." },
+  "community": {
+    "title": "Ratings & Comments", "ratings": "{{count}} ratings", "yourRating": "Your rating", "stars": "{{count}} stars", "placeholder": "Share your thoughts about this movie...", "comment": "Comment", "sending": "Sending...", "empty": "No comments yet. Be the first to share your thoughts.", "edited": "edited", "deleted": "This comment was deleted", "reply": "Reply", "replyPlaceholder": "Reply to {{name}}...", "editPlaceholder": "Edit comment...", "deleteConfirm": "Are you sure you want to delete this comment?", "loadError": "Unable to load ratings and comments", "saveError": "Unable to save comment", "deleteError": "Unable to delete comment", "ratingError": "Unable to submit rating", "commentError": "Unable to submit comment"
+  },
+  "continueWatching": { "title": "Continue Watching", "watched": "{{percent}}% watched", "scrollLeft": "Scroll left", "scrollRight": "Scroll right" },
+  "checkout": { "invalidLink": "Invalid payment link", "confirmError": "Unable to confirm payment", "gateway": "Payment gateway", "secure": "Safe & secure", "title": "Order payment", "order": "Order", "content": "Description", "planContent": "Netflix {{plan}} plan", "instruction": "Open {{provider}}, scan the QR code, and verify the amount before paying.", "scan": "Scan to pay", "qrLabel": "Payment QR code", "expires": "QR code expires in 30 minutes", "confirming": "Confirming...", "confirm": "Confirm payment", "viewResult": "View payment result", "cancel": "Cancel and go back" },
   "error": {
     "notFound": "Page not found",
     "unauthorized": "You are not authorized",

@@ -5,10 +5,10 @@ import { api, apiBaseUrl } from '@/lib/axios'
 import { useAuthStore } from '@/store/auth.store'
 import { getApiErrorBody } from '@/lib/api-error'
 
-const NOTICES: Record<string, string> = {
-  registered: 'Đăng ký thành công! Hãy đăng nhập để tiếp tục.',
-  temp_password: 'Tài khoản này đã đăng nhập bằng Google. Chúng tôi đã gửi mật khẩu tạm thời vào email của bạn.',
-  password_changed: 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại.',
+const NOTICE_KEYS: Record<string, string> = {
+  registered: 'auth.registeredNotice',
+  temp_password: 'auth.tempPasswordNotice',
+  password_changed: 'auth.passwordChangedNotice',
 }
 
 export default function Login() {
@@ -43,7 +43,7 @@ export default function Login() {
     } catch (err: unknown) {
       const error = getApiErrorBody(err)
       if (error.code === 'OAUTH_ACCOUNT') {
-        setError('Tài khoản này đăng nhập bằng Google. Vui lòng dùng nút "Đăng nhập với Google".')
+        setError(t('auth.oauthAccount'))
       } else {
         setError(error.message || t('common.error'))
       }
@@ -59,9 +59,9 @@ export default function Login() {
         <h1 className="mb-6 text-3xl font-bold text-red-600 sm:mb-8 sm:text-4xl">{t('common.appName')}</h1>
         <h2 className="mb-6 text-2xl font-bold text-white sm:text-3xl">{t('auth.login')}</h2>
 
-        {notice && NOTICES[notice] && (
+        {notice && NOTICE_KEYS[notice] && (
           <div className="bg-green-600 bg-opacity-20 border border-green-600 text-green-400 rounded px-4 py-3 mb-4 text-sm">
-            {NOTICES[notice]}
+            {t(NOTICE_KEYS[notice])}
           </div>
         )}
 
@@ -72,7 +72,7 @@ export default function Login() {
         )}
         {oauthError && !error && (
           <div className="bg-red-600 bg-opacity-20 border border-red-600 text-red-400 rounded px-4 py-3 mb-4 text-sm">
-            Đăng nhập Google không thành công. Vui lòng thử lại.
+            {t('auth.oauthFailed')}
           </div>
         )}
 
@@ -105,7 +105,7 @@ export default function Login() {
 
         <div className="my-4 flex items-center gap-3">
           <div className="flex-1 h-px bg-gray-600" />
-          <span className="text-gray-400 text-sm">hoặc</span>
+          <span className="text-gray-400 text-sm">{t('common.or')}</span>
           <div className="flex-1 h-px bg-gray-600" />
         </div>
 

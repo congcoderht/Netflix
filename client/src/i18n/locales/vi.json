@@ -10,7 +10,16 @@
     "edit": "Chỉnh sửa",
     "back": "Quay lại",
     "search": "Tìm kiếm",
-    "noResults": "Không có kết quả"
+    "noResults": "Không có kết quả",
+    "previous": "Trước",
+    "next": "Sau",
+    "close": "Đóng",
+    "retry": "Thử lại",
+    "remove": "Xóa",
+    "page": "Trang {{current}}/{{total}}",
+    "user": "Người dùng",
+    "or": "hoặc",
+    "days": "{{count}} ngày"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -26,7 +35,20 @@
     "hasAccount": "Đã có tài khoản?",
     "loginSuccess": "Đăng nhập thành công",
     "registerSuccess": "Đăng ký thành công",
-    "logoutSuccess": "Đăng xuất thành công"
+    "logoutSuccess": "Đăng xuất thành công",
+    "oauthFailed": "Đăng nhập Google không thành công. Vui lòng thử lại.",
+    "oauthAccount": "Tài khoản này đăng nhập bằng Google. Vui lòng dùng nút Đăng nhập với Google.",
+    "passwordMismatch": "Mật khẩu nhập lại không khớp",
+    "registeredNotice": "Đăng ký thành công! Hãy đăng nhập để tiếp tục.",
+    "tempPasswordNotice": "Chúng tôi đã gửi mật khẩu tạm thời vào email của bạn.",
+    "passwordChangedNotice": "Đổi mật khẩu thành công. Vui lòng đăng nhập lại.",
+    "verifyEmail": "Xác thực email",
+    "otpDescription": "Nhập mã OTP 6 số đã gửi đến {{email}}",
+    "verifying": "Đang xác thực...",
+    "verify": "Xác thực",
+    "noCode": "Không nhận được mã?",
+    "resendAfter": "Gửi lại sau {{seconds}}s",
+    "resend": "Gửi lại"
   },
   "nav": {
     "home": "Trang chủ",
@@ -34,7 +56,11 @@
     "series": "Phim bộ",
     "myList": "Danh sách của tôi",
     "profile": "Hồ sơ",
-    "admin": "Quản trị"
+    "admin": "Quản trị",
+    "billing": "Gói cước",
+    "history": "Lịch sử xem",
+    "managePlans": "Quản lý gói",
+    "openMenu": "Mở menu"
   },
   "home": {
     "hero": {
@@ -46,7 +72,7 @@
       "trending": "Đang thịnh hành",
       "newRelease": "Mới phát hành",
       "continueWatching": "Tiếp tục xem",
-      "featuredSeries": "Phim bộ nổi bật"
+      "featuredSeries": "Phim nổi bật"
     }
   },
   "movie": {
@@ -54,24 +80,80 @@
     "trailer": "Xem trailer",
     "addToList": "Thêm vào danh sách",
     "removeFromList": "Xóa khỏi danh sách",
-    "season": "Mùa",
-    "episode": "Tập",
     "genre": "Thể loại",
     "duration": "Thời lượng",
     "releaseYear": "Năm phát hành",
-    "description": "Mô tả"
+    "description": "Mô tả",
+    "castAndCrew": "Diễn viên & Đoàn làm phim",
+    "cast": "Diễn viên",
+    "crew": "Đoàn làm phim",
+    "addedToList": "Đã thêm vào danh sách",
+    "back": "Quay lại",
+    "subscriptionRequired": "Bạn cần đăng ký gói",
+    "subscriptionRequiredDescription": "Chọn một gói phù hợp để xem phim và sử dụng đầy đủ nội dung.",
+    "later": "Để sau",
+    "viewPlans": "Xem các gói",
+    "screenLimit": "Đã đạt giới hạn màn hình",
+    "screenLimitDescription": "Dừng một thiết bị đang xem rồi thử lại.",
+    "thisDevice": "Thiết bị này",
+    "device": "Thiết bị {{id}}",
+    "activeAt": "hoạt động {{time}}",
+    "stop": "Dừng",
+    "noActiveSessions": "Không còn phiên xem hoạt động.",
+    "takenOver": "Phiên xem đã chuyển sang nơi khác",
+    "takenOverDescription": "Gói cước hiện tại đã được dùng để xem trên một thiết bị khác. Phiên đăng nhập tại đây sẽ được kết thúc.",
+    "confirmLogout": "Xác nhận và đăng xuất",
+    "playbackError": "Không thể bắt đầu phát phim"
+  },
+  "movies": {
+    "count": "{{count}} phim",
+    "allGenres": "Tất cả thể loại",
+    "loadError": "Không thể tải danh sách phim. Vui lòng thử lại."
   },
   "subscription": {
     "title": "Chọn gói của bạn",
     "basic": "Cơ bản",
     "standard": "Tiêu chuẩn",
     "premium": "Cao cấp",
+    "planDescriptions": {
+      "BASIC": "1 màn hình, chất lượng SD",
+      "STANDARD": "2 màn hình, chất lượng HD",
+      "PREMIUM": "4 màn hình, chất lượng 4K"
+    },
     "perMonth": "/tháng",
     "subscribe": "Đăng ký gói",
     "currentPlan": "Gói hiện tại",
     "expiresAt": "Hết hạn",
     "renew": "Gia hạn",
-    "paymentHistory": "Lịch sử thanh toán"
+    "paymentHistory": "Lịch sử thanh toán",
+    "loadError": "Không thể tải thông tin gói cước",
+    "checkoutCreated": "Đã tạo đơn thanh toán",
+    "checkoutError": "Không thể tạo giao dịch thanh toán",
+    "currentPlanBadge": "Gói hiện tại",
+    "concurrentScreens": "{{count}} màn hình xem đồng thời",
+    "validUntil": "Hiệu lực đến {{date}}",
+    "changePlan": "Đổi sang gói này",
+    "buyPlan": "Mua gói",
+    "plan": "Gói",
+    "method": "Phương thức",
+    "amount": "Số tiền",
+    "createdAt": "Ngày tạo",
+    "status": "Trạng thái",
+    "noPayments": "Chưa có giao dịch",
+    "paymentFor": "Thanh toán gói",
+    "total": "Tổng thanh toán",
+    "replaceWarning": "Gói {{newPlan}} sẽ thay thế gói {{currentPlan}} ngay lập tức. Thời hạn còn lại không được cộng dồn.",
+    "chooseMethod": "Chọn phương thức thanh toán",
+    "continuePayment": "Tiếp tục thanh toán",
+    "processing": "Đang xử lý...",
+    "statuses": { "PENDING": "Đang xử lý", "SUCCESS": "Thành công", "FAILED": "Thất bại", "EXPIRED": "Hết hạn", "REFUNDED": "Đã hoàn tiền" },
+    "resultSuccess": "Thanh toán thành công",
+    "resultPending": "Đang xác nhận thanh toán",
+    "resultFailed": "Thanh toán chưa thành công",
+    "missingOrder": "Thiếu mã giao dịch",
+    "notFound": "Không tìm thấy giao dịch",
+    "transaction": "Giao dịch {{id}}",
+    "transactionStatus": "Trạng thái: {{status}}"
   },
   "profile": {
     "title": "Hồ sơ cá nhân",
@@ -80,7 +162,14 @@
     "newPassword": "Mật khẩu mới",
     "updateProfile": "Cập nhật hồ sơ",
     "watchHistory": "Lịch sử xem",
-    "myList": "Danh sách của tôi"
+    "myList": "Danh sách của tôi",
+    "info": "Thông tin",
+    "password": "Mật khẩu",
+    "language": "Ngôn ngữ",
+    "displayNamePlaceholder": "Nhập tên hiển thị",
+    "updateSuccess": "Cập nhật thành công!",
+    "googleNoPassword": "Tài khoản này đăng nhập bằng Google nên chưa có mật khẩu riêng.",
+    "languageDescription": "Chọn ngôn ngữ hiển thị cho ứng dụng"
   },
   "admin": {
     "dashboard": "Bảng điều khiển",
@@ -91,7 +180,53 @@
     "statistics": "Thống kê",
     "totalUsers": "Tổng người dùng",
     "revenue": "Doanh thu",
-    "topMovies": "Phim phổ biến"
+    "topMovies": "Phim phổ biến",
+    "title": "Quản trị",
+    "overview": "Tổng quan",
+    "plans": "Gói cước",
+    "byMonth": "Theo tháng", "byYear": "Theo năm", "selectMonth": "Chọn tháng", "selectYear": "Chọn năm", "month": "Tháng {{month}}",
+    "dashboardLoadError": "Không thể tải dữ liệu Dashboard", "periodMonth": "tháng {{month}}/{{year}}", "periodYear": "năm {{year}}", "newUsers": "+{{count}} trong tháng hiện tại", "activeSubscriptions": "Subscription hoạt động", "manageSubscriptions": "Quản lý các gói cước", "periodRevenue": "Doanh thu {{period}}", "viewPlansAndPayments": "Xem cấu hình gói và giao dịch", "content": "Nội dung", "movieCount": "{{count}} phim", "mostWatched": "Phim xem nhiều", "views": "{{count}} lượt xem", "noViewData": "Chưa có dữ liệu lượt xem", "recentPayments": "Giao dịch gần đây", "customer": "Khách hàng", "paymentDate": "Ngày thanh toán"
+  },
+  "list": {
+    "loadError": "Không thể tải danh sách của bạn.",
+    "empty": "Bạn chưa thêm phim nào.",
+    "remove": "Xóa khỏi danh sách"
+  },
+  "history": {
+    "loadError": "Không thể tải lịch sử xem.",
+    "clearConfirm": "Xóa toàn bộ lịch sử xem?",
+    "clearAll": "Xóa tất cả",
+    "empty": "Chưa có lịch sử xem."
+  },
+  "community": {
+    "title": "Đánh giá & bình luận",
+    "ratings": "{{count}} lượt đánh giá",
+    "yourRating": "Đánh giá của bạn",
+    "stars": "{{count}} sao",
+    "placeholder": "Chia sẻ cảm nhận của bạn về bộ phim...",
+    "comment": "Bình luận",
+    "sending": "Đang gửi...",
+    "empty": "Chưa có bình luận. Hãy là người đầu tiên chia sẻ cảm nhận.",
+    "edited": "đã sửa",
+    "deleted": "Bình luận đã bị xóa",
+    "reply": "Trả lời",
+    "replyPlaceholder": "Trả lời {{name}}...",
+    "editPlaceholder": "Chỉnh sửa bình luận...",
+    "deleteConfirm": "Bạn có chắc muốn xóa bình luận này?",
+    "loadError": "Không thể tải đánh giá và bình luận",
+    "saveError": "Không thể lưu bình luận",
+    "deleteError": "Không thể xóa bình luận",
+    "ratingError": "Không thể gửi đánh giá",
+    "commentError": "Không thể gửi bình luận"
+  },
+  "continueWatching": {
+    "title": "Tiếp tục xem",
+    "watched": "Đã xem {{percent}}%",
+    "scrollLeft": "Cuộn sang trái",
+    "scrollRight": "Cuộn sang phải"
+  },
+  "checkout": {
+    "invalidLink": "Liên kết thanh toán không hợp lệ", "confirmError": "Không thể xác nhận thanh toán", "gateway": "Cổng thanh toán", "secure": "An toàn & bảo mật", "title": "Thanh toán đơn hàng", "order": "Đơn hàng", "content": "Nội dung", "planContent": "Gói Netflix {{plan}}", "instruction": "Mở ứng dụng {{provider}}, chọn quét mã QR và kiểm tra đúng số tiền trước khi thanh toán.", "scan": "Quét mã để thanh toán", "qrLabel": "Mã QR thanh toán", "expires": "Mã QR hết hạn sau 30 phút", "confirming": "Đang xác nhận...", "confirm": "Xác nhận thanh toán", "viewResult": "Xem kết quả giao dịch", "cancel": "Hủy và quay lại"
   },
   "error": {
     "notFound": "Không tìm thấy trang",

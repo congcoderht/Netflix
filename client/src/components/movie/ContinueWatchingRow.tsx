@@ -1,10 +1,12 @@
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { ContinueWatchingItem } from '@/services/watch-progress.service'
+import { useTranslation } from 'react-i18next'
 
 export default function ContinueWatchingRow({ items }: { items: ContinueWatchingItem[] }) {
   const rowRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   if (!items.length) return null
 
@@ -15,10 +17,10 @@ export default function ContinueWatchingRow({ items }: { items: ContinueWatching
   return (
     <section className="mb-8 group/row">
       <h2 className="text-white font-bold text-lg sm:text-xl px-4 sm:px-12 md:px-16 mb-3">
-        Tiếp tục xem
+        {t('continueWatching.title')}
       </h2>
       <div className="relative px-4 sm:px-12 md:px-16">
-        <button onClick={() => scroll(-1)} aria-label="Cuộn sang trái"
+        <button onClick={() => scroll(-1)} aria-label={t('continueWatching.scrollLeft')}
           className="absolute left-0 sm:left-4 md:left-6 top-0 z-10 h-full w-10 bg-black/50 opacity-0 group-hover/row:opacity-100">
           ‹
         </button>
@@ -40,12 +42,12 @@ export default function ContinueWatchingRow({ items }: { items: ContinueWatching
                   </div>
                 </div>
                 <p className="mt-2 truncate text-sm font-semibold text-white">{item.movie.title}</p>
-                <p className="truncate text-xs text-gray-400">Đã xem {item.progressPercent}%</p>
+                <p className="truncate text-xs text-gray-400">{t('continueWatching.watched', { percent: item.progressPercent })}</p>
               </button>
             )
           })}
         </div>
-        <button onClick={() => scroll(1)} aria-label="Cuộn sang phải"
+        <button onClick={() => scroll(1)} aria-label={t('continueWatching.scrollRight')}
           className="absolute right-0 sm:right-4 md:right-6 top-0 z-10 h-full w-10 bg-black/50 opacity-0 group-hover/row:opacity-100">
           ›
         </button>

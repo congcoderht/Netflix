@@ -5,6 +5,7 @@ import Layout from '@/components/layout/Layout'
 import { useAuthStore } from '@/store/auth.store'
 import { api } from '@/lib/axios'
 import { getApiErrorMessage } from '@/lib/api-error'
+import { currentLanguage } from '@/i18n/format'
 
 const LANGUAGES = [
   { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳' },
@@ -15,6 +16,7 @@ type Tab = 'info' | 'password' | 'language'
 
 export default function Profile() {
   const { t, i18n } = useTranslation()
+  const language = currentLanguage(i18n.resolvedLanguage || i18n.language)
   const navigate = useNavigate()
   const { user, setUser, logout } = useAuthStore()
   const [tab, setTab] = useState<Tab>('info')
@@ -36,7 +38,7 @@ export default function Profile() {
     try {
       const { data } = await api.patch('/auth/profile', profileForm)
       setUser(data)
-      setProfileMsg({ type: 'ok', text: 'Cập nhật thành công!' })
+      setProfileMsg({ type: 'ok', text: t('profile.updateSuccess') })
     } catch (err: unknown) {
       setProfileMsg({ type: 'err', text: getApiErrorMessage(err, t('common.error')) })
     } finally {
@@ -47,7 +49,7 @@ export default function Profile() {
   const handlePasswordSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (passForm.newPassword !== passForm.confirmPassword) {
-      setPassMsg({ type: 'err', text: 'Mật khẩu nhập lại không khớp' })
+      setPassMsg({ type: 'err', text: t('auth.passwordMismatch') })
       return
     }
     setPassLoading(true)
@@ -69,7 +71,7 @@ export default function Profile() {
   const tabs: { key: Tab; label: string }[] = [
     { key: 'info', label: t('profile.updateProfile') },
     ...(user?.hasPassword ? [{ key: 'password' as const, label: t('profile.changePassword') }] : []),
-    { key: 'language', label: 'Ngôn ngữ' },
+    { key: 'language', label: t('profile.language') },
   ]
 
   return (
@@ -85,7 +87,7 @@ export default function Profile() {
               }
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">{user?.name || 'User'}</h1>
+              <h1 className="text-2xl font-bold text-white">{user?.name || t('common.user')}</h1>
               <p className="text-gray-400 text-sm">{user?.email}</p>
               {user?.role === 'ADMIN' && (
                 <span className="mt-1 inline-block text-xs bg-red-600 text-white px-2 py-0.5 rounded">Admin</span>
@@ -125,7 +127,7 @@ export default function Profile() {
                   value={profileForm.name}
                   onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded px-4 py-3 outline-none focus:border-gray-400 transition-colors"
-                  placeholder="Nhập tên hiển thị"
+                  placeholder={t('profile.displayNamePlaceholder')}
                 />
               </div>
               <div>
@@ -211,27 +213,27 @@ export default function Profile() {
 
           {tab === 'info' && user && !user.hasPassword && (
             <p className="mt-6 rounded border border-blue-700 bg-blue-900/20 px-4 py-3 text-sm text-blue-300">
-              Tài khoản này đăng nhập bằng Google nên chưa có mật khẩu riêng.
+              {t('profile.googleNoPassword')}
             </p>
           )}
 
           {/* Tab: Language */}
           {tab === 'language' && (
             <div className="space-y-3">
-              <p className="text-gray-400 text-sm mb-4">Chọn ngôn ngữ hiển thị cho ứng dụng</p>
+              <p className="text-gray-400 text-sm mb-4">{t('profile.languageDescription')}</p>
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => i18n.changeLanguage(lang.code)}
                   className={`w-full flex items-center gap-4 px-5 py-4 rounded-lg border transition-all ${
-                    i18n.language === lang.code
+                    language === lang.code
                       ? 'border-red-600 bg-red-600/10 text-white'
                       : 'border-gray-700 bg-gray-800/50 text-gray-300 hover:border-gray-500'
                   }`}
                 >
                   <span className="text-2xl">{lang.flag}</span>
                   <span className="font-medium">{lang.label}</span>
-                  {i18n.language === lang.code && (
+                  {language === lang.code && (
                     <svg className="ml-auto w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
                     </svg>

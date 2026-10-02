@@ -12,10 +12,12 @@ import { endPlaybackSession, getActivePlaybackSessions, getDeviceId, heartbeatPl
 import { getApiErrorBody, getApiErrorMessage } from '@/lib/api-error'
 import { api } from '@/lib/axios'
 import { useAuthStore } from '@/store/auth.store'
+import { formatDate } from '@/i18n/format'
 
 const CREW_ROLES = ['Đạo diễn', 'Giám đốc sản xuất', 'Nhà sản xuất', 'Biên kịch']
 
 function TrailerModal({ url, onClose }: { url: string; onClose: () => void }) {
+  const { t } = useTranslation()
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -36,7 +38,7 @@ function TrailerModal({ url, onClose }: { url: string; onClose: () => void }) {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
-          Đóng
+          {t('common.close')}
         </button>
         <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
           {embedUrl
@@ -51,7 +53,7 @@ function TrailerModal({ url, onClose }: { url: string; onClose: () => void }) {
 
 export default function MovieDetail() {
   const { id } = useParams<{ id: string }>()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
   const [searchParams] = useSearchParams()
@@ -116,12 +118,12 @@ export default function MovieDetail() {
         setPlaybackIssue('screens')
         void getActivePlaybackSessions().then(setActiveSessions).catch(() => setActiveSessions([]))
       } else {
-        setPlaybackError(getApiErrorMessage(error, 'Không thể bắt đầu phát phim'))
+        setPlaybackError(getApiErrorMessage(error, t('movie.playbackError')))
       }
     } finally {
       startingPlaybackRef.current = false
     }
-  }, [id])
+  }, [id, t])
 
   const stopActiveSession = async (sessionId: string) => {
     setEndingSession(sessionId)
@@ -194,33 +196,33 @@ export default function MovieDetail() {
       {playbackIssue === 'subscription' && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onMouseDown={() => setPlaybackIssue(null)}>
         <section role="dialog" aria-modal="true" aria-labelledby="subscription-required-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-900 p-5 text-center shadow-2xl sm:p-7">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-2xl">▶</div>
-          <h2 id="subscription-required-title" className="mt-5 text-2xl font-bold text-white">Bạn cần đăng ký gói</h2>
-          <p className="mt-3 text-gray-400">Chọn một gói phù hợp để xem phim và sử dụng đầy đủ nội dung.</p>
-          <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Để sau</button><button onClick={() => navigate('/billing')} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white">Xem các gói</button></div>
+          <h2 id="subscription-required-title" className="mt-5 text-2xl font-bold text-white">{t('movie.subscriptionRequired')}</h2>
+          <p className="mt-3 text-gray-400">{t('movie.subscriptionRequiredDescription')}</p>
+          <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">{t('movie.later')}</button><button onClick={() => navigate('/billing')} className="flex-1 rounded-lg bg-red-600 px-4 py-3 font-bold text-white">{t('movie.viewPlans')}</button></div>
         </section>
       </div>}
 
       {playbackIssue === 'screens' && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onMouseDown={() => setPlaybackIssue(null)}>
         <section role="dialog" aria-modal="true" aria-labelledby="screen-limit-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-lg rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl">
-          <h2 id="screen-limit-title" className="text-2xl font-bold text-white">Đã đạt giới hạn màn hình</h2>
-          <p className="mt-2 text-sm text-gray-400">Dừng một thiết bị đang xem rồi thử lại.</p>
+          <h2 id="screen-limit-title" className="text-2xl font-bold text-white">{t('movie.screenLimit')}</h2>
+          <p className="mt-2 text-sm text-gray-400">{t('movie.screenLimitDescription')}</p>
           <div className="mt-5 max-h-72 space-y-3 overflow-y-auto">
             {activeSessions.map((session) => <div key={session.id} className="flex items-center justify-between gap-4 rounded-xl bg-gray-800 p-4">
-              <div className="min-w-0"><p className="truncate font-semibold text-white">{session.movieTitle}</p><p className="mt-1 text-xs text-gray-400">{session.deviceId === getDeviceId() ? 'Thiết bị này' : `Thiết bị ${session.deviceId.slice(0, 8)}`} · hoạt động {new Date(session.lastHeartbeat).toLocaleTimeString('vi-VN')}</p></div>
-              <button disabled={endingSession === session.id} onClick={() => void stopActiveSession(session.id)} className="shrink-0 rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">Dừng</button>
+              <div className="min-w-0"><p className="truncate font-semibold text-white">{session.movieTitle}</p><p className="mt-1 text-xs text-gray-400">{session.deviceId === getDeviceId() ? t('movie.thisDevice') : t('movie.device', { id: session.deviceId.slice(0, 8) })} · {t('movie.activeAt', { time: formatDate(session.lastHeartbeat, i18n.resolvedLanguage || i18n.language, { timeStyle: 'short' }) })}</p></div>
+              <button disabled={endingSession === session.id} onClick={() => void stopActiveSession(session.id)} className="shrink-0 rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{t('movie.stop')}</button>
             </div>)}
-            {!activeSessions.length && <p className="rounded-lg bg-gray-800 p-5 text-center text-gray-400">Không còn phiên xem hoạt động.</p>}
+            {!activeSessions.length && <p className="rounded-lg bg-gray-800 p-5 text-center text-gray-400">{t('movie.noActiveSessions')}</p>}
           </div>
-          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Đóng</button><button onClick={retryPlayback} className="flex-1 rounded-lg bg-white px-4 py-3 font-bold text-black">Thử lại</button></div>
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">{t('common.close')}</button><button onClick={retryPlayback} className="flex-1 rounded-lg bg-white px-4 py-3 font-bold text-black">{t('common.retry')}</button></div>
         </section>
       </div>}
 
       {playbackIssue === 'taken-over' && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
         <section role="alertdialog" aria-modal="true" aria-labelledby="taken-over-title" className="w-full max-w-md rounded-2xl border border-red-900/60 bg-gray-900 p-6 text-center shadow-2xl">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-2xl">!</div>
-          <h2 id="taken-over-title" className="mt-5 text-2xl font-bold text-white">Phiên xem đã chuyển sang nơi khác</h2>
-          <p className="mt-3 text-gray-400">Gói cước hiện tại đã được dùng để xem trên một thiết bị khác. Phiên đăng nhập tại đây sẽ được kết thúc.</p>
-          <button onClick={() => void confirmForcedLogout()} className="mt-7 w-full rounded-lg bg-red-600 px-4 py-3 font-bold text-white hover:bg-red-500">Xác nhận và đăng xuất</button>
+          <h2 id="taken-over-title" className="mt-5 text-2xl font-bold text-white">{t('movie.takenOver')}</h2>
+          <p className="mt-3 text-gray-400">{t('movie.takenOverDescription')}</p>
+          <button onClick={() => void confirmForcedLogout()} className="mt-7 w-full rounded-lg bg-red-600 px-4 py-3 font-bold text-white hover:bg-red-500">{t('movie.confirmLogout')}</button>
         </section>
       </div>}
 
@@ -242,7 +244,7 @@ export default function MovieDetail() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  Quay lại
+                  {t('common.back')}
                 </button>
               </div>
               <VideoPlayer
@@ -318,7 +320,7 @@ export default function MovieDetail() {
               <button onClick={() => void toggleWatchlist()} disabled={watchlistLoading}
                 className="flex items-center gap-2 rounded bg-gray-700/80 px-6 py-3 font-semibold text-white hover:bg-gray-600/80 disabled:opacity-50">
                 <span className="text-xl">{inWatchlist ? '✓' : '+'}</span>
-                {inWatchlist ? 'Đã thêm vào danh sách' : 'Thêm vào danh sách'}
+                {inWatchlist ? t('movie.addedToList') : t('movie.addToList')}
               </button>
             </div>
 
@@ -333,12 +335,12 @@ export default function MovieDetail() {
           {/* Cast & Crew */}
           {(actors.length > 0 || crew.length > 0) && (
             <div className="border-t border-gray-800 py-8">
-              <h2 className="text-xl font-bold text-white mb-6">Diễn viên & Đoàn làm phim</h2>
+              <h2 className="text-xl font-bold text-white mb-6">{t('movie.castAndCrew')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 {/* Diễn viên */}
                 {actors.length > 0 && (
                   <div>
-                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Diễn viên</h3>
+                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">{t('movie.cast')}</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {actors.map(({ actor, role }) => (
                         <div key={actor.id} className="flex items-center gap-3 bg-gray-800/50 rounded-lg p-3 hover:bg-gray-800 transition-colors">
@@ -361,7 +363,7 @@ export default function MovieDetail() {
                 {/* Đoàn làm phim */}
                 {crew.length > 0 && (
                   <div>
-                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Đoàn làm phim</h3>
+                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">{t('movie.crew')}</h3>
                     <div className="space-y-3">
                       {CREW_ROLES.map((role) => {
                         const people = crew.filter((c) => c.role === role)

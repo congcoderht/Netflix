@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/auth.store'
 import { api } from '@/lib/axios'
+import { currentLanguage } from '@/i18n/format'
 
 const LANGUAGES = [
   { code: 'vi', label: 'Tiếng Việt' },
@@ -11,6 +12,7 @@ const LANGUAGES = [
 
 export default function Navbar() {
   const { t, i18n } = useTranslation()
+  const language = currentLanguage(i18n.resolvedLanguage || i18n.language)
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
@@ -52,7 +54,7 @@ export default function Navbar() {
   if (user?.role === 'ADMIN') {
     navLinks.push({ to: '/admin', label: t('nav.admin') })
   } else {
-    navLinks.push({ to: '/billing', label: 'Gói cước' })
+    navLinks.push({ to: '/billing', label: t('nav.billing') })
   }
 
   return (
@@ -81,7 +83,7 @@ export default function Navbar() {
             type="button"
             onClick={() => setMobileMenuOpen((value) => !value)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-md text-gray-300 transition hover:bg-white/10 hover:text-white md:hidden"
-            aria-label="Mở menu"
+            aria-label={t('nav.openMenu')}
             aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen
@@ -97,7 +99,7 @@ export default function Navbar() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
               </svg>
-              <span className="hidden sm:inline uppercase text-xs font-semibold">{i18n.language}</span>
+              <span className="hidden sm:inline uppercase text-xs font-semibold">{language}</span>
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
               </svg>
@@ -108,7 +110,7 @@ export default function Navbar() {
                   <button
                     key={lang.code}
                     onClick={() => { i18n.changeLanguage(lang.code); setLangMenuOpen(false) }}
-                    className={`w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-800 ${i18n.language === lang.code ? 'text-white font-semibold' : 'text-gray-300'}`}
+                    className={`w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-800 ${language === lang.code ? 'text-white font-semibold' : 'text-gray-300'}`}
                   >
                     {lang.label}
                   </button>
@@ -158,7 +160,7 @@ export default function Navbar() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  Lịch sử xem
+                  {t('nav.history')}
                 </Link>
                 {user?.role === 'ADMIN' && (
                   <><Link to="/admin" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
@@ -167,7 +169,7 @@ export default function Navbar() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     {t('nav.admin')}
-                  </Link><Link to="/admin/plans" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"><span className="w-4 text-center">$</span>Quản lý gói</Link></>
+                  </Link><Link to="/admin/plans" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"><span className="w-4 text-center">$</span>{t('nav.managePlans')}</Link></>
                 )}
                 <button
                   onClick={handleLogout}

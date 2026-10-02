@@ -82,7 +82,7 @@ export default function Movies() {
       })
       .catch(() => {
         if (!active) return
-        setError('Không thể tải danh sách phim. Vui lòng thử lại.')
+        setError(t('movies.loadError'))
       })
       .finally(() => {
         if (active) {
@@ -92,7 +92,7 @@ export default function Movies() {
       })
 
     return () => { active = false }
-  }, [genreParam, searchParam, page])
+  }, [genreParam, searchParam, page, t])
 
   // Debounce search
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function Movies() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">{title}</h1>
-              <p className="mt-1 min-h-5 text-sm text-gray-400">{hasLoaded ? `${total} phim` : 'Đang tải...'}</p>
+              <p className="mt-1 min-h-5 text-sm text-gray-400">{hasLoaded ? t('movies.count', { count: total }) : t('common.loading')}</p>
             </div>
 
             {/* Search */}
@@ -156,7 +156,7 @@ export default function Movies() {
             <div className="flex min-w-0 flex-wrap gap-2">
               <button onClick={() => setParam('genreId', '')}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${!genreParam ? 'border-white text-white' : 'border-gray-600 text-gray-400 hover:border-gray-400 hover:text-white'}`}>
-                Tất cả thể loại
+                {t('movies.allGenres')}
               </button>
               {genres.map((g) => (
                 <button key={g.id} onClick={() => setParam('genreId', genreParam === g.id ? '' : g.id)}
@@ -179,7 +179,7 @@ export default function Movies() {
                 onClick={() => window.location.reload()}
                 className="rounded bg-red-600 px-5 py-2 text-sm font-medium text-white hover:bg-red-700"
               >
-                Thử lại
+                {t('common.retry')}
               </button>
             </div>
           ) : movies.length === 0 ? (
