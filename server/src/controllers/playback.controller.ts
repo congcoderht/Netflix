@@ -20,3 +20,7 @@ export const end = async (req: Request, res: Response) => {
   await service.endPlayback(userFrom(req).userId, req.params.id as string)
   res.status(204).send()
 }
+export const takeOver = async (req: Request, res: Response) => {
+  await service.takeOverPlayback(userFrom(req).userId, req.params.id as string)
+  res.status(204).send()
+}

@@ -36,4 +36,5 @@ export const startPlaybackSession = async (movieId: string) => {
 
 export const heartbeatPlaybackSession = (sessionId: string) => api.patch(`/playback-sessions/${sessionId}/heartbeat`)
 export const endPlaybackSession = (sessionId: string) => api.delete(`/playback-sessions/${sessionId}`)
+export const takeOverPlaybackSession = (sessionId: string) => api.post(`/playback-sessions/${sessionId}/takeover`)
 export const getActivePlaybackSessions = async () => (await api.get<ActivePlaybackSession[]>('/playback-sessions')).data

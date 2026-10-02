@@ -8,8 +8,10 @@ import type { Movie } from '@/types/movie'
 import { getWatchProgress, saveWatchProgress } from '@/services/watch-progress.service'
 import { addToWatchlist, getWatchlistStatus, removeFromWatchlist } from '@/services/watchlist.service'
 import CommunitySection from '@/components/movie/CommunitySection'
-import { endPlaybackSession, getActivePlaybackSessions, getDeviceId, heartbeatPlaybackSession, startPlaybackSession, type ActivePlaybackSession } from '@/services/playback.service'
+import { endPlaybackSession, getActivePlaybackSessions, getDeviceId, heartbeatPlaybackSession, startPlaybackSession, takeOverPlaybackSession, type ActivePlaybackSession } from '@/services/playback.service'
 import { getApiErrorBody, getApiErrorMessage } from '@/lib/api-error'
+import { api } from '@/lib/axios'
+import { useAuthStore } from '@/store/auth.store'
 
 const CREW_ROLES = ['Đạo diễn', 'Giám đốc sản xuất', 'Nhà sản xuất', 'Biên kịch']
 
@@ -51,6 +53,7 @@ export default function MovieDetail() {
   const { id } = useParams<{ id: string }>()
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const logout = useAuthStore((state) => state.logout)
   const [searchParams] = useSearchParams()
   const shouldAutoPlay = searchParams.get('play') === '1'
   const [movie, setMovie] = useState<Movie | null>(null)
@@ -63,7 +66,7 @@ export default function MovieDetail() {
   const [playbackSessionId, setPlaybackSessionId] = useState<string | null>(null)
   const [playbackUrl, setPlaybackUrl] = useState('')
   const [playbackError, setPlaybackError] = useState('')
-  const [playbackIssue, setPlaybackIssue] = useState<'subscription' | 'screens' | null>(null)
+  const [playbackIssue, setPlaybackIssue] = useState<'subscription' | 'screens' | 'taken-over' | null>(null)
   const [activeSessions, setActiveSessions] = useState<ActivePlaybackSession[]>([])
   const [endingSession, setEndingSession] = useState<string | null>(null)
   const startingPlaybackRef = useRef(false)
@@ -123,7 +126,7 @@ export default function MovieDetail() {
   const stopActiveSession = async (sessionId: string) => {
     setEndingSession(sessionId)
     try {
-      await endPlaybackSession(sessionId)
+      await takeOverPlaybackSession(sessionId)
       setActiveSessions((sessions) => sessions.filter((session) => session.id !== sessionId))
     } finally {
       setEndingSession(null)
@@ -135,11 +138,22 @@ export default function MovieDetail() {
     void startPlayback()
   }
 
+  const confirmForcedLogout = async () => {
+    await api.post('/auth/logout').catch(() => undefined)
+    logout()
+    navigate('/login', { replace: true })
+  }
+
   useEffect(() => {
     if (!playbackSessionId) return
     const timer = window.setInterval(() => {
-      void heartbeatPlaybackSession(playbackSessionId).catch(() => setPlaying(false))
-    }, 30_000)
+      void heartbeatPlaybackSession(playbackSessionId).catch((error) => {
+        setPlaying(false)
+        if (getApiErrorBody(error).code === 'PLAYBACK_TAKEN_OVER') {
+          setPlaybackIssue('taken-over')
+        }
+      })
+    }, 10_000)
     return () => {
       window.clearInterval(timer)
       void endPlaybackSession(playbackSessionId).catch(() => undefined)
@@ -198,6 +212,15 @@ export default function MovieDetail() {
             {!activeSessions.length && <p className="rounded-lg bg-gray-800 p-5 text-center text-gray-400">Không còn phiên xem hoạt động.</p>}
           </div>
           <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row"><button onClick={() => setPlaybackIssue(null)} className="flex-1 rounded-lg bg-gray-700 px-4 py-3 text-white">Đóng</button><button onClick={retryPlayback} className="flex-1 rounded-lg bg-white px-4 py-3 font-bold text-black">Thử lại</button></div>
+        </section>
+      </div>}
+
+      {playbackIssue === 'taken-over' && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+        <section role="alertdialog" aria-modal="true" aria-labelledby="taken-over-title" className="w-full max-w-md rounded-2xl border border-red-900/60 bg-gray-900 p-6 text-center shadow-2xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-2xl">!</div>
+          <h2 id="taken-over-title" className="mt-5 text-2xl font-bold text-white">Phiên xem đã chuyển sang nơi khác</h2>
+          <p className="mt-3 text-gray-400">Gói cước hiện tại đã được dùng để xem trên một thiết bị khác. Phiên đăng nhập tại đây sẽ được kết thúc.</p>
+          <button onClick={() => void confirmForcedLogout()} className="mt-7 w-full rounded-lg bg-red-600 px-4 py-3 font-bold text-white hover:bg-red-500">Xác nhận và đăng xuất</button>
         </section>
       </div>}
 

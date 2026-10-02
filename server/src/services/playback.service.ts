@@ -43,13 +43,17 @@ export const startPlayback = async (userId: string, role: string, movieId: strin
 
   return prisma.$transaction(async (tx) => {
     await tx.playbackSession.updateMany({
-      where: { userId, endedAt: null, OR: [{ lastHeartbeat: { lt: cutoff } }, { deviceId }] },
-      data: { endedAt: now },
+      where: { userId, endedAt: null, lastHeartbeat: { lt: cutoff } },
+      data: { endedAt: now, endReason: 'TIMEOUT' },
+    })
+    await tx.playbackSession.updateMany({
+      where: { userId, endedAt: null, deviceId },
+      data: { endedAt: now, endReason: 'TAKEOVER' },
     })
     const activeCount = await tx.playbackSession.count({ where: { userId, endedAt: null, lastHeartbeat: { gte: cutoff } } })
     if (activeCount >= maxScreens) throw new AppError(409, 'Concurrent screen limit reached', 'SCREEN_LIMIT_REACHED')
     const session = await tx.playbackSession.create({ data: { userId, deviceId, movieId } })
-    return { sessionId: session.id, videoUrl, heartbeatIntervalSec: 30, expiresAfterSec: 90 }
+    return { sessionId: session.id, videoUrl, heartbeatIntervalSec: 10, expiresAfterSec: 90 }
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable })
 }
 
@@ -59,9 +63,28 @@ export const heartbeat = async (userId: string, id: string) => {
     where: { id, userId, endedAt: null, lastHeartbeat: { gte: cutoff } },
     data: { lastHeartbeat: new Date() },
   })
-  if (!updated.count) throw new AppError(404, 'Playback session expired', 'PLAYBACK_SESSION_EXPIRED')
+  if (!updated.count) {
+    const session = await prisma.playbackSession.findFirst({
+      where: { id, userId },
+      select: { endReason: true },
+    })
+    if (session?.endReason === 'TAKEOVER') {
+      throw new AppError(409, 'Playback continued on another device', 'PLAYBACK_TAKEN_OVER')
+    }
+    throw new AppError(404, 'Playback session expired', 'PLAYBACK_SESSION_EXPIRED')
+  }
 }
 
 export const endPlayback = async (userId: string, id: string) => {
-  await prisma.playbackSession.updateMany({ where: { id, userId, endedAt: null }, data: { endedAt: new Date() } })
+  await prisma.playbackSession.updateMany({
+    where: { id, userId, endedAt: null },
+    data: { endedAt: new Date(), endReason: 'USER_ENDED' },
+  })
+}
+
+export const takeOverPlayback = async (userId: string, id: string) => {
+  await prisma.playbackSession.updateMany({
+    where: { id, userId, endedAt: null },
+    data: { endedAt: new Date(), endReason: 'TAKEOVER' },
+  })
 }
