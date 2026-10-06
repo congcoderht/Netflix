@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -18,6 +19,8 @@ import { playbackRouter } from './routes/playback.routes';
 import { adminPlanRouter } from './routes/admin-plan.routes';
 import { adminDashboardRouter } from './routes/admin-dashboard.routes';
 import { adminUserRouter } from './routes/admin-user.routes';
+import { adminNotificationRouter, notificationRouter } from './routes/notification.routes';
+import { initializeSocket } from './lib/socket';
 import { errorHandler } from './middlewares/error.middleware';
 import './config/passport';
 import { startMaintenance } from './services/maintenance.service';
@@ -28,7 +31,6 @@ import * as path from 'path';
 validateConfig();
 
 const app = express();
-startMaintenance();
 
 app.use(helmet());
 app.use(cors({ origin: config.cors.origin, credentials: true }));
@@ -57,10 +59,16 @@ app.use('/api/playback-sessions', playbackRouter);
 app.use('/api/admin/plans', adminPlanRouter);
 app.use('/api/admin/dashboard', adminDashboardRouter);
 app.use('/api/admin/users', adminUserRouter);
+app.use('/api/notifications', notificationRouter);
+app.use('/api/admin/notifications', adminNotificationRouter);
 
 app.use(errorHandler);
 
-app.listen(config.port, () => {
+const httpServer = createServer(app);
+initializeSocket(httpServer);
+startMaintenance();
+
+httpServer.listen(config.port, () => {
   console.log(`Server running on http://localhost:${config.port}`);
   console.log(`Environment: ${config.nodeEnv}`);
 });

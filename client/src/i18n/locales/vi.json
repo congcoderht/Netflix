@@ -225,6 +225,23 @@
     "scrollLeft": "Cuộn sang trái",
     "scrollRight": "Cuộn sang phải"
   },
+  "notifications": {
+    "title": "Thông báo", "system": "Thông báo hệ thống", "all": "Tất cả", "unread": "Chưa đọc", "unreadCount": "{{count}} thông báo chưa đọc", "markAllRead": "Đánh dấu tất cả đã đọc", "viewAll": "Xem tất cả thông báo", "empty": "Bạn chưa có thông báo nào.", "noUnread": "Bạn đã đọc tất cả thông báo.", "loadMore": "Xem thêm", "delete": "Xóa thông báo",
+    "admin": { "nav": "Thông báo", "title": "Gửi thông báo hệ thống", "description": "Thông báo sẽ được lưu và gửi realtime tới tất cả khách hàng đang hoạt động.", "titleVi": "Tiêu đề tiếng Việt", "titleEn": "Tiêu đề tiếng Anh", "bodyVi": "Nội dung tiếng Việt", "bodyEn": "Nội dung tiếng Anh", "actionUrl": "Đường dẫn khi nhấn (không bắt buộc)", "expiresAt": "Hết hiệu lực lúc (không bắt buộc)", "send": "Gửi thông báo", "sending": "Đang gửi...", "sent": "Đã gửi đến {{count}} người dùng.", "sendError": "Không thể gửi thông báo" },
+    "events": {
+      "moviePublished": { "title": "Phim mới vừa ra mắt", "body": "{{movieTitle}} hiện đã có trên Netflix. Xem ngay!" },
+      "commentReply": { "title": "Phản hồi mới", "body": "{{actorName}} đã trả lời bình luận của bạn về {{movieTitle}}." },
+      "paymentFailed": { "title": "Thanh toán thất bại", "body": "Không thể thanh toán gói {{planName}}. Vui lòng thử lại." },
+      "paymentExpired": { "title": "Giao dịch đã hết hạn", "body": "Phiên thanh toán gói {{planName}} đã hết hạn." },
+      "subscriptionActivated": { "title": "Đã kích hoạt gói cước", "body": "Thanh toán thành công. Gói {{planName}} của bạn đã được kích hoạt." },
+      "subscriptionRenewed": { "title": "Gia hạn thành công", "body": "Gói {{planName}} của bạn đã được gia hạn thành công." },
+      "subscriptionChanged": { "title": "Đổi gói thành công", "body": "Tài khoản của bạn đã chuyển sang gói {{planName}}." },
+      "subscriptionExpiring": { "title": "Gói cước sắp hết hạn", "body": "Gói {{planName}} sẽ hết hạn sau {{days}} ngày. Gia hạn để tiếp tục xem." },
+      "subscriptionExpired": { "title": "Gói cước đã hết hạn", "body": "Gói {{planName}} đã hết hạn. Chọn một gói để tiếp tục xem phim." }
+      ,"passwordChanged": { "title": "Mật khẩu đã được thay đổi", "body": "Mật khẩu tài khoản của bạn vừa được cập nhật. Nếu đây không phải bạn, hãy liên hệ quản trị viên." }
+      ,"accountUnblocked": { "title": "Tài khoản đã được mở khóa", "body": "Bạn có thể tiếp tục sử dụng tài khoản bình thường." }
+    }
+  },
   "checkout": {
     "invalidLink": "Liên kết thanh toán không hợp lệ", "confirmError": "Không thể xác nhận thanh toán", "gateway": "Cổng thanh toán", "secure": "An toàn & bảo mật", "title": "Thanh toán đơn hàng", "order": "Đơn hàng", "content": "Nội dung", "planContent": "Gói Netflix {{plan}}", "instruction": "Mở ứng dụng {{provider}}, chọn quét mã QR và kiểm tra đúng số tiền trước khi thanh toán.", "scan": "Quét mã để thanh toán", "qrLabel": "Mã QR thanh toán", "expires": "Mã QR hết hạn sau 30 phút", "confirming": "Đang xác nhận...", "confirm": "Xác nhận thanh toán", "viewResult": "Xem kết quả giao dịch", "cancel": "Hủy và quay lại"
   },

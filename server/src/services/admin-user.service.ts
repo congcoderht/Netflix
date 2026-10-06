@@ -1,6 +1,8 @@
-import { SubscriptionStatus } from '@prisma/client'
+import { NotificationType, SubscriptionStatus } from '@prisma/client'
 import { AppError } from '../errors/app-error'
 import { prisma } from '../lib/prisma'
+import { createNotification } from './notification.service'
+import { disconnectUserSockets } from '../lib/socket'
 
 export const listUsers = async (page: number, limit: number, search?: string) => {
   const now = new Date()
@@ -33,7 +35,18 @@ export const updateUser = async (actorId: string, id: string, data: { isBlocked:
   if (actorId === id && data.isBlocked) {
     throw new AppError(409, 'You cannot block your own account', 'SELF_ADMIN_CHANGE')
   }
-  const user = await prisma.user.findUnique({ where: { id }, select: { id: true } })
+  const user = await prisma.user.findUnique({ where: { id }, select: { id: true, isBlocked: true } })
   if (!user) throw new AppError(404, 'User not found', 'USER_NOT_FOUND')
-  return prisma.user.update({ where: { id }, data, select: { id: true, isBlocked: true } })
+  const updated = await prisma.user.update({ where: { id }, data, select: { id: true, isBlocked: true } })
+  if (data.isBlocked) disconnectUserSockets(id)
+  if (user.isBlocked && !data.isBlocked) {
+    await createNotification({
+      userId: id,
+      type: NotificationType.SECURITY,
+      eventKey: 'accountUnblocked',
+      actionUrl: '/',
+      dedupeKey: `security:unblocked:${id}:${Date.now()}`,
+    }).catch((error) => console.error('Security notification failed:', error))
+  }
+  return updated
 }

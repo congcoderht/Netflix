@@ -12,6 +12,11 @@ import {
   type PaymentProvider,
   type VerifiedPaymentResult,
 } from './mock-payment.gateway'
+import {
+  deliverStoredNotification,
+  notifySubscriptionMilestone,
+  paymentNotificationData,
+} from './notification.service'
 
 export const listPlans = () => prisma.plan.findMany({
   where: { isActive: true },
@@ -20,10 +25,20 @@ export const listPlans = () => prisma.plan.findMany({
 
 export const getCurrentSubscription = async (userId: string) => {
   const now = new Date()
+  const expired = await prisma.subscription.findMany({
+    where: { userId, status: SubscriptionStatus.ACTIVE, expiresAt: { lte: now } },
+    include: { plan: { select: { name: true } } },
+  })
   await prisma.subscription.updateMany({
     where: { userId, status: SubscriptionStatus.ACTIVE, expiresAt: { lte: now } },
     data: { status: SubscriptionStatus.EXPIRED },
   })
+  await Promise.all(expired.map((subscription) => notifySubscriptionMilestone({
+    userId,
+    subscriptionId: subscription.id,
+    planName: subscription.plan.name,
+    eventKey: 'subscriptionExpired',
+  }))).catch((error) => console.error('Subscription expiration notification failed:', error))
   return prisma.subscription.findFirst({
     where: { userId, status: SubscriptionStatus.ACTIVE, expiresAt: { gt: now } },
     orderBy: { expiresAt: 'desc' },
@@ -87,26 +102,48 @@ const applyPaymentResult = async (result: VerifiedPaymentResult) => {
   if (payment.status === PaymentStatus.SUCCESS) return payment
 
   if (payment.expiresAt <= new Date()) {
-    await prisma.payment.updateMany({
-      where: { id: payment.id, status: PaymentStatus.PENDING },
-      data: { status: PaymentStatus.EXPIRED, failureMessage: 'Payment session expired' },
+    const notification = await prisma.$transaction(async (tx) => {
+      const claimed = await tx.payment.updateMany({
+        where: { id: payment.id, status: PaymentStatus.PENDING },
+        data: { status: PaymentStatus.EXPIRED, failureMessage: 'Payment session expired' },
+      })
+      if (!claimed.count) return null
+      return tx.notification.create({ data: paymentNotificationData({
+        userId: payment.userId,
+        paymentId: payment.id,
+        eventKey: 'paymentExpired',
+        planName: payment.planName,
+        orderId: payment.orderId,
+      }) })
     })
+    if (notification) deliverStoredNotification(notification)
     throw new AppError(409, 'Payment session expired', 'PAYMENT_EXPIRED')
   }
 
   if (result.outcome !== 'SUCCESS') {
-    await prisma.payment.updateMany({
-      where: { id: payment.id, status: PaymentStatus.PENDING },
-      data: {
-        status: PaymentStatus.FAILED,
-        failureCode: result.failureCode,
-        failureMessage: result.failureMessage,
-      },
+    const notification = await prisma.$transaction(async (tx) => {
+      const claimed = await tx.payment.updateMany({
+        where: { id: payment.id, status: PaymentStatus.PENDING },
+        data: {
+          status: PaymentStatus.FAILED,
+          failureCode: result.failureCode,
+          failureMessage: result.failureMessage,
+        },
+      })
+      if (!claimed.count) return null
+      return tx.notification.create({ data: paymentNotificationData({
+        userId: payment.userId,
+        paymentId: payment.id,
+        eventKey: 'paymentFailed',
+        planName: payment.planName,
+        orderId: payment.orderId,
+      }) })
     })
+    if (notification) deliverStoredNotification(notification)
     return prisma.payment.findUniqueOrThrow({ where: { id: payment.id } })
   }
 
-  await prisma.$transaction(async (tx) => {
+  const successResult = await prisma.$transaction(async (tx) => {
     const claimed = await tx.payment.updateMany({
       where: { id: payment.id, status: PaymentStatus.PENDING },
       data: {
@@ -117,7 +154,7 @@ const applyPaymentResult = async (result: VerifiedPaymentResult) => {
         failureMessage: null,
       },
     })
-    if (claimed.count === 0) return
+    if (claimed.count === 0) return null
 
     const now = new Date()
     const current = await tx.subscription.findFirst({
@@ -146,7 +183,20 @@ const applyPaymentResult = async (result: VerifiedPaymentResult) => {
           },
         })
     await tx.payment.update({ where: { id: payment.id }, data: { subscriptionId: subscription.id } })
+    const eventKey = !current
+      ? 'subscriptionActivated' as const
+      : renewsCurrentPlan ? 'subscriptionRenewed' as const : 'subscriptionChanged' as const
+    const notification = await tx.notification.create({ data: paymentNotificationData({
+      userId: payment.userId,
+      paymentId: payment.id,
+      eventKey,
+      planName: payment.planName,
+      orderId: payment.orderId,
+    }) })
+    return { notification }
   })
+
+  if (successResult) deliverStoredNotification(successResult.notification)
 
   return prisma.payment.findUniqueOrThrow({ where: { id: payment.id } })
 }

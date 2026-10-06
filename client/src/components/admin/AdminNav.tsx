@@ -6,6 +6,7 @@ const links = [
   { to: '/admin/movies', labelKey: 'admin.movies' },
   { to: '/admin/plans', labelKey: 'admin.plans' },
   { to: '/admin/users', labelKey: 'admin.users' },
+  { to: '/admin/notifications', labelKey: 'notifications.admin.nav' },
 ]
 
 export default function AdminNav() {

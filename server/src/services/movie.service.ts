@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma'
+import { notifyMoviePublished } from './notification.service'
 
 interface MovieFilters {
   genreId?: string
@@ -71,7 +72,7 @@ export const getById = async (id: string, includeUnpublished = false) => {
 
 export const create = async (data: MovieCreateInput) => {
   const { genreIds, ...rest } = data
-  return prisma.movie.create({
+  const movie = await prisma.movie.create({
     data: {
       ...rest,
       genres: genreIds?.length
@@ -80,11 +81,16 @@ export const create = async (data: MovieCreateInput) => {
     },
     select: MOVIE_SELECT,
   })
+  if (movie.isPublished) {
+    await notifyMoviePublished(movie).catch((error) => console.error('Movie notification failed:', error))
+  }
+  return movie
 }
 
 export const update = async (id: string, data: Partial<MovieCreateInput>) => {
   const { genreIds, ...rest } = data
-  return prisma.$transaction(async (tx) => {
+  const previous = await prisma.movie.findUniqueOrThrow({ where: { id }, select: { isPublished: true } })
+  const movie = await prisma.$transaction(async (tx) => {
     if (genreIds !== undefined) {
       await tx.genreOnMovie.deleteMany({ where: { movieId: id } })
       if (genreIds.length) {
@@ -96,6 +102,10 @@ export const update = async (id: string, data: Partial<MovieCreateInput>) => {
 
     return tx.movie.update({ where: { id }, data: rest, select: MOVIE_SELECT })
   })
+  if (!previous.isPublished && movie.isPublished) {
+    await notifyMoviePublished(movie).catch((error) => console.error('Movie notification failed:', error))
+  }
+  return movie
 }
 
 export const remove = async (id: string) => {

@@ -14,6 +14,7 @@ import WatchHistory from '@/pages/WatchHistory'
 import MyList from '@/pages/MyList'
 import RoleHome from '@/components/RoleHome'
 import AdminLayout from '@/components/admin/AdminLayout'
+import { NotificationProvider } from '@/components/notification/NotificationProvider'
 
 const Billing = lazy(() => import('@/pages/Billing'))
 const PaymentResult = lazy(() => import('@/pages/PaymentResult'))
@@ -21,11 +22,13 @@ const MockCheckout = lazy(() => import('@/pages/MockCheckout'))
 const AdminPlans = lazy(() => import('@/pages/admin/AdminPlans'))
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 const AdminUsers = lazy(() => import('@/pages/admin/AdminUsers'))
+const Notifications = lazy(() => import('@/pages/Notifications'))
+const AdminNotifications = lazy(() => import('@/pages/admin/AdminNotifications'))
 
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthBootstrap><Suspense fallback={<div className="min-h-screen bg-black" />}><Routes>
+      <AuthBootstrap><NotificationProvider><Suspense fallback={<div className="min-h-screen bg-black" />}><Routes>
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -42,16 +45,18 @@ export default function App() {
         <Route path="/payment/result" element={<ProtectedRoute customerOnly><PaymentResult /></ProtectedRoute>} />
         <Route path="/mock-payment/:provider" element={<ProtectedRoute customerOnly><MockCheckout /></ProtectedRoute>} />
         <Route path="/movies/:id" element={<ProtectedRoute><MovieDetail /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute adminOnly><AdminLayout /></ProtectedRoute>}>
           <Route index element={<AdminDashboard />} />
           <Route path="movies" element={<AdminMovies />} />
           <Route path="plans" element={<AdminPlans />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="notifications" element={<AdminNotifications />} />
         </Route>
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes></Suspense></AuthBootstrap>
+      </Routes></Suspense></NotificationProvider></AuthBootstrap>
     </BrowserRouter>
   )
 }

@@ -64,7 +64,7 @@ function CommentItem({ comment, movieId, isReply = false, onChanged }: CommentIt
   }
 
   return (
-    <div className={isReply ? 'ml-8 border-l border-gray-700 pl-4' : ''}>
+    <div id={`comment-${comment.id}`} className={`scroll-mt-24 ${isReply ? 'ml-8 border-l border-gray-700 pl-4' : ''}`}>
       <div className="flex gap-3 py-4">
         <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gray-700">
           {comment.user.avatar
@@ -78,12 +78,19 @@ function CommentItem({ comment, movieId, isReply = false, onChanged }: CommentIt
             {comment.updatedAt !== comment.createdAt && !comment.isDeleted && <span className="text-xs text-gray-500">{t('community.edited')}</span>}
           </div>
           <p className={`mt-1 whitespace-pre-wrap break-words text-sm ${comment.isDeleted ? 'italic text-gray-500' : 'text-gray-300'}`}>
-            {comment.isDeleted ? t('community.deleted') : comment.content}
+            {comment.isDeleted ? t('community.deleted') : (
+              <>
+                {isReply && comment.replyTo?.user && (
+                  <span className="mr-1 font-medium text-blue-400">@{comment.replyTo.user.name || t('common.user')}</span>
+                )}
+                {comment.content}
+              </>
+            )}
           </p>
 
           {!comment.isDeleted && mode === 'idle' && (
             <div className="mt-2 flex gap-3 text-xs">
-              {!isReply && <button onClick={() => { setMode('reply'); setContent('') }} className="text-gray-400 hover:text-white">{t('community.reply')}</button>}
+              <button onClick={() => { setMode('reply'); setContent('') }} className="text-gray-400 hover:text-white">{t('community.reply')}</button>
               {canEdit && <button onClick={() => { setMode('edit'); setContent(comment.content) }} className="text-gray-400 hover:text-white">{t('common.edit')}</button>}
               {canManage && <button disabled={saving} onClick={() => void remove()} className="text-red-400 hover:text-red-300 disabled:opacity-50">{t('common.delete')}</button>}
             </div>

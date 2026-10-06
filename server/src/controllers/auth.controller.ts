@@ -4,6 +4,9 @@ import * as otpService from '../services/otp.service'
 import { config } from '../config'
 import { JwtPayload } from '../utils/jwt.util'
 import { AppError } from '../errors/app-error'
+import { NotificationType } from '@prisma/client'
+import { createNotification } from '../services/notification.service'
+import { disconnectUserSockets } from '../lib/socket'
 
 const currentUserId = (req: Request) =>
   (req.user as unknown as JwtPayload).userId
@@ -60,7 +63,16 @@ export const updateProfile = async (req: Request, res: Response) => {
 }
 
 export const changePassword = async (req: Request, res: Response) => {
-  await authService.changePassword(currentUserId(req), req.body.oldPassword, req.body.newPassword)
+  const userId = currentUserId(req)
+  await authService.changePassword(userId, req.body.oldPassword, req.body.newPassword)
+  await createNotification({
+    userId,
+    type: NotificationType.SECURITY,
+    eventKey: 'passwordChanged',
+    actionUrl: '/profile',
+    dedupeKey: `security:password:${userId}:${Date.now()}`,
+  }).catch((error) => console.error('Security notification failed:', error))
+  disconnectUserSockets(userId)
   clearRefreshTokenCookie(res)
   res.json({ message: 'Password changed successfully. Please sign in again.' })
 }

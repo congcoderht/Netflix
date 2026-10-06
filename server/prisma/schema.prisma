@@ -40,7 +40,10 @@ enum PaymentStatus {
 
 enum NotificationType {
   NEW_MOVIE // phim mới được thêm
+  COMMENT // phản hồi bình luận
+  PAYMENT // trạng thái thanh toán
   SUBSCRIPTION // sắp hết hạn, đã gia hạn
+  SECURITY // thay đổi liên quan bảo mật
   SYSTEM // thông báo hệ thống
 }
 
@@ -318,7 +321,8 @@ model Comment {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
   movieId   String   @map("movie_id")
-  parentId  String?  @map("parent_id") // null = comment gốc, có giá trị = reply
+  parentId  String?  @map("parent_id") // null = bình luận gốc, có giá trị = thread gốc
+  replyToId String?  @map("reply_to_id") // bình luận/phản hồi được trả lời trực tiếp
   content   String
   isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime @default(now()) @map("created_at")
@@ -326,11 +330,14 @@ model Comment {
 
   user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   movie   Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  replies Comment[] @relation("CommentReplies")
+  parent          Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies         Comment[] @relation("CommentReplies")
+  replyTo         Comment?  @relation("CommentReplyTargets", fields: [replyToId], references: [id])
+  targetedReplies Comment[] @relation("CommentReplyTargets")
 
   @@index([movieId, createdAt])
   @@index([parentId])
+  @@index([replyToId])
   @@map("comments")
 }
 
@@ -357,12 +364,17 @@ model Notification {
   id        String           @id @default(uuid())
   userId    String           @map("user_id")
   type      NotificationType
-  title     String
-  body      String
-  isRead    Boolean          @default(false) @map("is_read")
+  eventKey  String           @map("event_key")
+  data      Json?
+  actionUrl String?          @map("action_url")
+  readAt    DateTime?        @map("read_at")
+  dedupeKey String?          @unique @map("dedupe_key")
+  expiresAt DateTime?        @map("expires_at")
   createdAt DateTime         @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId, readAt, createdAt])
+  @@index([expiresAt])
   @@map("notifications")
 }

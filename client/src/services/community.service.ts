@@ -13,6 +13,10 @@ export interface MovieComment {
   createdAt: string
   updatedAt: string
   user: CommentAuthor
+  replyTo?: {
+    id: string
+    user: CommentAuthor
+  } | null
   replies?: MovieComment[]
 }
 

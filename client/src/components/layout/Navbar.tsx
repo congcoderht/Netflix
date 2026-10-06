@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/auth.store'
 import { api } from '@/lib/axios'
 import { currentLanguage } from '@/i18n/format'
+import NotificationBell from '@/components/notification/NotificationBell'
 
 const LANGUAGES = [
   { code: 'vi', label: 'Tiếng Việt' },
@@ -21,8 +22,11 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [langMenuOpen, setLangMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [navIndicator, setNavIndicator] = useState({ left: 0, width: 0, visible: false })
   const userMenuRef = useRef<HTMLDivElement>(null)
   const langMenuRef = useRef<HTMLDivElement>(null)
+  const desktopNavRef = useRef<HTMLDivElement>(null)
+  const navLinkRefs = useRef(new Map<string, HTMLAnchorElement>())
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -57,6 +61,35 @@ export default function Navbar() {
     navLinks.push({ to: '/billing', label: t('nav.billing') })
   }
 
+  const isNavLinkActive = (to: string) => (
+    location.pathname + location.search === to
+    || (location.pathname === to.split('?')[0] && !to.includes('?'))
+  )
+
+  const activeNavLinkTo = navLinks.find((link) => isNavLinkActive(link.to))?.to
+
+  useLayoutEffect(() => {
+    const updateIndicator = () => {
+      const container = desktopNavRef.current
+      const activeLink = activeNavLinkTo ? navLinkRefs.current.get(activeNavLinkTo) : null
+
+      if (!container || !activeLink) {
+        setNavIndicator((current) => ({ ...current, visible: false }))
+        return
+      }
+
+      setNavIndicator({
+        left: activeLink.offsetLeft,
+        width: activeLink.offsetWidth,
+        visible: true,
+      })
+    }
+
+    updateIndicator()
+    window.addEventListener('resize', updateIndicator)
+    return () => window.removeEventListener('resize', updateIndicator)
+  }, [activeNavLinkTo, language])
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#141414]' : 'bg-gradient-to-b from-black/80 to-transparent'}`}>
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 flex items-center h-16 gap-4 lg:gap-8">
@@ -66,16 +99,29 @@ export default function Navbar() {
         </Link>
 
         {/* Nav links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div ref={desktopNavRef} className="relative hidden h-full items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`text-sm font-medium transition-colors hover:text-white ${location.pathname + location.search === link.to || location.pathname === link.to.split('?')[0] && !link.to.includes('?') ? 'text-white' : 'text-gray-300'}`}
+              ref={(element) => {
+                if (element) navLinkRefs.current.set(link.to, element)
+                else navLinkRefs.current.delete(link.to)
+              }}
+              className={`text-sm font-medium transition-colors duration-200 outline-none hover:text-white focus-visible:text-white ${isNavLinkActive(link.to) ? 'text-white' : 'text-gray-300'}`}
             >
               {link.label}
             </Link>
           ))}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-[calc(50%+15px)] h-0.5 rounded-full bg-red-600 shadow-[0_0_8px_rgba(229,9,20,0.55)] transition-[left,width,opacity] duration-300 ease-out motion-reduce:transition-none"
+            style={{
+              left: navIndicator.left,
+              width: navIndicator.width,
+              opacity: navIndicator.visible ? 1 : 0,
+            }}
+          />
         </div>
 
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
@@ -90,6 +136,7 @@ export default function Navbar() {
               ? <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               : <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>}
           </button>
+          <NotificationBell />
           {/* Language switcher */}
           <div className="relative" ref={langMenuRef}>
             <button
@@ -189,8 +236,8 @@ export default function Navbar() {
         <div className="border-t border-white/10 bg-[#141414]/98 px-4 py-3 shadow-2xl backdrop-blur md:hidden">
           <div className="mx-auto flex max-w-screen-2xl flex-col">
             {navLinks.map((link) => {
-              const active = location.pathname + location.search === link.to || (location.pathname === link.to.split('?')[0] && !link.to.includes('?'))
-              return <Link key={link.to} to={link.to} onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-3 text-sm font-medium transition ${active ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}>{link.label}</Link>
+              const active = isNavLinkActive(link.to)
+              return <Link key={link.to} to={link.to} onClick={() => setMobileMenuOpen(false)} className={`relative rounded-lg px-3 py-3 text-sm font-medium transition ${active ? 'bg-white/10 text-white after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-red-600' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}>{link.label}</Link>
             })}
           </div>
         </div>

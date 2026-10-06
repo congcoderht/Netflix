@@ -10,6 +10,7 @@
 | Backend        | Node.js + Express + TypeScript          |
 | Database       | PostgreSQL 16                           |
 | ORM            | Prisma                                  |
+| Realtime       | Socket.IO                               |
 | Containerization | Docker + Docker Compose              |
 | CI/CD          | GitHub Actions                          |
 
@@ -133,6 +134,15 @@ Netflix/
 | ------ | -------------- | ------------ |
 | GET    | /api/health    | Health check |
 | GET    | /api-docs      | Auto-Generated Swagger Docs (swagger-autogen) |
+
+## Realtime notifications
+
+Notifications are persisted in PostgreSQL and delivered live through Socket.IO. The REST API remains the source of truth when a client reconnects or was offline.
+
+- Users join a private `user:{userId}` room after JWT authentication.
+- `notification:new` delivers a newly persisted notification.
+- Movie publishing, comment replies, billing, subscription expiry, security changes, and admin broadcasts create notifications.
+- Run `npx prisma migrate dev` locally (or `npx prisma migrate deploy` in production) before starting the updated server.
 
 ## Scripts
 

@@ -1,7 +1,9 @@
 import { prisma } from '../lib/prisma'
 import { AppError } from '../errors/app-error'
+import { notifyCommentReply } from './notification.service'
 
 const USER_SELECT = { id: true, name: true, avatar: true }
+const REPLY_TO_SELECT = { id: true, user: { select: USER_SELECT } }
 
 const assertPublishedMovie = async (movieId: string) => {
   const movie = await prisma.movie.findFirst({ where: { id: movieId, isPublished: true }, select: { id: true } })
@@ -25,6 +27,7 @@ export const getComments = async (movieId: string, page: number, limit: number) 
           select: {
             id: true, content: true, isDeleted: true, createdAt: true, updatedAt: true,
             user: { select: USER_SELECT },
+            replyTo: { select: REPLY_TO_SELECT },
           },
         },
       },
@@ -36,14 +39,39 @@ export const getComments = async (movieId: string, page: number, limit: number) 
 
 export const createComment = async (userId: string, movieId: string, content: string, parentId?: string | null) => {
   await assertPublishedMovie(movieId)
+  let replyTarget: { id: string; parentId: string | null; userId: string; movie: { title: string } } | null = null
   if (parentId) {
-    const parent = await prisma.comment.findFirst({ where: { id: parentId, movieId, parentId: null }, select: { id: true } })
-    if (!parent) throw new AppError(404, 'Parent comment not found', 'PARENT_COMMENT_NOT_FOUND')
+    replyTarget = await prisma.comment.findFirst({
+      where: { id: parentId, movieId, isDeleted: false },
+      select: { id: true, parentId: true, userId: true, movie: { select: { title: true } } },
+    })
+    if (!replyTarget) throw new AppError(404, 'Reply target not found', 'REPLY_TARGET_NOT_FOUND')
   }
-  return prisma.comment.create({
-    data: { userId, movieId, content, parentId: parentId || null },
-    select: { id: true, content: true, isDeleted: true, createdAt: true, updatedAt: true, user: { select: USER_SELECT } },
+  const comment = await prisma.comment.create({
+    data: {
+      userId,
+      movieId,
+      parentId: replyTarget ? (replyTarget.parentId || replyTarget.id) : null,
+      replyToId: replyTarget?.id || null,
+      content,
+    },
+    select: {
+      id: true, content: true, isDeleted: true, createdAt: true, updatedAt: true,
+      user: { select: USER_SELECT },
+      replyTo: { select: REPLY_TO_SELECT },
+    },
   })
+  if (replyTarget && replyTarget.userId !== userId) {
+    await notifyCommentReply({
+      recipientId: replyTarget.userId,
+      actorName: comment.user.name || 'Netflix',
+      movieId,
+      movieTitle: replyTarget.movie.title,
+      commentId: comment.id,
+      replyId: comment.id,
+    }).catch((error) => console.error('Comment notification failed:', error))
+  }
+  return comment
 }
 
 export const updateComment = async (userId: string, movieId: string, commentId: string, content: string) => {
