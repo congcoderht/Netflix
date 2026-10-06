@@ -111,7 +111,7 @@ export const notifyCommentReply = async (input: {
   userId: input.recipientId,
   type: NotificationType.COMMENT,
   eventKey: 'commentReply',
-  data: { actorName: input.actorName, movieTitle: input.movieTitle },
+  data: { actorName: input.actorName, movieTitle: input.movieTitle, movieId: input.movieId },
   actionUrl: `/movies/${input.movieId}#comment-${input.commentId}`,
   dedupeKey: `comment:${input.commentId}:reply:${input.replyId}`,
 })

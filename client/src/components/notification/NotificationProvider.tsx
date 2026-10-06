@@ -86,6 +86,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setItems((current) => [notification, ...current])
       if (!notification.readAt) setUnreadCount((count) => count + 1)
       setLiveNotification(notification)
+      const movieId = notification.data?.movieId
+      if (notification.type === 'COMMENT' && typeof movieId === 'string') {
+        window.dispatchEvent(new CustomEvent('comments:changed', { detail: { movieId } }))
+      }
     })
     socket.on('notification:refresh', () => { void refresh() })
     socket.on('connect_error', (error) => {

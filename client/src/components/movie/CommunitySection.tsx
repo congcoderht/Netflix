@@ -141,6 +141,15 @@ export default function CommunitySection({ movieId }: { movieId: string }) {
       .finally(() => setLoading(false))
   }, [loadComments, movieId, t])
 
+  useEffect(() => {
+    const refreshMovieComments = (event: Event) => {
+      const movieEvent = event as CustomEvent<{ movieId?: string }>
+      if (movieEvent.detail?.movieId === movieId) void loadComments()
+    }
+    window.addEventListener('comments:changed', refreshMovieComments)
+    return () => window.removeEventListener('comments:changed', refreshMovieComments)
+  }, [loadComments, movieId])
+
   const rate = async (score: number) => {
     setError('')
     try {
