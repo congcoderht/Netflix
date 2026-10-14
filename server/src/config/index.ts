@@ -34,6 +34,14 @@ export const config = {
   },
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+  ai: {
+    enabled: process.env.AI_CHAT_ENABLED === 'true',
+    apiKey: process.env.GEMINI_API_KEY || '',
+    model: process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
+    maxOutputTokens: parseInt(process.env.AI_MAX_OUTPUT_TOKENS || '800', 10),
+    userDailyLimit: parseInt(process.env.AI_USER_DAILY_LIMIT || '50', 10),
+    adminDailyLimit: parseInt(process.env.AI_ADMIN_DAILY_LIMIT || '200', 10),
+  },
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     apiKey: process.env.CLOUDINARY_API_KEY || '',
@@ -57,6 +65,10 @@ export const config = {
 export const validateConfig = () => {
   if (!config.databaseUrl) {
     throw new Error('DATABASE_URL is required')
+  }
+
+  if (config.ai.enabled && !config.ai.apiKey) {
+    throw new Error('GEMINI_API_KEY is required when AI_CHAT_ENABLED=true')
   }
 
   if (config.nodeEnv === 'production') {

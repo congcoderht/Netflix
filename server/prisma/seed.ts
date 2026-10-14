@@ -68,13 +68,63 @@ async function main() {
     { id: 'actor-lee', name: 'Lee Jung-jae', avatar: 'https://image.tmdb.org/t/p/w185/5b5TAyl3T4EVvGHnXSjB4hYvHLG.jpg', bio: 'Diễn viên Hàn Quốc, vai Seong Gi-hun.' },
     { id: 'actor-park', name: 'Park Hae-soo', avatar: 'https://image.tmdb.org/t/p/w185/xRlCCNsHnWqrJr19Kz3A4F7WLSJ.jpg', bio: 'Diễn viên Hàn Quốc, vai Cho Sang-woo.' },
     { id: 'actor-hwang', name: 'Hwang Dong-hyuk', avatar: null, bio: 'Đạo diễn và người tạo ra Squid Game.' },
+    // Interstellar
+    { id: 'actor-mcconaughey', name: 'Matthew McConaughey', avatar: null, bio: 'Diễn viên người Mỹ, thủ vai Cooper trong Interstellar.' },
+    { id: 'actor-hathaway', name: 'Anne Hathaway', avatar: null, bio: 'Nữ diễn viên người Mỹ, thủ vai Amelia Brand trong Interstellar.' },
+    // The Dark Knight
+    { id: 'actor-bale', name: 'Christian Bale', avatar: null, bio: 'Diễn viên người Anh, thủ vai Bruce Wayne/Batman.' },
+    { id: 'actor-ledger', name: 'Heath Ledger', avatar: null, bio: 'Diễn viên người Úc, thủ vai Joker trong The Dark Knight.' },
+    // Parasite
+    { id: 'actor-song-kangho', name: 'Song Kang-ho', avatar: null, bio: 'Diễn viên Hàn Quốc, thủ vai Kim Ki-taek trong Parasite.' },
+    { id: 'actor-choi-wooshik', name: 'Choi Woo-shik', avatar: null, bio: 'Diễn viên Hàn Quốc, thủ vai Kim Ki-woo trong Parasite.' },
+    { id: 'actor-bong', name: 'Bong Joon-ho', avatar: null, bio: 'Đạo diễn và biên kịch người Hàn Quốc.' },
+    // Joker and Gladiator
+    { id: 'actor-joaquin', name: 'Joaquin Phoenix', avatar: null, bio: 'Diễn viên người Mỹ, nổi tiếng với Joker và Gladiator.' },
+    { id: 'actor-deniro', name: 'Robert De Niro', avatar: null, bio: 'Diễn viên người Mỹ, thủ vai Murray Franklin trong Joker.' },
+    { id: 'actor-todd-phillips', name: 'Todd Phillips', avatar: null, bio: 'Đạo diễn và đồng biên kịch Joker.' },
+    { id: 'actor-russell-crowe', name: 'Russell Crowe', avatar: null, bio: 'Diễn viên người New Zealand, thủ vai Maximus trong Gladiator.' },
+    { id: 'actor-ridley-scott', name: 'Ridley Scott', avatar: null, bio: 'Đạo diễn người Anh, đạo diễn Gladiator.' },
+    // Spider-Man: No Way Home
+    { id: 'actor-tom-holland', name: 'Tom Holland', avatar: null, bio: 'Diễn viên người Anh, thủ vai Peter Parker/Spider-Man.' },
+    { id: 'actor-zendaya', name: 'Zendaya', avatar: null, bio: 'Nữ diễn viên người Mỹ, thủ vai MJ và Chani.' },
+    { id: 'actor-jon-watts', name: 'Jon Watts', avatar: null, bio: 'Đạo diễn Spider-Man: No Way Home.' },
+    // Dune: Part One
+    { id: 'actor-chalamet', name: 'Timothée Chalamet', avatar: null, bio: 'Diễn viên người Mỹ, thủ vai Paul Atreides.' },
+    { id: 'actor-rebecca-ferguson', name: 'Rebecca Ferguson', avatar: null, bio: 'Nữ diễn viên Thụy Điển, thủ vai Lady Jessica.' },
+    { id: 'actor-villeneuve', name: 'Denis Villeneuve', avatar: null, bio: 'Đạo diễn người Canada, đạo diễn Dune: Part One.' },
+    // Oppenheimer
+    { id: 'actor-cillian', name: 'Cillian Murphy', avatar: null, bio: 'Diễn viên người Ireland, thủ vai J. Robert Oppenheimer.' },
+    { id: 'actor-emily-blunt', name: 'Emily Blunt', avatar: null, bio: 'Nữ diễn viên người Anh, thủ vai Kitty Oppenheimer.' },
+    // The Wolf of Wall Street
+    { id: 'actor-jonah-hill', name: 'Jonah Hill', avatar: null, bio: 'Diễn viên người Mỹ, thủ vai Donnie Azoff.' },
+    { id: 'actor-scorsese', name: 'Martin Scorsese', avatar: null, bio: 'Đạo diễn người Mỹ, đạo diễn The Wolf of Wall Street.' },
+    // The Matrix
+    { id: 'actor-keanu', name: 'Keanu Reeves', avatar: null, bio: 'Diễn viên người Canada, thủ vai Neo trong The Matrix.' },
+    { id: 'actor-carrie-anne', name: 'Carrie-Anne Moss', avatar: null, bio: 'Nữ diễn viên Canada, thủ vai Trinity trong The Matrix.' },
+    { id: 'actor-wachowski', name: 'Lana & Lilly Wachowski', avatar: null, bio: 'Bộ đôi đạo diễn và biên kịch The Matrix.' },
+    // Stranger Things
+    { id: 'actor-winona', name: 'Winona Ryder', avatar: null, bio: 'Nữ diễn viên người Mỹ, thủ vai Joyce Byers.' },
+    { id: 'actor-david-harbour', name: 'David Harbour', avatar: null, bio: 'Diễn viên người Mỹ, thủ vai Jim Hopper.' },
+    { id: 'actor-duffer', name: 'Matt & Ross Duffer', avatar: null, bio: 'Bộ đôi sáng tạo và đạo diễn Stranger Things.' },
+    // Money Heist
+    { id: 'actor-ursula', name: 'Úrsula Corberó', avatar: null, bio: 'Nữ diễn viên Tây Ban Nha, thủ vai Tokyo.' },
+    { id: 'actor-alvaro', name: 'Álvaro Morte', avatar: null, bio: 'Diễn viên Tây Ban Nha, thủ vai Giáo sư.' },
+    { id: 'actor-alex-pina', name: 'Álex Pina', avatar: null, bio: 'Nhà sáng tạo và nhà sản xuất Money Heist.' },
+    // Dark
+    { id: 'actor-louis-hofmann', name: 'Louis Hofmann', avatar: null, bio: 'Diễn viên người Đức, thủ vai Jonas Kahnwald.' },
+    { id: 'actor-lisa-vicari', name: 'Lisa Vicari', avatar: null, bio: 'Nữ diễn viên người Đức, thủ vai Martha Nielsen.' },
+    { id: 'actor-baran', name: 'Baran bo Odar', avatar: null, bio: 'Đạo diễn và đồng sáng tạo Dark.' },
+    // The Witcher
+    { id: 'actor-henry-cavill', name: 'Henry Cavill', avatar: null, bio: 'Diễn viên người Anh, thủ vai Geralt of Rivia.' },
+    { id: 'actor-anya-chalotra', name: 'Anya Chalotra', avatar: null, bio: 'Nữ diễn viên người Anh, thủ vai Yennefer of Vengerberg.' },
+    { id: 'actor-freya-allan', name: 'Freya Allan', avatar: null, bio: 'Nữ diễn viên người Anh, thủ vai Ciri.' },
   ]
 
   const actors = await Promise.all(
     actorData.map((a) =>
       prisma.actor.upsert({
         where: { id: a.id },
-        update: {},
+        update: { name: a.name, avatar: a.avatar, bio: a.bio },
         create: a,
       })
     )
@@ -630,6 +680,121 @@ async function main() {
       { movieId: squidGame.id, actorId: actorMap['actor-park'].id, role: 'Diễn viên' },
     ],
   })
+
+  // Keep cast information complete and repeatable after the former series were
+  // flattened into standalone movies. Relations are matched by movie title so
+  // the seed also repairs databases created before the flattening migrations.
+  const castByMovieTitle: Record<string, { actorId: string; role: string }[]> = {
+    'Avengers: Endgame': [
+      { actorId: 'actor-rdj', role: 'Tony Stark / Iron Man' },
+      { actorId: 'actor-chris-evans', role: 'Steve Rogers / Captain America' },
+      { actorId: 'actor-scarlett', role: 'Natasha Romanoff / Black Widow' },
+      { actorId: 'actor-russo', role: 'Đạo diễn' },
+      { actorId: 'actor-kevin', role: 'Giám đốc sản xuất' },
+    ],
+    Inception: [
+      { actorId: 'actor-dicaprio', role: 'Dom Cobb' },
+      { actorId: 'actor-joseph', role: 'Arthur' },
+      { actorId: 'actor-nolan', role: 'Đạo diễn' },
+    ],
+    Interstellar: [
+      { actorId: 'actor-mcconaughey', role: 'Cooper' },
+      { actorId: 'actor-hathaway', role: 'Amelia Brand' },
+      { actorId: 'actor-nolan', role: 'Đạo diễn' },
+    ],
+    'The Dark Knight': [
+      { actorId: 'actor-bale', role: 'Bruce Wayne / Batman' },
+      { actorId: 'actor-ledger', role: 'Joker' },
+      { actorId: 'actor-nolan', role: 'Đạo diễn' },
+    ],
+    Parasite: [
+      { actorId: 'actor-song-kangho', role: 'Kim Ki-taek' },
+      { actorId: 'actor-choi-wooshik', role: 'Kim Ki-woo' },
+      { actorId: 'actor-bong', role: 'Đạo diễn' },
+    ],
+    Joker: [
+      { actorId: 'actor-joaquin', role: 'Arthur Fleck / Joker' },
+      { actorId: 'actor-deniro', role: 'Murray Franklin' },
+      { actorId: 'actor-todd-phillips', role: 'Đạo diễn' },
+    ],
+    'Spider-Man: No Way Home': [
+      { actorId: 'actor-tom-holland', role: 'Peter Parker / Spider-Man' },
+      { actorId: 'actor-zendaya', role: 'MJ' },
+      { actorId: 'actor-jon-watts', role: 'Đạo diễn' },
+    ],
+    'Dune: Part One': [
+      { actorId: 'actor-chalamet', role: 'Paul Atreides' },
+      { actorId: 'actor-rebecca-ferguson', role: 'Lady Jessica' },
+      { actorId: 'actor-zendaya', role: 'Chani' },
+      { actorId: 'actor-villeneuve', role: 'Đạo diễn' },
+    ],
+    Oppenheimer: [
+      { actorId: 'actor-cillian', role: 'J. Robert Oppenheimer' },
+      { actorId: 'actor-emily-blunt', role: 'Kitty Oppenheimer' },
+      { actorId: 'actor-nolan', role: 'Đạo diễn' },
+    ],
+    'The Wolf of Wall Street': [
+      { actorId: 'actor-dicaprio', role: 'Jordan Belfort' },
+      { actorId: 'actor-jonah-hill', role: 'Donnie Azoff' },
+      { actorId: 'actor-scorsese', role: 'Đạo diễn' },
+    ],
+    Gladiator: [
+      { actorId: 'actor-russell-crowe', role: 'Maximus' },
+      { actorId: 'actor-joaquin', role: 'Commodus' },
+      { actorId: 'actor-ridley-scott', role: 'Đạo diễn' },
+    ],
+    'The Matrix': [
+      { actorId: 'actor-keanu', role: 'Neo' },
+      { actorId: 'actor-carrie-anne', role: 'Trinity' },
+      { actorId: 'actor-wachowski', role: 'Đạo diễn' },
+    ],
+    'Breaking Bad': [
+      { actorId: 'actor-cranston', role: 'Walter White' },
+      { actorId: 'actor-paul', role: 'Jesse Pinkman' },
+      { actorId: 'actor-vince', role: 'Đạo diễn' },
+    ],
+    'Squid Game': [
+      { actorId: 'actor-lee', role: 'Seong Gi-hun' },
+      { actorId: 'actor-park', role: 'Cho Sang-woo' },
+      { actorId: 'actor-hwang', role: 'Đạo diễn' },
+    ],
+    'Stranger Things': [
+      { actorId: 'actor-winona', role: 'Joyce Byers' },
+      { actorId: 'actor-david-harbour', role: 'Jim Hopper' },
+      { actorId: 'actor-duffer', role: 'Đạo diễn' },
+    ],
+    'Money Heist': [
+      { actorId: 'actor-ursula', role: 'Tokyo' },
+      { actorId: 'actor-alvaro', role: 'The Professor' },
+      { actorId: 'actor-alex-pina', role: 'Nhà sản xuất' },
+    ],
+    Dark: [
+      { actorId: 'actor-louis-hofmann', role: 'Jonas Kahnwald' },
+      { actorId: 'actor-lisa-vicari', role: 'Martha Nielsen' },
+      { actorId: 'actor-baran', role: 'Đạo diễn' },
+    ],
+    'The Witcher': [
+      { actorId: 'actor-henry-cavill', role: 'Geralt of Rivia' },
+      { actorId: 'actor-anya-chalotra', role: 'Yennefer of Vengerberg' },
+      { actorId: 'actor-freya-allan', role: 'Ciri' },
+    ],
+  }
+
+  const castMovies = await prisma.movie.findMany({
+    where: { title: { in: Object.keys(castByMovieTitle) } },
+    select: { id: true, title: true },
+  })
+  await prisma.$transaction(
+    castMovies.flatMap((movie) => castByMovieTitle[movie.title].map(({ actorId, role }) =>
+      prisma.actorOnMovie.upsert({
+        where: { movieId_actorId: { movieId: movie.id, actorId } },
+        update: { role },
+        create: { movieId: movie.id, actorId, role },
+      })
+    )),
+  )
+
+  console.log('✓ Complete movie cast created')
 
   console.log('✓ Former series converted to standalone movies')
 

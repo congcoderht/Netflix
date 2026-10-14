@@ -13,6 +13,7 @@ import { getApiErrorBody, getApiErrorMessage } from '@/lib/api-error'
 import { api } from '@/lib/axios'
 import { useAuthStore } from '@/store/auth.store'
 import { formatDate } from '@/i18n/format'
+import BackButton from '@/components/navigation/BackButton'
 
 const CREW_ROLES = ['Đạo diễn', 'Giám đốc sản xuất', 'Nhà sản xuất', 'Biên kịch']
 
@@ -228,7 +229,8 @@ export default function MovieDetail() {
 
       <div className="min-h-screen pt-16">
         {/* Hero / Player area */}
-        <div className="bg-black">
+        <div className="relative bg-black">
+          {!playing && <BackButton fallback="/movies" />}
           {playing && currentVideoUrl ? (
             <div className="max-w-5xl mx-auto px-4 py-6">
               <div className="flex items-center gap-3 mb-3">
@@ -333,26 +335,29 @@ export default function MovieDetail() {
           </div>
 
           {/* Cast & Crew */}
-          {(actors.length > 0 || crew.length > 0) && (
-            <div className="border-t border-gray-800 py-8">
-              <h2 className="text-xl font-bold text-white mb-6">{t('movie.castAndCrew')}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                {/* Diễn viên */}
+          <div className="border-t border-gray-800 py-8">
+            <h2 className="text-xl font-bold text-white mb-6">{t('movie.castAndCrew')}</h2>
+            {actors.length === 0 && crew.length === 0 ? (
+              <div className="rounded-xl border border-gray-800 bg-gray-900/50 px-5 py-6 text-sm text-gray-400">
+                {t('movie.castUnavailable')}
+              </div>
+            ) : (
+              <div className="space-y-7">
                 {actors.length > 0 && (
                   <div>
-                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">{t('movie.cast')}</h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <h3 className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-gray-500">{t('movie.cast')}</h3>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       {actors.map(({ actor, role }) => (
-                        <div key={actor.id} className="flex items-center gap-3 bg-gray-800/50 rounded-lg p-3 hover:bg-gray-800 transition-colors">
-                          <div className="w-11 h-11 rounded-full bg-gray-700 overflow-hidden shrink-0 ring-2 ring-gray-600">
+                        <div key={actor.id} className="group flex min-w-0 items-center gap-3 rounded-xl border border-gray-800 bg-gradient-to-br from-gray-900 to-gray-900/55 p-3 transition hover:border-gray-700 hover:from-gray-800 hover:to-gray-900">
+                          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-white/10 bg-gradient-to-br from-gray-600 to-gray-800 shadow-inner">
                             {actor.avatar
-                              ? <img src={actor.avatar} alt={actor.name} className="w-full h-full object-cover" />
-                              : <div className="w-full h-full flex items-center justify-center text-white font-bold">{actor.name[0]}</div>
+                              ? <img src={actor.avatar} alt={actor.name} className="h-full w-full object-cover" loading="lazy" />
+                              : <div className="flex h-full w-full items-center justify-center text-sm font-bold text-gray-100">{actor.name[0]}</div>
                             }
                           </div>
                           <div className="min-w-0">
-                            <p className="text-white text-sm font-medium truncate">{actor.name}</p>
-                            {role && <p className="text-gray-400 text-xs truncate">{role}</p>}
+                            <p className="truncate text-sm font-semibold text-white">{actor.name}</p>
+                            {role && <p className="mt-0.5 truncate text-xs text-gray-400">{role}</p>}
                           </div>
                         </div>
                       ))}
@@ -360,27 +365,30 @@ export default function MovieDetail() {
                   </div>
                 )}
 
-                {/* Đoàn làm phim */}
                 {crew.length > 0 && (
                   <div>
-                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">{t('movie.crew')}</h3>
-                    <div className="space-y-3">
-                      {CREW_ROLES.map((role) => {
-                        const people = crew.filter((c) => c.role === role)
-                        if (!people.length) return null
-                        return (
-                          <div key={role} className="flex gap-3">
-                            <span className="text-gray-500 text-sm w-36 shrink-0">{role}</span>
-                            <span className="text-white text-sm">{people.map((p) => p.actor.name).join(', ')}</span>
+                    <h3 className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-gray-500">{t('movie.crew')}</h3>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {crew.map(({ actor, role }) => (
+                        <div key={actor.id} className="group flex min-w-0 items-center gap-3 rounded-xl border border-gray-800 bg-gradient-to-br from-gray-900 to-gray-900/55 p-3 transition hover:border-gray-700 hover:from-gray-800 hover:to-gray-900">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-red-500/15 bg-red-950/35 text-sm font-bold text-red-300">
+                            {actor.avatar
+                              ? <img src={actor.avatar} alt={actor.name} className="h-full w-full object-cover" loading="lazy" />
+                              : actor.name[0]
+                            }
                           </div>
-                        )
-                      })}
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-white">{actor.name}</p>
+                            {role && <p className="mt-0.5 truncate text-xs text-gray-400">{role}</p>}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           <CommunitySection movieId={movie.id} />
         </div>

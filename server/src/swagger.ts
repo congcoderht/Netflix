@@ -16,6 +16,7 @@ import { adminPlanRouter } from './routes/admin-plan.routes'
 import { adminDashboardRouter } from './routes/admin-dashboard.routes'
 import { adminUserRouter } from './routes/admin-user.routes'
 import { adminNotificationRouter, notificationRouter } from './routes/notification.routes'
+import { chatRouter } from './routes/chat.routes'
 import { API_VALIDATION, ApiValidationMetadata } from './middlewares/validate.middleware'
 
 type JsonObject = Record<string, unknown>
@@ -43,6 +44,7 @@ const routers: Array<{ basePath: string; tag: string; router: unknown; protected
   { basePath: '/api/admin/users', tag: 'Admin users', router: adminUserRouter, protected: true },
   { basePath: '/api/notifications', tag: 'Notifications', router: notificationRouter, protected: true },
   { basePath: '/api/admin/notifications', tag: 'Admin notifications', router: adminNotificationRouter, protected: true },
+  { basePath: '/api/chat', tag: 'AI chat', router: chatRouter, protected: true },
 ]
 
 const jsonSchema = (schema: ZodType): JsonObject => {

@@ -27,6 +27,28 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+  .chat-scrollbar {
+    scrollbar-color: rgb(75 85 99 / 0.8) transparent;
+    scrollbar-width: thin;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgb(75 85 99 / 0.8);
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(229 9 20 / 0.75);
+  }
 }
 @keyframes notification-in {
   from { opacity: 0; transform: translate3d(0, -12px, 0); }

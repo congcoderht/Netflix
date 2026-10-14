@@ -15,6 +15,7 @@ import MyList from '@/pages/MyList'
 import RoleHome from '@/components/RoleHome'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { NotificationProvider } from '@/components/notification/NotificationProvider'
+import ChatWidget from '@/components/chat/ChatWidget'
 
 const Billing = lazy(() => import('@/pages/Billing'))
 const PaymentResult = lazy(() => import('@/pages/PaymentResult'))
@@ -56,7 +57,7 @@ export default function App() {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes></Suspense></NotificationProvider></AuthBootstrap>
+      </Routes><ChatWidget /></Suspense></NotificationProvider></AuthBootstrap>
     </BrowserRouter>
   )
 }

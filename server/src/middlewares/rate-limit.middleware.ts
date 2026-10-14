@@ -46,3 +46,10 @@ export const playbackHeartbeatRateLimit = rateLimit({
   limit: 180,
   message: { status: 'error', code: 'HEARTBEAT_RATE_LIMITED', message: 'Too many heartbeat requests.' },
 })
+
+export const chatRateLimit = rateLimit({
+  ...commonOptions,
+  windowMs: 60 * 1000,
+  limit: 10,
+  message: { status: 'error', code: 'CHAT_RATE_LIMITED', message: 'Too many chat requests. Please try again shortly.' },
+})

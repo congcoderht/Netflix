@@ -62,7 +62,7 @@
     "description": "Description",
     "crew": "Crew",
     "addedToList": "Added to My List",
-    "castAndCrew": "Cast & Crew", "cast": "Cast", "back": "Back", "subscriptionRequired": "A subscription is required", "subscriptionRequiredDescription": "Choose a plan to watch this movie and access all content.", "later": "Not now", "viewPlans": "View plans", "screenLimit": "Screen limit reached", "screenLimitDescription": "Stop an active device, then try again.", "thisDevice": "This device", "device": "Device {{id}}", "activeAt": "active at {{time}}", "stop": "Stop", "noActiveSessions": "No active playback sessions.", "takenOver": "Playback moved to another device", "takenOverDescription": "Your current plan is being used on another device. You will be signed out here.", "confirmLogout": "Confirm and sign out", "playbackError": "Unable to start playback"
+    "castAndCrew": "Cast & Crew", "cast": "Cast", "castUnavailable": "Cast and crew information has not been added for this movie yet.", "back": "Back", "subscriptionRequired": "A subscription is required", "subscriptionRequiredDescription": "Choose a plan to watch this movie and access all content.", "later": "Not now", "viewPlans": "View plans", "screenLimit": "Screen limit reached", "screenLimitDescription": "Stop an active device, then try again.", "thisDevice": "This device", "device": "Device {{id}}", "activeAt": "active at {{time}}", "stop": "Stop", "noActiveSessions": "No active playback sessions.", "takenOver": "Playback moved to another device", "takenOverDescription": "Your current plan is being used on another device. You will be signed out here.", "confirmLogout": "Confirm and sign out", "playbackError": "Unable to start playback"
   },
   "movies": { "count": "{{count}} movies", "allGenres": "All genres", "loadError": "Unable to load movies. Please try again." },
   "subscription": {
@@ -126,6 +126,10 @@
       ,"passwordChanged": { "title": "Password changed", "body": "Your account password was just updated. Contact an administrator if this wasn't you." }
       ,"accountUnblocked": { "title": "Account unblocked", "body": "You can continue using your account normally." }
     }
+  },
+  "chat": {
+    "title": "Netflix AI", "open": "Open AI assistant", "userSubtitle": "Movies and account assistant", "adminSubtitle": "Read-only operations assistant", "clear": "Clear", "welcome": "How can I help?", "description": "Ask about movies, plans, or your account. Answers may use current application data.", "placeholder": "Ask Netflix AI...", "send": "Send message", "thinking": "AI is thinking", "disclaimer": "AI can make mistakes. Verify important information.", "minutes": "{{count}} min", "error": "The AI assistant is temporarily unavailable. Please try again.", "disabled": "The AI assistant is not available right now.", "dailyLimit": "You have reached today's AI message limit.", "rateLimit": "You're sending messages too quickly. Please wait a moment.", "providerRateLimit": "Gemini has reached its free-tier limit. Please try again later.",
+    "prompts": { "recommend": "Recommend a movie for me", "myPlan": "What is my current plan?", "adminOverview": "Give me an overview of the system", "contentIssues": "Which movies are missing information?" }
   },
   "checkout": { "invalidLink": "Invalid payment link", "confirmError": "Unable to confirm payment", "gateway": "Payment gateway", "secure": "Safe & secure", "title": "Order payment", "order": "Order", "content": "Description", "planContent": "Netflix {{plan}} plan", "instruction": "Open {{provider}}, scan the QR code, and verify the amount before paying.", "scan": "Scan to pay", "qrLabel": "Payment QR code", "expires": "QR code expires in 30 minutes", "confirming": "Confirming...", "confirm": "Confirm payment", "viewResult": "View payment result", "cancel": "Cancel and go back" },
   "error": {

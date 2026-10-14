@@ -86,6 +86,7 @@
     "description": "Mô tả",
     "castAndCrew": "Diễn viên & Đoàn làm phim",
     "cast": "Diễn viên",
+    "castUnavailable": "Phim này chưa có thông tin diễn viên và đoàn làm phim trong hệ thống.",
     "crew": "Đoàn làm phim",
     "addedToList": "Đã thêm vào danh sách",
     "back": "Quay lại",
@@ -241,6 +242,10 @@
       ,"passwordChanged": { "title": "Mật khẩu đã được thay đổi", "body": "Mật khẩu tài khoản của bạn vừa được cập nhật. Nếu đây không phải bạn, hãy liên hệ quản trị viên." }
       ,"accountUnblocked": { "title": "Tài khoản đã được mở khóa", "body": "Bạn có thể tiếp tục sử dụng tài khoản bình thường." }
     }
+  },
+  "chat": {
+    "title": "Netflix AI", "open": "Mở trợ lý AI", "userSubtitle": "Trợ lý phim và tài khoản", "adminSubtitle": "Trợ lý vận hành chỉ đọc dữ liệu", "clear": "Xóa hội thoại", "welcome": "Tôi có thể giúp gì?", "description": "Hỏi về phim, gói cước hoặc tài khoản của bạn. Câu trả lời có thể dùng dữ liệu hiện tại của ứng dụng.", "placeholder": "Hỏi Netflix AI...", "send": "Gửi tin nhắn", "thinking": "AI đang suy nghĩ", "disclaimer": "AI có thể trả lời sai. Hãy kiểm tra thông tin quan trọng.", "minutes": "{{count}} phút", "error": "Trợ lý AI tạm thời không phản hồi. Vui lòng thử lại.", "disabled": "Trợ lý AI hiện chưa khả dụng.", "dailyLimit": "Bạn đã dùng hết lượt hỏi AI hôm nay.", "rateLimit": "Bạn đang gửi quá nhanh. Vui lòng chờ một chút.", "providerRateLimit": "Gemini đã đạt giới hạn miễn phí. Vui lòng thử lại sau.",
+    "prompts": { "recommend": "Gợi ý một phim phù hợp cho tôi", "myPlan": "Gói cước hiện tại của tôi là gì?", "adminOverview": "Cho tôi tổng quan hệ thống", "contentIssues": "Những phim nào đang thiếu thông tin?" }
   },
   "checkout": {
     "invalidLink": "Liên kết thanh toán không hợp lệ", "confirmError": "Không thể xác nhận thanh toán", "gateway": "Cổng thanh toán", "secure": "An toàn & bảo mật", "title": "Thanh toán đơn hàng", "order": "Đơn hàng", "content": "Nội dung", "planContent": "Gói Netflix {{plan}}", "instruction": "Mở ứng dụng {{provider}}, chọn quét mã QR và kiểm tra đúng số tiền trước khi thanh toán.", "scan": "Quét mã để thanh toán", "qrLabel": "Mã QR thanh toán", "expires": "Mã QR hết hạn sau 30 phút", "confirming": "Đang xác nhận...", "confirm": "Xác nhận thanh toán", "viewResult": "Xem kết quả giao dịch", "cancel": "Hủy và quay lại"
